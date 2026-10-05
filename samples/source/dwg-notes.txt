@@ -1,0 +1,94 @@
+RD Šíma stavba.dwg — inspection notes
+Date: 2026-10-04
+File was not modified. Nothing was committed. No OBJ merge.
+
+How it was opened
+- Binary DWG, version AC1021 (AutoCAD 2007), 2,302,016 bytes. ezdxf cannot read DWG.
+- No dwg2dxf, LibreCAD, or ODA converter was installed. LibreDWG 0.14.8601 was built under /tmp and used only to write a temporary DXF (/tmp/floorplan.dxf, 11 MB). That DXF was read with ezdxf 1.4.4.
+- Decode warnings (not fatal): Invalid num_pages 0; Invalid SORTENTSTABLE.num_ents 89684; many unstable DIMASSOC / MATERIAL / TABLESTYLE objects. Text, layers, lines, and dimension measurements that were checked still look coherent.
+- DXF code page: cp1250. All geometry is in model space (18,858 entities). Paperspace layouts Rozvržení1 (2 viewports) and Rozvržení2 (empty) do not hold the plan.
+
+Units and extents
+- $INSUNITS = 4 (millimetres). $MEASUREMENT = 1 (metric). $LUNITS = 2 (decimal). $DIMLFAC = 1, $DIMSCALE = 10.
+- Header extents (mm): EXTMIN (4625798.257, -795669.465, -812.800), EXTMAX (5066998.002, -552128.151, 1371.600).
+- Overall model size: 441.20 m × 243.54 m. This is the whole tiled model, not the house. It includes the site drawing (SITUACE), elevations (POHLEDY), sections (ŘEZ A-A … D-D), roof plan (PŮDORYS STŘECHY), ceiling plan (VÝKRES STROPU NAD 1.NP), and the sanitary plan (PŮDORYS 1.NP - ZTI), plus title blocks.
+- Dimension measurements are in mm (samples: 200, 250, 1000, 1475, 2500, 3300, 4050, 4600).
+- The architectural sheet titled PŮDORYS 1.NP sits around model x ≈ 4698–4744 m, y ≈ -615 to -599 m (coordinates are mm/1000). In that band, ignoring entities longer than 25 m:
+  - layer silná: about 53.4 m × 16.0 m
+  - layer šrafy: about 45.0 m × 16.1 m
+  - layer zařízení (furniture): about 34.9 m × 15.0 m
+  Room-name inserts for that copy span about 39.8 m × 12.0 m. So the 1.NP drawing is on the order of 35–50 m by 15–16 m, not the 441 m model extent. Only a 1.NP plan was found (no 2.NP title).
+
+Layers (all ON, unfrozen)
+0
+silná                  thick-line geometry (walls): LINE 142, LWPOLYLINE 107, ARC 25
+šrafy                  hatches / fill: LWPOLYLINE 1718, LINE 549, HATCH 210
+koty                   dimensions: DIMENSION 1606, LINE 1631, MTEXT 1024, LWPOLYLINE 232
+tenka                  thin geometry and sheet titles: LINE 3996, MTEXT 583, LWPOLYLINE 260
+Defpoints
+detaily                LINE 347, MTEXT 43
+šrafy 2                LINE 42, HATCH 6
+popis                  labels / markers: MTEXT 572, LINE 531, CIRCLE 90
+zařízení              furniture / fittings: LINE 2306, ARC 358, LWPOLYLINE 250, SPLINE 232 (separate from walls)
+1, 18, 19, 101, 105
+LEGENDA                utility legend text
+ČEZ, Vodakva - voda, Vodakva - kanal dešť, Vodakva - kanal spla, RWE, Telefonika O2
+zivot                  INSERT (block "octavia situ")
+ostatní kce            notes
+konstrukce             structure notes (Ytong beams, fire equipment)
+tabulka                area legend (novostavba RD, chodník, komunikace)
+popis místností        room names only: 48 MTEXT
+popis ZTI              sanitary labels (U1, WC1, PE 32, …)
+vodovod, kanalizace
+
+Readable room names
+Yes. Layer "popis místností". 48 MTEXT, 25 unique strings. Most names appear twice (once on PŮDORYS 1.NP, once on PŮDORYS 1.NP - ZTI).
+Sample (plain text):
+  1.01 Zádveří
+  1.02 Obývací pokoj+KK
+  1.03 Spíž
+  1.04 Technická místnost   (the other copy is only "1.04")
+  1.05 Chodba
+  1.06 WC
+  1.07 Koupelna
+  1.08 Prádelna
+  1.09 Koupelna
+  1.10 Šatna
+  1.11 Ložnice
+  1.12 Pokoj
+  1.13 Pokoj
+  1.14 Pokoj
+  1.15 Pracovna
+  1.16 Garáž
+  1.17 Chodba
+  1.19 WC
+  1.20, 1.21, 1.22, 1.23   (numbers only, no name)
+  Sklad
+  Terasa
+No "1.18" string is present. Other readable text includes the title block: NOVOSTAVBA RODINNÉHO DOMU, parc. č. 796/1, k.ú. Bor u Tachova, investor Zuzana Kořínková, Petr Šíma, scale 1:50, date 04-2022.
+
+Walls: closed polylines or a line mess?
+A line mess, not one closed polyline per room.
+- silná: 68 closed LWPOLYLINE, 39 open, plus 142 LINE and 25 ARC. Closed ones are mixed sizes (many under 0.3 m, some 1–20 m). They are wall pieces, not room outlines.
+- šrafy: 1677 closed LWPOLYLINE, mostly 4 vertices and 0.3–1 m across (wall-fill rectangles), plus 210 HATCH.
+- tenka: mostly open LINE (3996), plus 164 closed / 96 open polylines.
+- zařízení is its own layer, so furniture can be dropped without deleting walls.
+- Almost no block inserts for furniture (78 INSERT total; 65 are dimension arrows "_Oblique"). Fittings are exploded geometry.
+
+Entity counts in model space
+  10366 LINE
+   2699 LWPOLYLINE
+   2496 MTEXT
+   1606 DIMENSION
+    632 CIRCLE
+    434 ARC
+    274 HATCH
+    232 SPLINE
+     78 INSERT
+     29 TEXT
+      7 ELLIPSE
+      5 POINT
+  18858 total
+
+Verdict
+Usable as the floorplan source. Units are millimetres, room names exist, walls and dimensions are on separate layers from furniture. It is not a clean set of closed room polygons: the plan has to be traced from silná/tenka/šrafy lines, and the model also contains site, elevations, sections, roof, and a duplicate ZTI plan.

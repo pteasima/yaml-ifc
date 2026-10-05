@@ -1,0 +1,123 @@
+Ceiling heights, levels and roof slopes read from RD Šíma stavba.dwg
+Date: 2026-10-04. DWG was not modified. Nothing was committed. OBJ files were not opened.
+Read via the existing LibreDWG 0.14.8601 conversion /tmp/floorplan.dxf (ezdxf 1.4.4). Units millimetres.
+Model space tiles many sheets. Coordinates below are model-space insert points of the sheet titles.
+
+Sheets found
+- ŘEZ A-A  D.1.1.07  title (4687.078 m, -572.547 m)
+- ŘEZ B-B  D.1.1.08  title (4687.078 m, -594.746 m)
+- ŘEZ C-C  D.1.1.09  title (4687.078 m, -616.944 m)
+- ŘEZ D-D  D.1.1.10  title (4687.078 m, -639.367 m)
+  The four sections are separate sheets, stacked about 22.2 m apart in model Y, each with its own title block.
+  No room name (1.01, ložnice, garáž, …) is written on the section drawings themselves.
+  Build-up notes on ŘEZ B-B do say "Podlaha garáže" and "Obvodová stěna garáže"; that is a floor recipe, not a ceiling height.
+- POHLEDY  D.1.1.11  title (4681.085 m, -681.611 m)  scale text 1:100
+- POHLED JIHOVÝCHODNÍ  title (4639.462 m, -642.658 m)
+- POHLED SEVEROZÁPADNÍ  title (4639.963 m, -655.941 m)
+- POHLED JIHOZÁPADNÍ  title (4638.923 m, -666.258 m)
+- POHLED SEVEROVÝCHODNÍ  title (4672.712 m, -666.248 m)
+  All four views sit on the one POHLEDY sheet. There is no second copy.
+- Also read, because the clear heights and the pitched-roof angles are not on the sections:
+  PŮDORYS 1.NP room legend "Legenda místností", column header "s.v. [mm]", on the floor-plan sheet (not a section).
+  KROV title (4740.281 m, -699.891 m)
+  PŮDORYS STŘECHY title (4740.281 m, -730.988 m)
+
+Datum, written on every section title block and on POHLEDY:
+  ±0,000 = 472,100 m n. m. (Bpv)
+
+Level markers actually written (spot heights, role level). Counts are repeats of the same text.
+- ŘEZ A-A: -1,250 ×2, -0,750, -0,450, -0,350, -0,250 ×2, -0,150 ×2, ±0,000 ×2, +2,300, +2,500, +3,000, +3,450, +3,500, +3,650, +5,000, +5,525
+    slope text: 2,0%
+- ŘEZ B-B: -1,950, -1,800, -1,650, -1,550, -1,250 ×2, -0,750 ×2, -0,450 ×2, -0,350 ×2, -0,250 ×2, -0,050, -0,030 ×2, ±0,000 ×2, +2,250, +2,550, +2,625, +2,750 ×4, +2,950, +3,200, +3,375, +3,650 ×2, +5,525
+    slope text: 2,0% ×2
+- ŘEZ C-C: -1,250, -0,750, -0,450, -0,350, -0,250, -0,150, -0,050, ±0,000, +2,750 ×2, +2,950, +3,200 ×2, +5,150, +5,850
+    slope text: none
+- ŘEZ D-D: -1,250, -0,750, -0,450, -0,350, -0,250 ×2, -0,150 ×2, ±0,000 ×2, +2,300, +2,500, +3,000, +3,450, +3,500, +3,650, +4,875, +5,000, +5,525
+    slope text: 2,0%
+- POHLED JIHOVÝCHODNÍ: -0,150 ×2, -0,050, ±0,000 ×2, +2,750, +2,950, +3,200 ×3, +3,450 ×2, +3,650 ×2, +5,525 ×3, +5,850 ×2
+    slope text: none. Dimension entities inside this view: 0
+- POHLED SEVEROZÁPADNÍ: -0,150 ×3, ±0,000 ×2, +3,200 ×2, +3,450, +3,650 ×4, +5,525 ×2, +5,850 ×2
+    slope text: none. Dimension entities inside this view: 0
+- POHLED JIHOZÁPADNÍ: -0,150 ×2, ±0,000 ×2, +3,200 ×2, +3,450, +3,650 ×2, +5,525 ×2, +5,850
+    slope text: none. Dimension entities inside this view: 0
+- POHLED SEVEROVÝCHODNÍ: -0,150 ×2, ±0,000 ×3, +3,200 ×2, +3,650 ×2, +5,525 ×2, +5,850
+    slope text: none. Dimension entities inside this view: 0
+
+Vertical dimensions on the sections (layer koty). Empty dimension text, so the number is the measured length in mm.
+"From floor" means the lower extension point sits on the same baseline as the other storey dimensions, about 293 mm below the ±0,000 label.
+Anything else at or above 2000 mm is a vertical segment higher up (roof rise), not a named room height.
+- ŘEZ A-A from floor: 2500 mm ×2, 2750 mm, 3040 mm, 3250 mm, 3650 mm
+    other vertical ≥2000 mm: 2274.5 mm
+- ŘEZ B-B from floor: 2250 mm, 2550 mm, 2750 mm, 3000 mm ×2
+    other vertical ≥2000 mm: 2525.4 mm
+- ŘEZ C-C from floor: 2750 mm, 3000 mm
+    other vertical ≥2000 mm: 2149.8 mm, 2850.3 mm
+- ŘEZ D-D from floor: 2500 mm ×2, 2750 mm, 3000 mm, 3650 mm, 5524.5 mm
+    other vertical ≥2000 mm: (none)
+Shorter vertical dimensions on the same sheets (150, 200, 250, 300, 375, 500, 550, 650, 675, 700, 900, 1250, 1375, 1500, 1600, 1625 mm) are foundation layers or short segments.
+Where the text override is "1250", the geometry measures 1264 mm; the override matches the level marker -1,250. Not a ceiling.
+Bare texts 25, 200, 225, 250 mm sit on the wall-detail strips at the right of the sections. Not room heights.
+No elevation view has a vertical dimension. No text in the file says parapet, nadpraží, or sill.
+
+Clear height per room, column "s.v. [mm]" on PŮDORYS 1.NP (Legenda místností). These strings are in the file; they are not inferred from the sections.
+  1.01 Zádveří: 2550
+  1.02 Obývací pokoj+KK: 2500-5050
+  1.03 Spíž: 2500
+  1.04 Technická místnost: 2500
+  1.05 Chodba: 2500
+  1.06 WC: 2500
+  1.07 Koupelna: 2500
+  1.08 Prádelna: 2500
+  1.09 Koupelna: 2500
+  1.10 Šatna: 2500
+  1.11 Ložnice: 2500-4875
+  1.12 Pokoj: 3000
+  1.13 Pokoj: 3000
+  1.14 Pokoj: 3000
+  1.15 Pracovna: 3000
+  1.16 Garáž: 2750
+  1.17 Chodba: 2750
+  1.19 WC: 2550
+  1.20 Koupelna: 2550
+  1.21 Koupelna: 2550
+  1.22 Chodba: 2550
+  1.23 Pokoj+KK: 2550
+There is no 1.18 row. "Ker. obklad v. 2100 mm" in the wall column is tile height, not a window and not s.v.
+Ceiling description in the same legend is "Tvrdý strop" or "Tvrdý strop, SDK podhled" (GKB/GKF/GKI). Slab note on VÝKRES STROPU NAD 1.NP: "Tl. stropu: 250 mm" (slab thickness, not room height).
+
+Roof slope texts (not on the section or elevation sheets):
+- PŮDORYS STŘECHY: 40° ×6, 36° ×4, 2% ×19
+- KROV: 2% ×19, 40° ×10
+Sections A, B and D also carry "2,0%" (ŘEZ C-C does not). That is the only slope written on a section. The pitched-roof angles 36° and 40° are on the roof plan and the krov sheet.
+
+Windows
+Elevation opening marks, with no height, sill or head number beside them:
+- POHLED JIHOVÝCHODNÍ: O1, O10, O11, O2 ×4, O9 ×2
+- POHLED SEVEROZÁPADNÍ: O5 ×2, O6, O7, O8, O9 ×2
+- POHLED JIHOZÁPADNÍ: D2, O3, O4
+- POHLED SEVEROVÝCHODNÍ: D1, D5, D6
+Material legend on POHLEDY says "Okna hliníková s izolačním trojsklem - antracit". No size.
+The sections have no O/D marks and no per-window dimension.
+The only opening-size strings are on PŮDORYS 1.NP, not on a section or elevation. The file does not label which number is width, height, sill or head, so they are role unknown:
+  1000 | 2150  ×1
+  1100 | 2450  ×3
+  1800 | 2100  ×1
+  700 | 2100  ×1
+  750 (1750)  ×10
+  800 | 2100  ×13
+  850 | 2150  ×2
+  900 | 2400  ×1
+No window was given a height that is not written next to it.
+
+What this does and does not support
+Sections are separable (A-A, B-B, C-C, D-D) but they are not labeled by room, so a section level cannot be handed to one room.
+Per-room clear heights come from the floor-plan legend, not from the sections:
+  2.500 m for 1.03, 1.04, 1.05, 1.06, 1.07, 1.08, 1.09, 1.10
+  2.550 m for 1.01, 1.19, 1.20, 1.21, 1.22, 1.23
+  2.750 m for 1.16 Garáž and 1.17 Chodba
+  3.000 m for 1.12, 1.13, 1.14, 1.15
+  1.02 Obývací pokoj+KK is written "2500-5050" (a range, not a single height)
+  1.11 Ložnice is written "2500-4875"
+The section spot levels that match that family are +2,250, +2,300, +2,500, +2,550, +2,625, +2,750, +2,950, +3,000, +3,200, +3,375, +3,450, +3,500, +3,650, +4,875, +5,000, +5,150, +5,525, +5,850.
++4,875 is the same number as the bedroom legend top. +5,050 is only in the living-room legend; it is not a section spot level. +5,525 and +5,850 are section and elevation levels and are not in the s.v. column.
+Elevations repeat a few of those levels (±0,000, -0,150, -0,050, +2,750, +2,950, +3,200, +3,450, +3,650, +5,525, +5,850). They do not give a height for each window.
