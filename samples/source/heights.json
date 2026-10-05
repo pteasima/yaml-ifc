@@ -1,0 +1,950 @@
+[
+  {
+    "sheet": "ŘEZ A-A",
+    "text": "-1,250",
+    "value_m": -1.25,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ A-A",
+    "text": "-0,750",
+    "value_m": -0.75,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ A-A",
+    "text": "-0,450",
+    "value_m": -0.45,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ A-A",
+    "text": "-0,350",
+    "value_m": -0.35,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ A-A",
+    "text": "-0,250",
+    "value_m": -0.25,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ A-A",
+    "text": "-0,150",
+    "value_m": -0.15,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ A-A",
+    "text": "±0,000",
+    "value_m": 0.0,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ A-A",
+    "text": "+2,300",
+    "value_m": 2.3,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ A-A",
+    "text": "+2,500",
+    "value_m": 2.5,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ A-A",
+    "text": "+3,000",
+    "value_m": 3.0,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ A-A",
+    "text": "+3,450",
+    "value_m": 3.45,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ A-A",
+    "text": "+3,500",
+    "value_m": 3.5,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ A-A",
+    "text": "+3,650",
+    "value_m": 3.65,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ A-A",
+    "text": "+5,000",
+    "value_m": 5.0,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ A-A",
+    "text": "+5,525",
+    "value_m": 5.525,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ A-A",
+    "text": "2,0%",
+    "value_m": null,
+    "role": "slope"
+  },
+  {
+    "sheet": "ŘEZ A-A",
+    "text": "2500",
+    "value_m": 2.5,
+    "role": "floor-to-level"
+  },
+  {
+    "sheet": "ŘEZ A-A",
+    "text": "2750",
+    "value_m": 2.75,
+    "role": "floor-to-level"
+  },
+  {
+    "sheet": "ŘEZ A-A",
+    "text": "3040",
+    "value_m": 3.04,
+    "role": "floor-to-level"
+  },
+  {
+    "sheet": "ŘEZ A-A",
+    "text": "3250",
+    "value_m": 3.25,
+    "role": "floor-to-level"
+  },
+  {
+    "sheet": "ŘEZ A-A",
+    "text": "3650",
+    "value_m": 3.65,
+    "role": "floor-to-level"
+  },
+  {
+    "sheet": "ŘEZ A-A",
+    "text": "2274.5",
+    "value_m": 2.2745,
+    "role": "unknown"
+  },
+  {
+    "sheet": "ŘEZ A-A",
+    "text": "±0,000 = 472,100 m n. m. (Bpv)",
+    "value_m": 472.1,
+    "role": "datum"
+  },
+  {
+    "sheet": "ŘEZ B-B",
+    "text": "-1,950",
+    "value_m": -1.95,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ B-B",
+    "text": "-1,800",
+    "value_m": -1.8,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ B-B",
+    "text": "-1,650",
+    "value_m": -1.65,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ B-B",
+    "text": "-1,550",
+    "value_m": -1.55,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ B-B",
+    "text": "-1,250",
+    "value_m": -1.25,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ B-B",
+    "text": "-0,750",
+    "value_m": -0.75,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ B-B",
+    "text": "-0,450",
+    "value_m": -0.45,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ B-B",
+    "text": "-0,350",
+    "value_m": -0.35,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ B-B",
+    "text": "-0,250",
+    "value_m": -0.25,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ B-B",
+    "text": "-0,050",
+    "value_m": -0.05,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ B-B",
+    "text": "-0,030",
+    "value_m": -0.03,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ B-B",
+    "text": "±0,000",
+    "value_m": 0.0,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ B-B",
+    "text": "+2,250",
+    "value_m": 2.25,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ B-B",
+    "text": "+2,550",
+    "value_m": 2.55,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ B-B",
+    "text": "+2,625",
+    "value_m": 2.625,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ B-B",
+    "text": "+2,750",
+    "value_m": 2.75,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ B-B",
+    "text": "+2,950",
+    "value_m": 2.95,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ B-B",
+    "text": "+3,200",
+    "value_m": 3.2,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ B-B",
+    "text": "+3,375",
+    "value_m": 3.375,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ B-B",
+    "text": "+3,650",
+    "value_m": 3.65,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ B-B",
+    "text": "+5,525",
+    "value_m": 5.525,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ B-B",
+    "text": "2,0%",
+    "value_m": null,
+    "role": "slope"
+  },
+  {
+    "sheet": "ŘEZ B-B",
+    "text": "2750",
+    "value_m": 2.75,
+    "role": "floor-to-level"
+  },
+  {
+    "sheet": "ŘEZ B-B",
+    "text": "3000",
+    "value_m": 3.0,
+    "role": "floor-to-level"
+  },
+  {
+    "sheet": "ŘEZ B-B",
+    "text": "2550",
+    "value_m": 2.55,
+    "role": "floor-to-level"
+  },
+  {
+    "sheet": "ŘEZ B-B",
+    "text": "2525.4",
+    "value_m": 2.5254,
+    "role": "unknown"
+  },
+  {
+    "sheet": "ŘEZ B-B",
+    "text": "2250",
+    "value_m": 2.25,
+    "role": "floor-to-level"
+  },
+  {
+    "sheet": "ŘEZ B-B",
+    "text": "±0,000 = 472,100 m n. m. (Bpv)",
+    "value_m": 472.1,
+    "role": "datum"
+  },
+  {
+    "sheet": "ŘEZ C-C",
+    "text": "-1,250",
+    "value_m": -1.25,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ C-C",
+    "text": "-0,750",
+    "value_m": -0.75,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ C-C",
+    "text": "-0,450",
+    "value_m": -0.45,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ C-C",
+    "text": "-0,350",
+    "value_m": -0.35,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ C-C",
+    "text": "-0,250",
+    "value_m": -0.25,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ C-C",
+    "text": "-0,150",
+    "value_m": -0.15,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ C-C",
+    "text": "-0,050",
+    "value_m": -0.05,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ C-C",
+    "text": "±0,000",
+    "value_m": 0.0,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ C-C",
+    "text": "+2,750",
+    "value_m": 2.75,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ C-C",
+    "text": "+2,950",
+    "value_m": 2.95,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ C-C",
+    "text": "+3,200",
+    "value_m": 3.2,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ C-C",
+    "text": "+5,150",
+    "value_m": 5.15,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ C-C",
+    "text": "+5,850",
+    "value_m": 5.85,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ C-C",
+    "text": "2750",
+    "value_m": 2.75,
+    "role": "floor-to-level"
+  },
+  {
+    "sheet": "ŘEZ C-C",
+    "text": "2149.8",
+    "value_m": 2.1498,
+    "role": "unknown"
+  },
+  {
+    "sheet": "ŘEZ C-C",
+    "text": "3000",
+    "value_m": 3.0,
+    "role": "floor-to-level"
+  },
+  {
+    "sheet": "ŘEZ C-C",
+    "text": "2850.3",
+    "value_m": 2.8503,
+    "role": "unknown"
+  },
+  {
+    "sheet": "ŘEZ C-C",
+    "text": "±0,000 = 472,100 m n. m. (Bpv)",
+    "value_m": 472.1,
+    "role": "datum"
+  },
+  {
+    "sheet": "ŘEZ D-D",
+    "text": "-1,250",
+    "value_m": -1.25,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ D-D",
+    "text": "-0,750",
+    "value_m": -0.75,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ D-D",
+    "text": "-0,450",
+    "value_m": -0.45,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ D-D",
+    "text": "-0,350",
+    "value_m": -0.35,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ D-D",
+    "text": "-0,250",
+    "value_m": -0.25,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ D-D",
+    "text": "-0,150",
+    "value_m": -0.15,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ D-D",
+    "text": "±0,000",
+    "value_m": 0.0,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ D-D",
+    "text": "+2,300",
+    "value_m": 2.3,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ D-D",
+    "text": "+2,500",
+    "value_m": 2.5,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ D-D",
+    "text": "+3,000",
+    "value_m": 3.0,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ D-D",
+    "text": "+3,450",
+    "value_m": 3.45,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ D-D",
+    "text": "+3,500",
+    "value_m": 3.5,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ D-D",
+    "text": "+3,650",
+    "value_m": 3.65,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ D-D",
+    "text": "+4,875",
+    "value_m": 4.875,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ D-D",
+    "text": "+5,000",
+    "value_m": 5.0,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ D-D",
+    "text": "+5,525",
+    "value_m": 5.525,
+    "role": "level"
+  },
+  {
+    "sheet": "ŘEZ D-D",
+    "text": "2,0%",
+    "value_m": null,
+    "role": "slope"
+  },
+  {
+    "sheet": "ŘEZ D-D",
+    "text": "2500",
+    "value_m": 2.5,
+    "role": "floor-to-level"
+  },
+  {
+    "sheet": "ŘEZ D-D",
+    "text": "2750",
+    "value_m": 2.75,
+    "role": "floor-to-level"
+  },
+  {
+    "sheet": "ŘEZ D-D",
+    "text": "3000",
+    "value_m": 3.0,
+    "role": "floor-to-level"
+  },
+  {
+    "sheet": "ŘEZ D-D",
+    "text": "5524.5",
+    "value_m": 5.5245,
+    "role": "floor-to-level"
+  },
+  {
+    "sheet": "ŘEZ D-D",
+    "text": "3650",
+    "value_m": 3.65,
+    "role": "floor-to-level"
+  },
+  {
+    "sheet": "ŘEZ D-D",
+    "text": "±0,000 = 472,100 m n. m. (Bpv)",
+    "value_m": 472.1,
+    "role": "datum"
+  },
+  {
+    "sheet": "POHLED JIHOVÝCHODNÍ",
+    "text": "-0,150",
+    "value_m": -0.15,
+    "role": "level"
+  },
+  {
+    "sheet": "POHLED JIHOVÝCHODNÍ",
+    "text": "-0,050",
+    "value_m": -0.05,
+    "role": "level"
+  },
+  {
+    "sheet": "POHLED JIHOVÝCHODNÍ",
+    "text": "±0,000",
+    "value_m": 0.0,
+    "role": "level"
+  },
+  {
+    "sheet": "POHLED JIHOVÝCHODNÍ",
+    "text": "+2,750",
+    "value_m": 2.75,
+    "role": "level"
+  },
+  {
+    "sheet": "POHLED JIHOVÝCHODNÍ",
+    "text": "+2,950",
+    "value_m": 2.95,
+    "role": "level"
+  },
+  {
+    "sheet": "POHLED JIHOVÝCHODNÍ",
+    "text": "+3,200",
+    "value_m": 3.2,
+    "role": "level"
+  },
+  {
+    "sheet": "POHLED JIHOVÝCHODNÍ",
+    "text": "+3,450",
+    "value_m": 3.45,
+    "role": "level"
+  },
+  {
+    "sheet": "POHLED JIHOVÝCHODNÍ",
+    "text": "+3,650",
+    "value_m": 3.65,
+    "role": "level"
+  },
+  {
+    "sheet": "POHLED JIHOVÝCHODNÍ",
+    "text": "+5,525",
+    "value_m": 5.525,
+    "role": "level"
+  },
+  {
+    "sheet": "POHLED JIHOVÝCHODNÍ",
+    "text": "+5,850",
+    "value_m": 5.85,
+    "role": "level"
+  },
+  {
+    "sheet": "POHLED SEVEROZÁPADNÍ",
+    "text": "-0,150",
+    "value_m": -0.15,
+    "role": "level"
+  },
+  {
+    "sheet": "POHLED SEVEROZÁPADNÍ",
+    "text": "±0,000",
+    "value_m": 0.0,
+    "role": "level"
+  },
+  {
+    "sheet": "POHLED SEVEROZÁPADNÍ",
+    "text": "+3,200",
+    "value_m": 3.2,
+    "role": "level"
+  },
+  {
+    "sheet": "POHLED SEVEROZÁPADNÍ",
+    "text": "+3,450",
+    "value_m": 3.45,
+    "role": "level"
+  },
+  {
+    "sheet": "POHLED SEVEROZÁPADNÍ",
+    "text": "+3,650",
+    "value_m": 3.65,
+    "role": "level"
+  },
+  {
+    "sheet": "POHLED SEVEROZÁPADNÍ",
+    "text": "+5,525",
+    "value_m": 5.525,
+    "role": "level"
+  },
+  {
+    "sheet": "POHLED SEVEROZÁPADNÍ",
+    "text": "+5,850",
+    "value_m": 5.85,
+    "role": "level"
+  },
+  {
+    "sheet": "POHLED JIHOZÁPADNÍ",
+    "text": "-0,150",
+    "value_m": -0.15,
+    "role": "level"
+  },
+  {
+    "sheet": "POHLED JIHOZÁPADNÍ",
+    "text": "±0,000",
+    "value_m": 0.0,
+    "role": "level"
+  },
+  {
+    "sheet": "POHLED JIHOZÁPADNÍ",
+    "text": "+3,200",
+    "value_m": 3.2,
+    "role": "level"
+  },
+  {
+    "sheet": "POHLED JIHOZÁPADNÍ",
+    "text": "+3,450",
+    "value_m": 3.45,
+    "role": "level"
+  },
+  {
+    "sheet": "POHLED JIHOZÁPADNÍ",
+    "text": "+3,650",
+    "value_m": 3.65,
+    "role": "level"
+  },
+  {
+    "sheet": "POHLED JIHOZÁPADNÍ",
+    "text": "+5,525",
+    "value_m": 5.525,
+    "role": "level"
+  },
+  {
+    "sheet": "POHLED JIHOZÁPADNÍ",
+    "text": "+5,850",
+    "value_m": 5.85,
+    "role": "level"
+  },
+  {
+    "sheet": "POHLED SEVEROVÝCHODNÍ",
+    "text": "-0,150",
+    "value_m": -0.15,
+    "role": "level"
+  },
+  {
+    "sheet": "POHLED SEVEROVÝCHODNÍ",
+    "text": "±0,000",
+    "value_m": 0.0,
+    "role": "level"
+  },
+  {
+    "sheet": "POHLED SEVEROVÝCHODNÍ",
+    "text": "+3,200",
+    "value_m": 3.2,
+    "role": "level"
+  },
+  {
+    "sheet": "POHLED SEVEROVÝCHODNÍ",
+    "text": "+3,650",
+    "value_m": 3.65,
+    "role": "level"
+  },
+  {
+    "sheet": "POHLED SEVEROVÝCHODNÍ",
+    "text": "+5,525",
+    "value_m": 5.525,
+    "role": "level"
+  },
+  {
+    "sheet": "POHLED SEVEROVÝCHODNÍ",
+    "text": "+5,850",
+    "value_m": 5.85,
+    "role": "level"
+  },
+  {
+    "sheet": "POHLEDY",
+    "text": "±0,000 = 472,100 m n. m. (Bpv)",
+    "value_m": 472.1,
+    "role": "datum"
+  },
+  {
+    "sheet": "PŮDORYS 1.NP legenda 1.01 Zádveří",
+    "text": "2550",
+    "value_m": 2.55,
+    "role": "ceiling"
+  },
+  {
+    "sheet": "PŮDORYS 1.NP legenda 1.02 Obývací pokoj+KK",
+    "text": "2500-5050",
+    "value_m": null,
+    "role": "ceiling"
+  },
+  {
+    "sheet": "PŮDORYS 1.NP legenda 1.03 Spíž",
+    "text": "2500",
+    "value_m": 2.5,
+    "role": "ceiling"
+  },
+  {
+    "sheet": "PŮDORYS 1.NP legenda 1.04 Technická místnost",
+    "text": "2500",
+    "value_m": 2.5,
+    "role": "ceiling"
+  },
+  {
+    "sheet": "PŮDORYS 1.NP legenda 1.05 Chodba",
+    "text": "2500",
+    "value_m": 2.5,
+    "role": "ceiling"
+  },
+  {
+    "sheet": "PŮDORYS 1.NP legenda 1.06 WC",
+    "text": "2500",
+    "value_m": 2.5,
+    "role": "ceiling"
+  },
+  {
+    "sheet": "PŮDORYS 1.NP legenda 1.07 Koupelna",
+    "text": "2500",
+    "value_m": 2.5,
+    "role": "ceiling"
+  },
+  {
+    "sheet": "PŮDORYS 1.NP legenda 1.08 Prádelna",
+    "text": "2500",
+    "value_m": 2.5,
+    "role": "ceiling"
+  },
+  {
+    "sheet": "PŮDORYS 1.NP legenda 1.09 Koupelna",
+    "text": "2500",
+    "value_m": 2.5,
+    "role": "ceiling"
+  },
+  {
+    "sheet": "PŮDORYS 1.NP legenda 1.10 Šatna",
+    "text": "2500",
+    "value_m": 2.5,
+    "role": "ceiling"
+  },
+  {
+    "sheet": "PŮDORYS 1.NP legenda 1.11 Ložnice",
+    "text": "2500-4875",
+    "value_m": null,
+    "role": "ceiling"
+  },
+  {
+    "sheet": "PŮDORYS 1.NP legenda 1.12 Pokoj",
+    "text": "3000",
+    "value_m": 3.0,
+    "role": "ceiling"
+  },
+  {
+    "sheet": "PŮDORYS 1.NP legenda 1.13 Pokoj",
+    "text": "3000",
+    "value_m": 3.0,
+    "role": "ceiling"
+  },
+  {
+    "sheet": "PŮDORYS 1.NP legenda 1.14 Pokoj",
+    "text": "3000",
+    "value_m": 3.0,
+    "role": "ceiling"
+  },
+  {
+    "sheet": "PŮDORYS 1.NP legenda 1.15 Pracovna",
+    "text": "3000",
+    "value_m": 3.0,
+    "role": "ceiling"
+  },
+  {
+    "sheet": "PŮDORYS 1.NP legenda 1.16 Garáž",
+    "text": "2750",
+    "value_m": 2.75,
+    "role": "ceiling"
+  },
+  {
+    "sheet": "PŮDORYS 1.NP legenda 1.17 Chodba",
+    "text": "2750",
+    "value_m": 2.75,
+    "role": "ceiling"
+  },
+  {
+    "sheet": "PŮDORYS 1.NP legenda 1.19 WC",
+    "text": "2550",
+    "value_m": 2.55,
+    "role": "ceiling"
+  },
+  {
+    "sheet": "PŮDORYS 1.NP legenda 1.20 Koupelna",
+    "text": "2550",
+    "value_m": 2.55,
+    "role": "ceiling"
+  },
+  {
+    "sheet": "PŮDORYS 1.NP legenda 1.21 Koupelna",
+    "text": "2550",
+    "value_m": 2.55,
+    "role": "ceiling"
+  },
+  {
+    "sheet": "PŮDORYS 1.NP legenda 1.22 Chodba",
+    "text": "2550",
+    "value_m": 2.55,
+    "role": "ceiling"
+  },
+  {
+    "sheet": "PŮDORYS 1.NP legenda 1.23 Pokoj+KK",
+    "text": "2550",
+    "value_m": 2.55,
+    "role": "ceiling"
+  },
+  {
+    "sheet": "PŮDORYS STŘECHY",
+    "text": "40°",
+    "value_m": null,
+    "role": "slope"
+  },
+  {
+    "sheet": "PŮDORYS STŘECHY",
+    "text": "36°",
+    "value_m": null,
+    "role": "slope"
+  },
+  {
+    "sheet": "PŮDORYS STŘECHY",
+    "text": "2%",
+    "value_m": null,
+    "role": "slope"
+  },
+  {
+    "sheet": "KROV",
+    "text": "2%",
+    "value_m": null,
+    "role": "slope"
+  },
+  {
+    "sheet": "KROV",
+    "text": "40°",
+    "value_m": null,
+    "role": "slope"
+  },
+  {
+    "sheet": "PŮDORYS 1.NP",
+    "text": "1000 | 2150",
+    "value_m": null,
+    "role": "unknown"
+  },
+  {
+    "sheet": "PŮDORYS 1.NP",
+    "text": "1100 | 2450",
+    "value_m": null,
+    "role": "unknown"
+  },
+  {
+    "sheet": "PŮDORYS 1.NP",
+    "text": "1800 | 2100",
+    "value_m": null,
+    "role": "unknown"
+  },
+  {
+    "sheet": "PŮDORYS 1.NP",
+    "text": "700 | 2100",
+    "value_m": null,
+    "role": "unknown"
+  },
+  {
+    "sheet": "PŮDORYS 1.NP",
+    "text": "750 (1750)",
+    "value_m": null,
+    "role": "unknown"
+  },
+  {
+    "sheet": "PŮDORYS 1.NP",
+    "text": "800 | 2100",
+    "value_m": null,
+    "role": "unknown"
+  },
+  {
+    "sheet": "PŮDORYS 1.NP",
+    "text": "850 | 2150",
+    "value_m": null,
+    "role": "unknown"
+  },
+  {
+    "sheet": "PŮDORYS 1.NP",
+    "text": "900 | 2400",
+    "value_m": null,
+    "role": "unknown"
+  }
+]
