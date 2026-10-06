@@ -1,0 +1,139 @@
+schema: IFC4 ADD2 TC1
+units:
+  LengthUnit: METRE
+project:
+  id: IfcOpenHouse
+  GlobalId: 2Iicv0RnfAVPda6Sg4SE78
+  Aggregates: [3bqf5ZY_nDpfb1hfmOkxFk]
+site:
+  id: 3bqf5ZY_nDpfb1hfmOkxFk
+  GlobalId: 3bqf5ZY_nDpfb1hfmOkxFk
+  Aggregates: [3FweM$L1L56fABBUNXlIbJ]
+building:
+  id: 3FweM$L1L56fABBUNXlIbJ
+  GlobalId: 3FweM$L1L56fABBUNXlIbJ
+  Aggregates: [38aOKO8_DDkBd1FHm_lVXz]
+storey:
+  id: 38aOKO8_DDkBd1FHm_lVXz
+  GlobalId: 38aOKO8_DDkBd1FHm_lVXz
+walls:
+- id: South wall
+  GlobalId: 3g46_woBL6sugXeY5_WP6n
+  PredefinedType: STANDARD
+  Axis:
+    Start: [-5, 0]
+    End: [5, 0]
+  Thickness: 0.36
+  Height: 3
+  MaterialLayers:
+    Layers:
+    - LayerThickness: 0.36
+      Material: Brick
+- id: North wall
+  GlobalId: 3xUPAVO39FGgNkCUQqf4JV
+  PredefinedType: STANDARD
+  Axis:
+    Start: [-5, 5]
+    End: [5, 5]
+  Thickness: 0.36
+  Height: 3
+  MaterialLayers:
+    Layers:
+    - LayerThickness: 0.36
+      Material: Brick
+- id: East wall
+  GlobalId: 3hw7qrktPAl8j6w3qKhwKm
+  PredefinedType: STANDARD
+  Axis:
+    Start: [4.82, 0]
+    End: [4.82, 5]
+  Thickness: 0.36
+  Height: 5.5
+  MaterialLayers:
+    Layers:
+    - LayerThickness: 0.36
+      Material: Brick
+- id: West wall
+  GlobalId: 1hwEPyGUD1vwPpm508N9dQ
+  PredefinedType: STANDARD
+  Axis:
+    Start: [-4.82, 0]
+    End: [-4.82, 5]
+  Thickness: 0.36
+  Height: 5.5
+  MaterialLayers:
+    Layers:
+    - LayerThickness: 0.36
+      Material: Brick
+openings:
+- id: 2SFAmcP6j7ngFXHkheLGEs
+  GlobalId: 2SFAmcP6j7ngFXHkheLGEs
+  VoidsElement: South wall
+  AlongAxis: -0.5
+  Width: 6
+  Height: 1.6
+  SillHeight: 0.4
+  Depth: 3.63
+- id: 0vU7dryu95R8Tsq6mf0HAl
+  GlobalId: 0vU7dryu95R8Tsq6mf0HAl
+  VoidsElement: South wall
+  AlongAxis: 7.07
+  Width: 1.86
+  Height: 1.6
+  SillHeight: 0.4
+  Depth: 3
+- id: 1RBjKX3ZvFfwXeqVcf3G6M
+  GlobalId: 1RBjKX3ZvFfwXeqVcf3G6M
+  VoidsElement: West wall
+  AlongAxis: -1.815
+  Width: 3.63
+  Height: 1.6
+  SillHeight: 0.4
+  Depth: 6
+- id: 2tj6XC4fPEOAaGWGahOG04
+  GlobalId: 2tj6XC4fPEOAaGWGahOG04
+  VoidsElement: East wall
+  AlongAxis: 1.1
+  Width: 1
+  Height: 2.2
+  SillHeight: 0
+  Depth: 1
+doors:
+- id: 0Tif_$wI1FwAwq$OJt24I8
+  GlobalId: 0Tif_$wI1FwAwq$OJt24I8
+  FillsOpening: 2tj6XC4fPEOAaGWGahOG04
+  OverallWidth: 1
+  OverallHeight: 2.2
+  PredefinedType: DOOR
+  OperationType: SINGLE_SWING_LEFT
+windows:
+- id: 3lY7vAqg1AOuHmhrmPSRNL
+  GlobalId: 3lY7vAqg1AOuHmhrmPSRNL
+  OverallWidth: 1.86
+  OverallHeight: 1.6
+  PredefinedType: WINDOW
+  PartitioningType: SINGLE_PANEL
+- id: 1$ROshSLD8PxvcHXbFnnTi
+  GlobalId: 1$ROshSLD8PxvcHXbFnnTi
+  OverallWidth: 1.86
+  OverallHeight: 1.6
+  PredefinedType: WINDOW
+  PartitioningType: SINGLE_PANEL
+- id: 1omMjrueL1RBg$X8j2Z2J5
+  GlobalId: 1omMjrueL1RBg$X8j2Z2J5
+  OverallWidth: 1.86
+  OverallHeight: 1.6
+  PredefinedType: WINDOW
+  PartitioningType: SINGLE_PANEL
+- id: 2hoO8_fkD7T9eJPdlaToJT
+  GlobalId: 2hoO8_fkD7T9eJPdlaToJT
+  OverallWidth: 1.86
+  OverallHeight: 1.6
+  PredefinedType: WINDOW
+  PartitioningType: SINGLE_PANEL
+- id: 1f2A4_vjLEBRKe77yVKHtq
+  GlobalId: 1f2A4_vjLEBRKe77yVKHtq
+  OverallWidth: 1.86
+  OverallHeight: 1.6
+  PredefinedType: WINDOW
+  PartitioningType: SINGLE_PANEL

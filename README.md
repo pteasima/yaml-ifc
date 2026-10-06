@@ -6,6 +6,8 @@ The format is [docs/spec.md](docs/spec.md). The ground floor of RD Šíma is [sa
 
 Render a plan locally with `pip install -r tools/requirements.txt` (needs libcairo2) and `python tools/render_plan.py samples/ground-floor.yaml --out-dir dist`.
 
+Convert with `pip install -r requirements.txt`, then `python -m yaml_ifc to-ifc samples/ground-floor.yaml -o samples/ground-floor.ifc` and `python -m yaml_ifc from-ifc samples/external/IfcOpenHouse_IFC4.ifc -o samples/external/IfcOpenHouse_IFC4.yaml`. The second command prints the entity types it skipped. Tests: `pytest`.
+
 ## Known issues (v1)
 
 Petr's review of the first plan render, 2026-10-06:

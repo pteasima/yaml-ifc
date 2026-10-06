@@ -28,7 +28,7 @@ jobs:
           python -m pip install -r tools/requirements.txt
 
       - name: Render samples
-        run: python tools/render_plan.py samples/*.yaml --out-dir dist
+        run: python tools/render_plan.py samples/*.yaml samples/external/*.yaml --out-dir dist
 
       - uses: actions/upload-artifact@v4
         with:
@@ -44,3 +44,18 @@ jobs:
           REPO: ${{ github.repository }}
           RUN_ID: ${{ github.run_id }}
         run: bash tools/publish_preview.sh
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install converter dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Run round-trip tests
+        run: python -m pytest
