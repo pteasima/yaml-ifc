@@ -19,3 +19,13 @@ def global_id(yaml_id, explicit=None):
 
 def is_derived(stored, yaml_id):
     return stored == derived_global_id(yaml_id)
+
+
+def connection_yaml_id(connection):
+    """Stable name for a connection, which has no YAML id of its own."""
+    return (
+        f"{connection['RelatingElement']}"
+        f":{connection['RelatingConnectionType']}"
+        f":{connection['RelatedElement']}"
+        f":{connection['RelatedConnectionType']}"
+    )

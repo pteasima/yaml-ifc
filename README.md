@@ -8,6 +8,10 @@ Render a plan locally with `pip install -r tools/requirements.txt` (needs libcai
 
 Convert with `pip install -r requirements.txt`, then `python -m yaml_ifc to-ifc samples/ground-floor.yaml -o samples/ground-floor.ifc` and `python -m yaml_ifc from-ifc samples/external/IfcOpenHouse_IFC4.ifc -o samples/external/IfcOpenHouse_IFC4.yaml`. The second command prints the entity types it skipped. Tests: `pytest`.
 
+Wall joints are an optional `connections` list on the file (see the spec). The converter writes them as butt joints: the relating wall runs through, and the related wall is trimmed. It does not search for joints. To snap axes that stop short of a corner and record the joints, run `python -m yaml_ifc detect-connections INPUT -o OUTPUT` once and review the diff. Moving a wall's start shifts each opening's `AlongAxis` so the opening stays put.
+
+`yaml_ifc.footprints(doc)` returns `{wall id: [[x, y], ...]}` in metres, in the same plan coordinates as `Axis`. Joined walls are the trimmed polygons IfcOpenShell built for the IFC, so a later model can extrude those rings and match the file. Walls with no body are omitted. The ring is not closed.
+
 ## Known issues (v1)
 
 Petr's review of the first plan render, 2026-10-06:
@@ -15,4 +19,4 @@ Petr's review of the first plan render, 2026-10-06:
 - Some hinged doors open the wrong way in the render.
 - Sliding doors and the garage door are not supported yet.
 - Window openings are either not supported by the spec or not filled in the sample.
-- Wall joints (corners) are missing: walls are drawn as separate bands that don't meet.
+- The plan renderer still draws each wall as a centreline band, so corners overlap in the picture. The IFC footprints are the trimmed butt joints from `yaml_ifc.footprints`.

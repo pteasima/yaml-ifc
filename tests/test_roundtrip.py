@@ -5,7 +5,7 @@ from pathlib import Path
 import ifcopenshell
 
 from yaml_ifc.from_ifc import format_skipped, read_ifc
-from yaml_ifc.ids import derived_global_id
+from yaml_ifc.ids import connection_yaml_id, derived_global_id
 from yaml_ifc.supported import SUPPORTED
 from yaml_ifc.to_ifc import validation_errors, write_ifc
 from yaml_ifc.yamlio import load
@@ -50,11 +50,19 @@ def index_by_global_id(doc):
     found = {}
 
     def take(entity):
-        gid = entity.get("GlobalId") or derived_global_id(entity["id"])
-        found[gid] = entity
+        if entity.get("GlobalId"):
+            found[entity["GlobalId"]] = entity
+            return
+        if "id" in entity:
+            found[derived_global_id(entity["id"])] = entity
+            return
+        if "RelatingElement" in entity:
+            found[derived_global_id(connection_yaml_id(entity))] = entity
 
     for _cls, key, is_list in SUPPORTED:
-        value = doc[key]
+        value = doc.get(key)
+        if value is None:
+            continue
         if is_list:
             for entity in value:
                 take(entity)
@@ -85,8 +93,16 @@ def test_ground_floor_ifc_validates_and_counts():
     assert [rep.RepresentationIdentifier for rep in thin.Representation.Representations] == ["Axis"]
     band = next(wall for wall in model.by_type("IfcWall") if wall.Name == "W-002")
     body = next(rep for rep in band.Representation.Representations if rep.RepresentationIdentifier == "Body")
+    assert body.Items[0].is_a("IfcExtrudedAreaSolid")
     assert body.Items[0].Depth == 3.0
-    assert body.Items[0].SweptArea.YDim == 0.375
+    usage = next(
+        rel.RelatingMaterial
+        for rel in band.HasAssociations
+        if rel.is_a("IfcRelAssociatesMaterial")
+    )
+    assert usage.ForLayerSet.MaterialLayers[0].LayerThickness == 0.375
+    document = load(GROUND_YAML)
+    assert len(model.by_type("IfcRelConnectsPathElements")) == len(document["connections"])
 
 
 def test_ground_floor_reference_matches(tmp_path):
@@ -118,6 +134,12 @@ def test_external_coverage_follows_the_registry():
             continue
         entity = by_gid[filler.GlobalId]
         assert entity["FillsOpening"] == id_of[rel.RelatingOpeningElement.GlobalId]
+    for rel in model.by_type("IfcRelConnectsPathElements"):
+        entity = by_gid[rel.GlobalId]
+        assert entity["RelatingElement"] == id_of[rel.RelatingElement.GlobalId]
+        assert entity["RelatedElement"] == id_of[rel.RelatedElement.GlobalId]
+        assert entity["RelatingConnectionType"] == str(rel.RelatingConnectionType).strip(".")
+        assert entity["RelatedConnectionType"] == str(rel.RelatedConnectionType).strip(".")
 
 
 def test_external_round_trip_is_stable(tmp_path):

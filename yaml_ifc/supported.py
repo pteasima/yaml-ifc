@@ -11,6 +11,7 @@ SUPPORTED = (
     ("IfcBuilding", "building", False),
     ("IfcBuildingStorey", "storey", False),
     ("IfcWall", "walls", True),
+    ("IfcRelConnectsPathElements", "connections", True),
     ("IfcOpeningElement", "openings", True),
     ("IfcDoor", "doors", True),
     ("IfcWindow", "windows", True),
@@ -22,6 +23,13 @@ DEFAULT_WALL_HEIGHT = 3.0
 DEFAULT_OPENING_DEPTH = 0.2
 
 PSET_NAME = "yaml-ifc"
+# A one-layer set invented from Thickness. Import must not emit MaterialLayers.
+PSET_MATERIAL_FROM_THICKNESS = "MaterialFromThickness"
+# Authored axis of a joined wall, kept because regeneration trims the curve.
+PSET_AXIS = ("AxisStartX", "AxisStartY", "AxisEndX", "AxisEndY")
+DERIVED_MATERIAL_NAME = "wall"
+RELATING_CONNECTION_TYPES = ("ATSTART", "ATEND", "ATPATH")
+RELATED_CONNECTION_TYPES = ("ATSTART", "ATEND")
 ORIGINATING_SYSTEM = "yaml-ifc"
 SCHEMA_NAME = "IFC4 ADD2 TC1"
 HEADER_FILE_NAME = "yaml-ifc.ifc"

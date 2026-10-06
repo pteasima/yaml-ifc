@@ -1,9 +1,10 @@
-"""Command line: python -m yaml_ifc to-ifc|from-ifc INPUT -o OUTPUT."""
+"""Command line: python -m yaml_ifc to-ifc|from-ifc|detect-connections INPUT -o OUTPUT."""
 
 import argparse
 import sys
 from pathlib import Path
 
+from yaml_ifc.detect import detect_connections, format_report
 from yaml_ifc.from_ifc import format_skipped, read_ifc
 from yaml_ifc.to_ifc import validation_errors, write_ifc
 from yaml_ifc.yamlio import dump, load
@@ -21,7 +22,22 @@ def main(argv):
     from_ifc.add_argument("source", type=Path)
     from_ifc.add_argument("-o", "--output", type=Path, required=True)
 
+    detect = sub.add_parser(
+        "detect-connections",
+        help="snap axes to centre-line intersections and write connections",
+    )
+    detect.add_argument("source", type=Path)
+    detect.add_argument("-o", "--output", type=Path, required=True)
+
     args = parser.parse_args(argv)
+    if args.command == "detect-connections":
+        # A reviewed edit of the file. to-ifc and from-ifc do not do this.
+        document, report = detect_connections(load(args.source))
+        dump(document, args.output)
+        sys.stdout.write(format_report(report))
+        print(args.output)
+        return 0
+
     if args.command == "to-ifc":
         model = write_ifc(load(args.source), args.output)
         errors = validation_errors(model)

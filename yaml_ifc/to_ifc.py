@@ -4,19 +4,61 @@ import math
 from pathlib import Path
 
 import ifcopenshell
+import ifcopenshell.api.geometry
+import ifcopenshell.util.element
 import ifcopenshell.validate
 
-from yaml_ifc.ids import global_id
+from yaml_ifc.ids import connection_yaml_id, global_id
+from yaml_ifc.joints import install_priority_fix
 from yaml_ifc.supported import (
     DEFAULT_OPENING_DEPTH,
     DEFAULT_WALL_HEIGHT,
+    DERIVED_MATERIAL_NAME,
     HEADER_FILE_NAME,
     HEADER_TIMESTAMP,
     ORIGINATING_SYSTEM,
+    PSET_AXIS,
+    PSET_MATERIAL_FROM_THICKNESS,
     PSET_NAME,
+    RELATED_CONNECTION_TYPES,
+    RELATING_CONNECTION_TYPES,
 )
 
 TOL = 1e-9
+
+
+def _derived_thickness(wall):
+    layers = ((wall.get("MaterialLayers") or {}).get("Layers")) or []
+    return (
+        wall.get("Thickness") is not None
+        and not layers
+        and not wall.get("Footprint")
+        and not wall.get("Profile")
+    )
+
+
+def _regenerable(wall):
+    """A centreline wall with a thickness. Footprints and profiles keep their body."""
+    if wall.get("Footprint") or wall.get("Profile"):
+        return False
+    return wall.get("Thickness") is not None
+
+
+def _connected_ids(doc):
+    found = set()
+    for connection in doc.get("connections") or []:
+        if connection.get("RelatingElement"):
+            found.add(connection["RelatingElement"])
+        if connection.get("RelatedElement"):
+            found.add(connection["RelatedElement"])
+    return found
+
+
+def _layer_count(product):
+    material = ifcopenshell.util.element.get_material(product, should_skip_usage=True)
+    if material and material.is_a("IfcMaterialLayerSet"):
+        return len(material.MaterialLayers or [])
+    return 0
 
 
 def validation_errors(model):
@@ -37,10 +79,12 @@ class Builder:
         self.file = ifcopenshell.file(schema="IFC4")
         self.products = {}
         self.placements = {}
+        self.connected_ids = _connected_ids(doc)
         self._stamp_header()
         self._units_and_context()
         self._spatial()
         self._elements()
+        self._connections()
         self._containment()
 
     def _stamp_header(self):
@@ -144,11 +188,25 @@ class Builder:
             ParentContext=context,
             TargetView="MODEL_VIEW",
         )
+        # Wall axes live in Plan/Axis/GRAPH_VIEW. That is the context
+        # regenerate_wall_representation reads and rewrites.
+        plan_origin = f.create_entity(
+            "IfcAxis2Placement2D",
+            Location=self._point(0.0, 0.0),
+            RefDirection=self._direction((1.0, 0.0)),
+        )
+        self.plan = f.create_entity(
+            "IfcGeometricRepresentationContext",
+            ContextType="Plan",
+            CoordinateSpaceDimension=2,
+            Precision=1e-5,
+            WorldCoordinateSystem=plan_origin,
+        )
         self.axis = f.create_entity(
             "IfcGeometricRepresentationSubContext",
             ContextIdentifier="Axis",
-            ContextType="Model",
-            ParentContext=context,
+            ContextType="Plan",
+            ParentContext=self.plan,
             TargetView="GRAPH_VIEW",
         )
         self.units = units
@@ -170,7 +228,7 @@ class Builder:
             GlobalId=global_id(project["id"], project.get("GlobalId")),
             Name=self._named(project, project["id"]),
             LongName=project["id"],
-            RepresentationContexts=[self.context],
+            RepresentationContexts=[self.context, self.plan],
             UnitsInContext=self.units,
         )
         site_place = self._local((0.0, 0.0, 0.0), (1.0, 0.0, 0.0), None)
@@ -395,6 +453,12 @@ class Builder:
             book["HeightDefaulted"] = True
         if plan:
             book["PlanShape"] = plan
+        if _derived_thickness(wall):
+            book[PSET_MATERIAL_FROM_THICKNESS] = True
+        if yaml_id in self.connected_ids and frame:
+            start, end = wall["Axis"]["Start"], wall["Axis"]["End"]
+            for key, value in zip(PSET_AXIS, (start[0], start[1], end[0], end[1])):
+                book[key] = value
         self._pset(product, book, yaml_id)
         self._user_psets(product, wall)
         self._materials(product, wall)
@@ -404,6 +468,10 @@ class Builder:
 
     def _materials(self, product, wall):
         layers = ((wall.get("MaterialLayers") or {}).get("Layers")) or []
+        if not layers and _derived_thickness(wall):
+            layers = [
+                {"LayerThickness": float(wall["Thickness"]), "Material": DERIVED_MATERIAL_NAME}
+            ]
         if not layers:
             return
         ifc_layers = []
@@ -526,6 +594,64 @@ class Builder:
         self._user_psets(product, element)
         self.products[yaml_id] = product
         return product
+
+    def _connections(self):
+        connections = self.doc.get("connections") or []
+        if not connections:
+            return
+        seen = set()
+        for connection in connections:
+            relating_id = connection.get("RelatingElement")
+            related_id = connection.get("RelatedElement")
+            relating_type = connection.get("RelatingConnectionType")
+            related_type = connection.get("RelatedConnectionType")
+            relating = self.walls.get(relating_id)
+            related = self.walls.get(related_id)
+            if relating is None or related is None:
+                raise ValueError(
+                    f"connection {relating_id}/{related_id} references an unknown wall"
+                )
+            if relating_id == related_id:
+                raise ValueError(f"{relating_id} cannot connect to itself")
+            if relating_type not in RELATING_CONNECTION_TYPES:
+                raise ValueError(f"unknown RelatingConnectionType {relating_type}")
+            if related_type not in RELATED_CONNECTION_TYPES:
+                raise ValueError(f"unknown RelatedConnectionType {related_type}")
+            pair = tuple(sorted((relating_id, related_id)))
+            if pair in seen:
+                raise ValueError(f"{relating_id} and {related_id} are connected more than once")
+            seen.add(pair)
+            # Written directly so the GlobalId stays derived from the four
+            # fields. connect_path would also invent an OwnerHistory and a
+            # random GlobalId, and would leave the priorities empty (a mitre).
+            self.file.create_entity(
+                "IfcRelConnectsPathElements",
+                GlobalId=global_id(connection_yaml_id(connection), connection.get("GlobalId")),
+                RelatingElement=relating,
+                RelatedElement=related,
+                RelatingConnectionType=relating_type,
+                RelatedConnectionType=related_type,
+                RelatingPriorities=[1] * _layer_count(relating),
+                RelatedPriorities=[0] * _layer_count(related),
+            )
+        install_priority_fix()
+        for wall in self.doc.get("walls") or []:
+            if wall["id"] not in self.connected_ids or not _regenerable(wall):
+                continue
+            product = self.walls[wall["id"]]
+            frame = self._wall_frame(wall)
+            if frame is None:
+                continue
+            _length = frame[2]
+            height = wall.get("Height")
+            if height is None:
+                height = DEFAULT_WALL_HEIGHT
+            ifcopenshell.api.geometry.regenerate_wall_representation(
+                self.file,
+                wall=product,
+                length=float(_length),
+                height=float(height),
+            )
 
     def _containment(self):
         if not self.contained:
