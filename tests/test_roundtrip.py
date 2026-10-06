@@ -93,8 +93,16 @@ def test_ground_floor_ifc_validates_and_counts():
     assert [rep.RepresentationIdentifier for rep in thin.Representation.Representations] == ["Axis"]
     band = next(wall for wall in model.by_type("IfcWall") if wall.Name == "W-002")
     body = next(rep for rep in band.Representation.Representations if rep.RepresentationIdentifier == "Body")
+    assert body.Items[0].is_a("IfcExtrudedAreaSolid")
     assert body.Items[0].Depth == 3.0
-    assert body.Items[0].SweptArea.YDim == 0.375
+    usage = next(
+        rel.RelatingMaterial
+        for rel in band.HasAssociations
+        if rel.is_a("IfcRelAssociatesMaterial")
+    )
+    assert usage.ForLayerSet.MaterialLayers[0].LayerThickness == 0.375
+    document = load(GROUND_YAML)
+    assert len(model.by_type("IfcRelConnectsPathElements")) == len(document["connections"])
 
 
 def test_ground_floor_reference_matches(tmp_path):

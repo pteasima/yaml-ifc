@@ -231,6 +231,13 @@ def test_detect_is_idempotent():
     same(once, twice)
 
 
+def test_ground_floor_sample_matches_detection():
+    document = load(GROUND_YAML)
+    detected, _report = detect_connections(document)
+    same(document, detected)
+    assert len(document["connections"]) == 55
+
+
 def test_written_ifc_matches_twice(tmp_path):
     sample = _house(
         [

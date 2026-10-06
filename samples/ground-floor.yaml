@@ -47,17 +47,17 @@ storey:
 walls:
   - id: W-001
     Axis:
-      Start: [30.15, 0.225]
-      End: [34.75, 0.225]
+      Start: [29.925, 0.225]
+      End: [34.975, 0.225]
     Thickness: 0.45
   - id: W-002
     Axis:
-      Start: [0.45, 3.0875]
+      Start: [0.225, 3.0875]
       End: [17.5, 3.0875]
     Thickness: 0.375
   - id: W-003
     Axis:
-      Start: [18, 3.1175]
+      Start: [17.775, 3.1175]
       End: [19, 3.1175]
     Thickness: 0.435
   # 120 mm closed square on layer silná. Kept as a short wall; IfcColumn is deferred.
@@ -68,18 +68,18 @@ walls:
     Thickness: 0.12
   - id: W-005
     Axis:
-      Start: [38.1, 3.525]
-      End: [44.7, 3.525]
+      Start: [37.925, 3.525]
+      End: [44.875, 3.525]
     Thickness: 0.35
   - id: W-006
     Axis:
       Start: [32.775, 3.7125]
-      End: [34.75, 3.7125]
+      End: [34.975, 3.7125]
     Thickness: 0.125
   - id: W-007
     Axis:
-      Start: [35.2, 5.425]
-      End: [37.75, 5.425]
+      Start: [34.975, 5.425]
+      End: [37.925, 5.425]
     Thickness: 0.25
   - id: W-008
     Axis:
@@ -88,8 +88,8 @@ walls:
     Thickness: 0.125
   - id: W-009
     Axis:
-      Start: [30.15, 5.9]
-      End: [32.325, 5.9]
+      Start: [29.925, 5.9]
+      End: [32.3875, 5.9]
     Thickness: 0.25
   - id: W-010
     Axis:
@@ -103,12 +103,12 @@ walls:
     Thickness: 0.45
   - id: W-012
     Axis:
-      Start: [18, 8.025]
-      End: [18.55, 8.025]
+      Start: [17.775, 8.025]
+      End: [18.775, 8.025]
     Thickness: 0.35
   - id: W-013
     Axis:
-      Start: [3.925, 8.075]
+      Start: [3.8375, 8.075]
       End: [17.55, 8.075]
     Thickness: 0.25
   # 120 mm closed square on layer silná. Kept as a short wall; IfcColumn is deferred.
@@ -119,7 +119,7 @@ walls:
     Thickness: 0.12
   - id: W-015
     Axis:
-      Start: [30.15, 8.075]
+      Start: [29.925, 8.075]
       End: [32.225, 8.075]
     Thickness: 0.25
   - id: W-016
@@ -135,13 +135,13 @@ walls:
       End: [15.75, 9.475]
   - id: W-018
     Axis:
-      Start: [0.45, 9.5625]
+      Start: [0.225, 9.5625]
       End: [5.525, 9.5625]
     Thickness: 0.125
   - id: W-019
     Axis:
-      Start: [33.1, 9.9875]
-      End: [37.85, 9.9875]
+      Start: [32.975, 9.9875]
+      End: [37.975, 9.9875]
     Thickness: 0.125
   - id: W-020
     Axis:
@@ -155,8 +155,8 @@ walls:
     Thickness: 0.45
   - id: W-022
     Axis:
-      Start: [5.75, 10.0875]
-      End: [14.225, 10.0875]
+      Start: [5.6875, 10.0875]
+      End: [14.2875, 10.0875]
     Thickness: 0.125
   # Glazed run. Thickness is the 100 mm posts at x 21.95–22.05 and 26.45–26.55;
   # the long faces are not drawn. OP27, OP28 and OP29 void this wall.
@@ -167,108 +167,108 @@ walls:
     Thickness: 0.1
   - id: W-024
     Axis:
-      Start: [15.75, 11.4125]
+      Start: [15.625, 11.4125]
       End: [18.45, 11.4125]
     Thickness: 0.125
   - id: W-025
     Axis:
-      Start: [33.3, 11.425]
-      End: [37.75, 11.425]
+      Start: [33.075, 11.425]
+      End: [37.925, 11.425]
     Thickness: 0.35
   - id: W-026
     Axis:
-      Start: [0.45, 12.475]
-      End: [15.3, 12.475]
+      Start: [0.225, 12.475]
+      End: [15.525, 12.475]
     Thickness: 0.45
   - id: W-027
     Axis:
-      Start: [38.1, 12.875]
-      End: [44.7, 12.875]
+      Start: [37.925, 12.875]
+      End: [44.875, 12.875]
     Thickness: 0.35
   - id: W-028
     Axis:
-      Start: [15.75, 13.6375]
-      End: [18.55, 13.6375]
+      Start: [15.525, 13.6375]
+      End: [18.675, 13.6375]
     Thickness: 0.125
   - id: W-029
     Axis:
-      Start: [15.75, 15.825]
-      End: [32.85, 15.825]
+      Start: [15.525, 15.825]
+      End: [33.075, 15.825]
     Thickness: 0.45
   - id: W-030
     Axis:
-      Start: [0.225, 3.275]
-      End: [0.225, 12.25]
+      Start: [0.225, 3.0875]
+      End: [0.225, 12.475]
     Thickness: 0.45
   - id: W-031
     Axis:
-      Start: [3.8375, 3.275]
-      End: [3.8375, 7.95]
+      Start: [3.8375, 3.0875]
+      End: [3.8375, 8.075]
     Thickness: 0.175
   - id: W-032
     Axis:
-      Start: [4.1125, 9.625]
-      End: [4.1125, 12.25]
+      Start: [4.1125, 9.5625]
+      End: [4.1125, 12.475]
     Thickness: 0.125
   - id: W-033
     Axis:
       Start: [5.6875, 8.35]
-      End: [5.6875, 10.025]
+      End: [5.6875, 10.0875]
     Thickness: 0.125
   - id: W-034
     Axis:
-      Start: [6.9375, 3.275]
-      End: [6.9375, 7.95]
+      Start: [6.9375, 3.0875]
+      End: [6.9375, 8.075]
     Thickness: 0.175
   - id: W-035
     Axis:
-      Start: [7.2375, 10.15]
+      Start: [7.2375, 10.0875]
       End: [7.2375, 10.55]
     Thickness: 0.325
   - id: W-036
     Axis:
       Start: [7.3375, 10.55]
-      End: [7.3375, 12.25]
+      End: [7.3375, 12.475]
     Thickness: 0.125
   - id: W-037
     Axis:
       Start: [7.9375, 9.475]
-      End: [7.9375, 10.025]
+      End: [7.9375, 10.0875]
     Thickness: 0.125
   - id: W-038
     Axis:
       Start: [9.0625, 9.475]
-      End: [9.0625, 10.025]
+      End: [9.0625, 10.0875]
     Thickness: 0.125
   - id: W-039
     Axis:
-      Start: [9.6625, 10.15]
+      Start: [9.6625, 10.0875]
       End: [9.6625, 12.05]
     Thickness: 0.125
   - id: W-040
     Axis:
       Start: [9.75, 12.05]
-      End: [9.75, 12.25]
+      End: [9.75, 12.475]
     Thickness: 0.3
   - id: W-041
     Axis:
-      Start: [10.0375, 3.275]
-      End: [10.0375, 7.95]
+      Start: [10.0375, 3.0875]
+      End: [10.0375, 8.075]
     Thickness: 0.175
   - id: W-042
     Axis:
       Start: [11.4375, 9.475]
-      End: [11.4375, 10.025]
+      End: [11.4375, 10.0875]
     Thickness: 0.125
   - id: W-043
     Axis:
       Start: [12.5625, 9.475]
-      End: [12.5625, 10.025]
+      End: [12.5625, 10.0875]
     Thickness: 0.125
   - id: W-044
     Axis:
-      Start: [13.1375, 3.275]
-      End: [13.1375, 7.95]
+      Start: [13.1375, 3.0875]
+      End: [13.1375, 8.075]
     Thickness: 0.175
   - id: W-045
     Axis:
@@ -278,12 +278,12 @@ walls:
   - id: W-046
     Axis:
       Start: [14.3875, 12.05]
-      End: [14.3875, 12.25]
+      End: [14.3875, 12.475]
     Thickness: 0.325
   - id: W-047
     Axis:
-      Start: [15.525, 12.7]
-      End: [15.525, 15.6]
+      Start: [15.525, 12.475]
+      End: [15.525, 15.825]
     Thickness: 0.45
   - id: W-048
     Axis:
@@ -292,53 +292,53 @@ walls:
     Thickness: 0.25
   - id: W-049
     Axis:
-      Start: [17.775, 3.335]
-      End: [17.775, 7.85]
+      Start: [17.775, 3.1175]
+      End: [17.775, 8.025]
     Thickness: 0.45
   - id: W-050
     Axis:
       Start: [18.675, 10.25]
-      End: [18.675, 15.6]
+      End: [18.675, 15.825]
     Thickness: 0.25
   - id: W-051
     Axis:
-      Start: [18.775, 8.2]
+      Start: [18.775, 8.025]
       End: [18.775, 9.65]
     Thickness: 0.45
   - id: W-052
     Axis:
       Start: [22.3, 15.35]
-      End: [22.3, 15.6]
+      End: [22.3, 15.825]
     Thickness: 0.3
   - id: W-053
     Axis:
       Start: [25.3, 15.35]
-      End: [25.3, 15.6]
+      End: [25.3, 15.825]
     Thickness: 0.3
   - id: W-054
     Axis:
-      Start: [29.925, 0.45]
+      Start: [29.925, 0.225]
       End: [29.925, 7.7]
     Thickness: 0.45
   - id: W-055
     Axis:
-      Start: [29.925, 8.2]
+      Start: [29.925, 8.075]
       End: [29.925, 9.65]
     Thickness: 0.45
   - id: W-056
     Axis:
       Start: [30.025, 10.25]
-      End: [30.025, 15.6]
+      End: [30.025, 15.825]
     Thickness: 0.25
   - id: W-057
     Axis:
-      Start: [32.3875, 6.025]
+      Start: [32.3875, 5.9]
       End: [32.3875, 7.95]
     Thickness: 0.125
   - id: W-058
     Axis:
       Start: [32.7125, 3.875]
-      End: [32.7125, 5.775]
+      End: [32.7125, 5.8375]
     Thickness: 0.125
   - id: W-059
     Axis:
@@ -347,8 +347,8 @@ walls:
     Thickness: 0.25
   - id: W-060
     Axis:
-      Start: [33.075, 11.6]
-      End: [33.075, 15.6]
+      Start: [33.075, 11.425]
+      End: [33.075, 15.825]
     Thickness: 0.45
   - id: W-061
     Axis:
@@ -358,84 +358,308 @@ walls:
   - id: W-062
     Axis:
       Start: [34.875, 8.2]
-      End: [34.875, 9.925]
+      End: [34.875, 9.9875]
     Thickness: 0.25
   - id: W-063
     Axis:
-      Start: [34.975, 0.45]
-      End: [34.975, 5.3]
+      Start: [34.975, 0.225]
+      End: [34.975, 5.425]
     Thickness: 0.45
   - id: W-064
     Axis:
-      Start: [37.925, 3.7]
-      End: [37.925, 5.3]
+      Start: [37.925, 3.525]
+      End: [37.925, 5.425]
     Thickness: 0.35
   - id: W-065
     Axis:
-      Start: [37.925, 11.6]
-      End: [37.925, 12.7]
+      Start: [37.925, 11.425]
+      End: [37.925, 12.875]
     Thickness: 0.35
   - id: W-066
     Axis:
       Start: [37.975, 5.55]
-      End: [37.975, 9.925]
+      End: [37.975, 9.9875]
     Thickness: 0.25
   - id: W-067
     Axis:
-      Start: [44.875, 3.7]
-      End: [44.875, 12.7]
+      Start: [44.875, 3.525]
+      End: [44.875, 12.875]
     Thickness: 0.35
+# Butt joints from `python -m yaml_ifc detect-connections`.
+# Axes are snapped to the centre-line intersection. That edit is reviewed
+# here; the converter does not snap them again.
+connections:
+  - RelatingElement: W-002
+    RelatingConnectionType: ATPATH
+    RelatedElement: W-031
+    RelatedConnectionType: ATSTART
+  - RelatingElement: W-002
+    RelatingConnectionType: ATPATH
+    RelatedElement: W-034
+    RelatedConnectionType: ATSTART
+  - RelatingElement: W-002
+    RelatingConnectionType: ATPATH
+    RelatedElement: W-041
+    RelatedConnectionType: ATSTART
+  - RelatingElement: W-002
+    RelatingConnectionType: ATPATH
+    RelatedElement: W-044
+    RelatedConnectionType: ATSTART
+  - RelatingElement: W-005
+    RelatingConnectionType: ATSTART
+    RelatedElement: W-064
+    RelatedConnectionType: ATSTART
+  - RelatingElement: W-008
+    RelatingConnectionType: ATPATH
+    RelatedElement: W-058
+    RelatedConnectionType: ATEND
+  - RelatingElement: W-009
+    RelatingConnectionType: ATEND
+    RelatedElement: W-057
+    RelatedConnectionType: ATSTART
+  - RelatingElement: W-013
+    RelatingConnectionType: ATPATH
+    RelatedElement: W-034
+    RelatedConnectionType: ATEND
+  - RelatingElement: W-013
+    RelatingConnectionType: ATPATH
+    RelatedElement: W-041
+    RelatedConnectionType: ATEND
+  - RelatingElement: W-013
+    RelatingConnectionType: ATPATH
+    RelatedElement: W-044
+    RelatedConnectionType: ATEND
+  - RelatingElement: W-013
+    RelatingConnectionType: ATSTART
+    RelatedElement: W-031
+    RelatedConnectionType: ATEND
+  - RelatingElement: W-018
+    RelatingConnectionType: ATPATH
+    RelatedElement: W-032
+    RelatedConnectionType: ATSTART
+  - RelatingElement: W-019
+    RelatingConnectionType: ATPATH
+    RelatedElement: W-062
+    RelatedConnectionType: ATEND
+  - RelatingElement: W-022
+    RelatingConnectionType: ATPATH
+    RelatedElement: W-035
+    RelatedConnectionType: ATSTART
+  - RelatingElement: W-022
+    RelatingConnectionType: ATPATH
+    RelatedElement: W-037
+    RelatedConnectionType: ATEND
+  - RelatingElement: W-022
+    RelatingConnectionType: ATPATH
+    RelatedElement: W-038
+    RelatedConnectionType: ATEND
+  - RelatingElement: W-022
+    RelatingConnectionType: ATPATH
+    RelatedElement: W-039
+    RelatedConnectionType: ATSTART
+  - RelatingElement: W-022
+    RelatingConnectionType: ATPATH
+    RelatedElement: W-042
+    RelatedConnectionType: ATEND
+  - RelatingElement: W-022
+    RelatingConnectionType: ATPATH
+    RelatedElement: W-043
+    RelatedConnectionType: ATEND
+  - RelatingElement: W-022
+    RelatingConnectionType: ATSTART
+    RelatedElement: W-033
+    RelatedConnectionType: ATEND
+  - RelatingElement: W-025
+    RelatingConnectionType: ATEND
+    RelatedElement: W-065
+    RelatedConnectionType: ATSTART
+  - RelatingElement: W-026
+    RelatingConnectionType: ATEND
+    RelatedElement: W-047
+    RelatedConnectionType: ATSTART
+  - RelatingElement: W-026
+    RelatingConnectionType: ATPATH
+    RelatedElement: W-032
+    RelatedConnectionType: ATEND
+  - RelatingElement: W-026
+    RelatingConnectionType: ATPATH
+    RelatedElement: W-036
+    RelatedConnectionType: ATEND
+  - RelatingElement: W-026
+    RelatingConnectionType: ATPATH
+    RelatedElement: W-040
+    RelatedConnectionType: ATEND
+  - RelatingElement: W-026
+    RelatingConnectionType: ATPATH
+    RelatedElement: W-046
+    RelatedConnectionType: ATEND
+  - RelatingElement: W-026
+    RelatingConnectionType: ATSTART
+    RelatedElement: W-030
+    RelatedConnectionType: ATEND
+  - RelatingElement: W-027
+    RelatingConnectionType: ATSTART
+    RelatedElement: W-065
+    RelatedConnectionType: ATEND
+  - RelatingElement: W-029
+    RelatingConnectionType: ATEND
+    RelatedElement: W-060
+    RelatedConnectionType: ATEND
+  - RelatingElement: W-029
+    RelatingConnectionType: ATPATH
+    RelatedElement: W-050
+    RelatedConnectionType: ATEND
+  - RelatingElement: W-029
+    RelatingConnectionType: ATPATH
+    RelatedElement: W-052
+    RelatedConnectionType: ATEND
+  - RelatingElement: W-029
+    RelatingConnectionType: ATPATH
+    RelatedElement: W-053
+    RelatedConnectionType: ATEND
+  - RelatingElement: W-029
+    RelatingConnectionType: ATPATH
+    RelatedElement: W-056
+    RelatedConnectionType: ATEND
+  - RelatingElement: W-029
+    RelatingConnectionType: ATSTART
+    RelatedElement: W-047
+    RelatedConnectionType: ATEND
+  - RelatingElement: W-030
+    RelatingConnectionType: ATPATH
+    RelatedElement: W-018
+    RelatedConnectionType: ATSTART
+  - RelatingElement: W-030
+    RelatingConnectionType: ATSTART
+    RelatedElement: W-002
+    RelatedConnectionType: ATSTART
+  - RelatingElement: W-045
+    RelatingConnectionType: ATPATH
+    RelatedElement: W-022
+    RelatedConnectionType: ATEND
+  - RelatingElement: W-047
+    RelatingConnectionType: ATPATH
+    RelatedElement: W-028
+    RelatedConnectionType: ATSTART
+  - RelatingElement: W-048
+    RelatingConnectionType: ATPATH
+    RelatedElement: W-024
+    RelatedConnectionType: ATSTART
+  - RelatingElement: W-049
+    RelatingConnectionType: ATEND
+    RelatedElement: W-012
+    RelatedConnectionType: ATSTART
+  - RelatingElement: W-049
+    RelatingConnectionType: ATSTART
+    RelatedElement: W-003
+    RelatedConnectionType: ATSTART
+  - RelatingElement: W-050
+    RelatingConnectionType: ATPATH
+    RelatedElement: W-028
+    RelatedConnectionType: ATEND
+  - RelatingElement: W-051
+    RelatingConnectionType: ATSTART
+    RelatedElement: W-012
+    RelatedConnectionType: ATEND
+  - RelatingElement: W-054
+    RelatingConnectionType: ATPATH
+    RelatedElement: W-009
+    RelatedConnectionType: ATSTART
+  - RelatingElement: W-054
+    RelatingConnectionType: ATSTART
+    RelatedElement: W-001
+    RelatedConnectionType: ATSTART
+  - RelatingElement: W-055
+    RelatingConnectionType: ATSTART
+    RelatedElement: W-015
+    RelatedConnectionType: ATSTART
+  - RelatingElement: W-059
+    RelatingConnectionType: ATPATH
+    RelatedElement: W-019
+    RelatedConnectionType: ATSTART
+  - RelatingElement: W-060
+    RelatingConnectionType: ATSTART
+    RelatedElement: W-025
+    RelatedConnectionType: ATSTART
+  - RelatingElement: W-063
+    RelatingConnectionType: ATEND
+    RelatedElement: W-007
+    RelatedConnectionType: ATSTART
+  - RelatingElement: W-063
+    RelatingConnectionType: ATPATH
+    RelatedElement: W-006
+    RelatedConnectionType: ATEND
+  - RelatingElement: W-063
+    RelatingConnectionType: ATSTART
+    RelatedElement: W-001
+    RelatedConnectionType: ATEND
+  - RelatingElement: W-064
+    RelatingConnectionType: ATEND
+    RelatedElement: W-007
+    RelatedConnectionType: ATEND
+  - RelatingElement: W-066
+    RelatingConnectionType: ATEND
+    RelatedElement: W-019
+    RelatedConnectionType: ATEND
+  - RelatingElement: W-067
+    RelatingConnectionType: ATEND
+    RelatedElement: W-027
+    RelatedConnectionType: ATEND
+  - RelatingElement: W-067
+    RelatingConnectionType: ATSTART
+    RelatedElement: W-005
+    RelatedConnectionType: ATEND
 openings:
   - id: OP01
     VoidsElement: W-030
-    AlongAxis: 1.15
+    AlongAxis: 1.3375
     Width: 2.4
     Height: 2.5
     SillHeight: 0
     Tag: O3
   - id: OP02
     VoidsElement: W-030
-    AlongAxis: 5.175
+    AlongAxis: 5.3625
     Width: 0.9
     Height: 2.5
     SillHeight: 0
     Tag: O4
   - id: OP03
     VoidsElement: W-018
-    AlongAxis: 0.9
+    AlongAxis: 1.125
     Width: 1.9
     Height: 2.1
     SillHeight: 0
   - id: OP04
     VoidsElement: W-026
-    AlongAxis: 1.1
+    AlongAxis: 1.325
     Width: 1.6
     Height: 0.75
     SillHeight: 1.75
     Tag: O5
   - id: OP05
     VoidsElement: W-002
-    AlongAxis: 1
+    AlongAxis: 1.225
     Width: 2.25
     Height: 2.5
     SillHeight: 0
     Tag: O2
   - id: OP06
     VoidsElement: W-018
-    AlongAxis: 4.275
+    AlongAxis: 4.5
     Width: 0.8
     Height: 2.1
     SillHeight: 0
   - id: OP07
     VoidsElement: W-026
-    AlongAxis: 4.1
+    AlongAxis: 4.325
     Width: 1.6
     Height: 0.75
     SillHeight: 1.75
     Tag: O5
   - id: OP08
     VoidsElement: W-002
-    AlongAxis: 4.2
+    AlongAxis: 4.425
     Width: 2.15
     Height: 2.5
     SillHeight: 0
@@ -448,59 +672,59 @@ openings:
     SillHeight: 0
   - id: OP10
     VoidsElement: W-013
-    AlongAxis: 1.925
+    AlongAxis: 2.0125
     Width: 0.9
     Height: 2.1
     SillHeight: 0
   - id: OP11
     VoidsElement: W-022
-    AlongAxis: 2.25
+    AlongAxis: 2.3125
     Width: 1
     Height: 2.1
     SillHeight: 0
   - id: OP12
     VoidsElement: W-026
-    AlongAxis: 7.65
+    AlongAxis: 7.875
     Width: 0.9
     Height: 0.75
     SillHeight: 1.75
     Tag: O6
   - id: OP13
     VoidsElement: W-002
-    AlongAxis: 7.3
+    AlongAxis: 7.525
     Width: 2.15
     Height: 2.5
     SillHeight: 0
     Tag: O2
   - id: OP14
     VoidsElement: W-013
-    AlongAxis: 5.025
+    AlongAxis: 5.1125
     Width: 0.9
     Height: 2.1
     SillHeight: 0
   - id: OP15
     VoidsElement: W-026
-    AlongAxis: 9.5
+    AlongAxis: 9.725
     Width: 2.9
     Height: 0.75
     SillHeight: 1.75
     Tag: O7
   - id: OP16
     VoidsElement: W-002
-    AlongAxis: 10.4
+    AlongAxis: 10.625
     Width: 2.15
     Height: 2.5
     SillHeight: 0
     Tag: O2
   - id: OP17
     VoidsElement: W-022
-    AlongAxis: 5.75
+    AlongAxis: 5.8125
     Width: 1
     Height: 2.1
     SillHeight: 0
   - id: OP18
     VoidsElement: W-013
-    AlongAxis: 8.125
+    AlongAxis: 8.2125
     Width: 0.9
     Height: 2.1
     SillHeight: 0
@@ -513,27 +737,27 @@ openings:
     SillHeight: 0
   - id: OP20
     VoidsElement: W-047
-    AlongAxis: 1.2
+    AlongAxis: 1.425
     Width: 0.9
     Height: 2.15
     SillHeight: 0
     Tag: D2
   - id: OP21
     VoidsElement: W-002
-    AlongAxis: 13.5
+    AlongAxis: 13.725
     Width: 3.55
     Height: 2.5
     SillHeight: 0
     Tag: O1
   - id: OP22
     VoidsElement: W-013
-    AlongAxis: 12.375
+    AlongAxis: 12.4625
     Width: 0.9
     Height: 2.1
     SillHeight: 0
   - id: OP23
     VoidsElement: W-024
-    AlongAxis: 1.8
+    AlongAxis: 1.925
     Width: 0.9
     Height: 2.1
     SillHeight: 0
@@ -552,7 +776,7 @@ openings:
   # OP26: Petr 2026-10-05 overrides the DWG text.
   - id: OP26
     VoidsElement: W-051
-    AlongAxis: 0.3
+    AlongAxis: 0.475
     Width: 1.15
     Height: 2.5
     SillHeight: 0
@@ -578,19 +802,19 @@ openings:
   # OP30: Petr 2026-10-05 overrides the DWG text. Sill taken as 1.75; Petr wrote 1759.
   - id: OP30
     VoidsElement: W-054
-    AlongAxis: 2.775
+    AlongAxis: 3
     Width: 1.9
     Height: 0.75
     SillHeight: 1.75
   - id: OP31
     VoidsElement: W-054
-    AlongAxis: 6.35
+    AlongAxis: 6.575
     Width: 0.9
     Height: 0.75
     SillHeight: 1.75
   - id: OP32
     VoidsElement: W-055
-    AlongAxis: 0.3
+    AlongAxis: 0.425
     Width: 1.15
     Height: 2.5
     SillHeight: 0
@@ -602,13 +826,13 @@ openings:
     SillHeight: 0
   - id: OP34
     VoidsElement: W-015
-    AlongAxis: 1.175
+    AlongAxis: 1.4
     Width: 0.9
     Height: 2.1
     SillHeight: 0
   - id: OP35
     VoidsElement: W-001
-    AlongAxis: 0.75
+    AlongAxis: 0.975
     Width: 3.1
     Height: 2.5
     SillHeight: 0
@@ -635,14 +859,14 @@ openings:
   # OP39a: Petr 2026-10-05 overrides the DWG text.
   - id: OP39a
     VoidsElement: W-060
-    AlongAxis: 0.3
+    AlongAxis: 0.475
     Width: 1.1
     Height: 2.15
     SillHeight: 0
   # OP39b: Petr 2026-10-05 overrides the DWG text. Elevation sheet marks the whole entrance bay D1; not stored as Tag, because this half is a window.
   - id: OP39b
     VoidsElement: W-060
-    AlongAxis: 1.4
+    AlongAxis: 1.575
     Width: 1.1
     Height: 2.5
     SillHeight: 0
@@ -654,13 +878,13 @@ openings:
     SillHeight: 0
   - id: OP41
     VoidsElement: W-063
-    AlongAxis: 3.475
+    AlongAxis: 3.7
     Width: 0.9
     Height: 2.15
     SillHeight: 0
   - id: OP42
     VoidsElement: W-025
-    AlongAxis: 0.75
+    AlongAxis: 0.975
     Width: 2.9
     Height: 0.75
     SillHeight: 1.75
@@ -668,48 +892,48 @@ openings:
   # OP43: Petr 2026-10-05 overrides the DWG text.
   - id: OP43
     VoidsElement: W-007
-    AlongAxis: 0.5
+    AlongAxis: 0.725
     Width: 1.5
     Height: 2.25
     SillHeight: 0
   - id: OP45
     VoidsElement: W-005
-    AlongAxis: 1.05
+    AlongAxis: 1.225
     Width: 1.6
     Height: 0.75
     SillHeight: 1.75
     Tag: O9
   - id: OP46
     VoidsElement: W-027
-    AlongAxis: 1.05
+    AlongAxis: 1.225
     Width: 1.6
     Height: 0.75
     SillHeight: 1.75
     Tag: O9
   - id: OP47
     VoidsElement: W-005
-    AlongAxis: 3.95
+    AlongAxis: 4.125
     Width: 1.6
     Height: 0.75
     SillHeight: 1.75
     Tag: O9
   - id: OP48
     VoidsElement: W-027
-    AlongAxis: 3.95
+    AlongAxis: 4.125
     Width: 1.6
     Height: 0.75
     SillHeight: 1.75
     Tag: O9
   - id: OP49
     VoidsElement: W-067
-    AlongAxis: 0.65
+    AlongAxis: 0.825
     Width: 2.1
     Height: 2.25
     SillHeight: 0
     Tag: D6
   - id: OP50
     VoidsElement: W-067
-    AlongAxis: 3.2
+    AlongAxis: 3.375
     Width: 5.15
     Height: 2.25
     SillHeight: 0
