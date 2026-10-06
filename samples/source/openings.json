@@ -1,0 +1,3615 @@
+{
+ "floor": "PŮDORYS 1.NP",
+ "units": "m",
+ "origin_in_model_m": [
+  4698.8019,
+  -615.0793
+ ],
+ "source": "RD Šíma stavba.dwg via LibreDWG 0.14.8601 DXF (/tmp/floorplan.dxf), read with ezdxf 1.4.4; DWG not modified",
+ "method": "Openings = gaps in layer silná walls (polygonized double lines): facing wall-end faces 0.45-5.5 m apart with a free rectangle between, or two wall ends on one line. Every candidate was reviewed; the kept ones are listed, rejected ones in rejected_candidates. Size texts = MTEXT/TEXT inside the plan (pair \"W\\nH\", \"H (S)\", single 4-digit 1800-3000) matched to the nearest opening (pairs also by width). Elevation marks O1..O11 / D1,D2,D5,D6 are only on the POHLEDY sheet, matched by façade alignment; drawn_bottom/top there are measured from the elevation frame lines relative to ±0,000.",
+ "text_conventions": {
+  "W | H (two-line MTEXT)": "door width | door height in mm (Petr); head = height",
+  "H (S)": "window height H, sill S in parentheses; head = H + S. Checked on elevations O5, O8, O9: drawn 1.75 m to 2.50 m",
+  "N (single 4-digit)": "height of the opening top above floor; elevation O1, O2, O3, O4, O10, D5, D6 show these openings from floor (0) to N"
+ },
+ "counts": {
+  "window": 24,
+  "door": 24,
+  "opening": 2,
+  "total": 50,
+  "without_size_text": 1,
+  "size_texts": 64,
+  "size_texts_unmatched": 1,
+  "corrected_by_petr": 6
+ },
+ "openings": [
+  {
+   "id": "OP01",
+   "kind": "window",
+   "raw_text": "2500",
+   "text_format": "single",
+   "interpretation": "single number 2500 mm = height of the opening top above floor (head); no width, no sill written; elevation shows the opening starting at floor level, so sill 0",
+   "width_m": 2.4,
+   "width_source": "plan geometry: clear wall gap (no width in text)",
+   "height_m": 2.5,
+   "sill_m": 0.0,
+   "head_m": 2.5,
+   "center": [
+    0.1,
+    5.625
+   ],
+   "gap_clear_width_m": 2.4,
+   "gap_bounds": [
+    0.0,
+    4.425,
+    0.2,
+    6.825
+   ],
+   "wall_direction": "y",
+   "wall_segment_hint": [
+    [
+     247
+    ],
+    [
+     260
+    ]
+   ],
+   "rooms_between": [
+    "exterior",
+    "1.11 Ložnice"
+   ],
+   "on_outer_wall": true,
+   "door_swing_arc": null,
+   "companion_texts": null,
+   "elevation": {
+    "view": "POHLED JIHOZÁPADNÍ",
+    "mark": "O3",
+    "mark_offset_m": 1.34,
+    "elev_x_range": [
+     -51.5,
+     -49.09
+    ],
+    "drawn_bottom_m": 0.03,
+    "drawn_top_m": 2.46,
+    "drawn_layers": "šrafy frame"
+   },
+   "text_distance_m": 0.267,
+   "confidence": "high",
+   "notes": [
+    "elevation mark O3 = window (Ox in the POHLEDY legend)"
+   ],
+   "source": "dwg-extraction"
+  },
+  {
+   "id": "OP02",
+   "kind": "window",
+   "raw_text": "2500",
+   "text_format": "single",
+   "interpretation": "single number 2500 mm = height of the opening top above floor (head); no width, no sill written; elevation shows the opening starting at floor level, so sill 0",
+   "width_m": 0.9,
+   "width_source": "plan geometry: clear wall gap (no width in text)",
+   "height_m": 2.5,
+   "sill_m": 0.0,
+   "head_m": 2.5,
+   "center": [
+    0.1,
+    8.9
+   ],
+   "gap_clear_width_m": 0.9,
+   "gap_bounds": [
+    0.0,
+    8.45,
+    0.2,
+    9.35
+   ],
+   "wall_direction": "y",
+   "wall_segment_hint": [
+    [
+     258
+    ],
+    [
+     16
+    ]
+   ],
+   "rooms_between": [
+    "exterior",
+    "1.11 Ložnice"
+   ],
+   "on_outer_wall": true,
+   "door_swing_arc": null,
+   "companion_texts": null,
+   "elevation": {
+    "view": "POHLED JIHOZÁPADNÍ",
+    "mark": "O4",
+    "mark_offset_m": 0.7,
+    "elev_x_range": [
+     -54.02,
+     -53.12
+    ],
+    "drawn_bottom_m": 0.03,
+    "drawn_top_m": 2.46,
+    "drawn_layers": "šrafy frame"
+   },
+   "text_distance_m": 0.267,
+   "confidence": "high",
+   "notes": [
+    "elevation mark O4 = window (Ox in the POHLEDY legend)"
+   ],
+   "source": "dwg-extraction"
+  },
+  {
+   "id": "OP03",
+   "kind": "door",
+   "raw_text": "1800 | 2100",
+   "text_format": "pair",
+   "interpretation": "door width 1800 mm | door height 2100 mm; head = door height (wall continuous above)",
+   "width_m": 1.8,
+   "width_source": "text",
+   "height_m": 2.1,
+   "sill_m": null,
+   "head_m": 2.1,
+   "center": [
+    2.3,
+    9.562
+   ],
+   "gap_clear_width_m": 1.9,
+   "gap_bounds": [
+    1.35,
+    9.5,
+    3.25,
+    9.625
+   ],
+   "wall_direction": "x",
+   "wall_segment_hint": [
+    [
+     5,
+     6
+    ],
+    [
+     23,
+     24
+    ]
+   ],
+   "rooms_between": [
+    "1.11 Ložnice",
+    "1.10 Šatna"
+   ],
+   "on_outer_wall": false,
+   "door_swing_arc": null,
+   "companion_texts": null,
+   "elevation": null,
+   "text_distance_m": 0.0,
+   "confidence": "high",
+   "notes": [
+    "no door swing arc drawn (sliding door or plain opening?)"
+   ],
+   "source": "dwg-extraction"
+  },
+  {
+   "id": "OP04",
+   "kind": "window",
+   "raw_text": "750 (1750)",
+   "text_format": "paren",
+   "interpretation": "window height 750 mm, sill (parapet) 1750 mm in parentheses, head = 2500 mm",
+   "width_m": 1.6,
+   "width_source": "plan geometry: clear wall gap (no width in text)",
+   "height_m": 0.75,
+   "sill_m": 1.75,
+   "head_m": 2.5,
+   "center": [
+    2.35,
+    12.6
+   ],
+   "gap_clear_width_m": 1.6,
+   "gap_bounds": [
+    1.55,
+    12.5,
+    3.15,
+    12.7
+   ],
+   "wall_direction": "x",
+   "wall_segment_hint": [
+    [
+     13
+    ],
+    [
+     35
+    ]
+   ],
+   "rooms_between": [
+    "1.10 Šatna",
+    "exterior"
+   ],
+   "on_outer_wall": true,
+   "door_swing_arc": null,
+   "companion_texts": null,
+   "elevation": {
+    "view": "POHLED SEVEROZÁPADNÍ",
+    "mark": "O5",
+    "mark_offset_m": 0.37,
+    "elev_x_range": [
+     -18.5,
+     -16.9
+    ],
+    "drawn_bottom_m": 1.78,
+    "drawn_top_m": 2.46,
+    "drawn_layers": "šrafy frame"
+   },
+   "text_distance_m": 0.251,
+   "confidence": "high",
+   "notes": null,
+   "source": "dwg-extraction"
+  },
+  {
+   "id": "OP05",
+   "kind": "window",
+   "raw_text": "2500",
+   "text_format": "single",
+   "interpretation": "single number 2500 mm = height of the opening top above floor (head); no width, no sill written; elevation shows the opening starting at floor level, so sill 0",
+   "width_m": 2.25,
+   "width_source": "plan geometry: clear wall gap (no width in text)",
+   "height_m": 2.5,
+   "sill_m": 0.0,
+   "head_m": 2.5,
+   "center": [
+    2.575,
+    3.0
+   ],
+   "gap_clear_width_m": 2.25,
+   "gap_bounds": [
+    1.45,
+    2.9,
+    3.7,
+    3.1
+   ],
+   "wall_direction": "x",
+   "wall_segment_hint": [
+    [
+     238
+    ],
+    [
+     224
+    ]
+   ],
+   "rooms_between": [
+    "exterior",
+    "1.11 Ložnice"
+   ],
+   "on_outer_wall": true,
+   "door_swing_arc": null,
+   "companion_texts": null,
+   "elevation": {
+    "view": "POHLED JIHOVÝCHODNÍ",
+    "mark": "O2",
+    "mark_offset_m": -0.13,
+    "elev_x_range": [
+     -59.29,
+     -57.04
+    ],
+    "drawn_bottom_m": 0.04,
+    "drawn_top_m": 2.47,
+    "drawn_layers": "šrafy frame"
+   },
+   "text_distance_m": 0.49,
+   "confidence": "high",
+   "notes": [
+    "elevation mark O2 = window (Ox in the POHLEDY legend)"
+   ],
+   "source": "dwg-extraction"
+  },
+  {
+   "id": "OP06",
+   "kind": "door",
+   "raw_text": "700 | 2100",
+   "text_format": "pair",
+   "interpretation": "door width 700 mm | door height 2100 mm; head = door height (wall continuous above)",
+   "width_m": 0.7,
+   "width_source": "text",
+   "height_m": 2.1,
+   "sill_m": null,
+   "head_m": 2.1,
+   "center": [
+    5.125,
+    9.562
+   ],
+   "gap_clear_width_m": 0.8,
+   "gap_bounds": [
+    4.725,
+    9.5,
+    5.525,
+    9.625
+   ],
+   "wall_direction": "x",
+   "wall_segment_hint": [
+    [
+     26
+    ],
+    [
+     351
+    ]
+   ],
+   "rooms_between": [
+    "1.11 Ložnice",
+    "1.09 Koupelna"
+   ],
+   "on_outer_wall": false,
+   "door_swing_arc": [
+    {
+     "center": [
+      5.475,
+      9.625
+     ],
+     "radius_m": 0.7
+    }
+   ],
+   "companion_texts": null,
+   "elevation": null,
+   "text_distance_m": 0.274,
+   "confidence": "high",
+   "notes": null,
+   "source": "dwg-extraction"
+  },
+  {
+   "id": "OP07",
+   "kind": "window",
+   "raw_text": "750 (1750)",
+   "text_format": "paren",
+   "interpretation": "window height 750 mm, sill (parapet) 1750 mm in parentheses, head = 2500 mm",
+   "width_m": 1.6,
+   "width_source": "plan geometry: clear wall gap (no width in text)",
+   "height_m": 0.75,
+   "sill_m": 1.75,
+   "head_m": 2.5,
+   "center": [
+    5.35,
+    12.6
+   ],
+   "gap_clear_width_m": 1.6,
+   "gap_bounds": [
+    4.55,
+    12.5,
+    6.15,
+    12.7
+   ],
+   "wall_direction": "x",
+   "wall_segment_hint": [
+    [
+     33
+    ],
+    [
+     369
+    ]
+   ],
+   "rooms_between": [
+    "1.09 Koupelna",
+    "exterior"
+   ],
+   "on_outer_wall": true,
+   "door_swing_arc": null,
+   "companion_texts": null,
+   "elevation": {
+    "view": "POHLED SEVEROZÁPADNÍ",
+    "mark": "O5",
+    "mark_offset_m": 0.37,
+    "elev_x_range": [
+     -21.5,
+     -19.9
+    ],
+    "drawn_bottom_m": 1.78,
+    "drawn_top_m": 2.46,
+    "drawn_layers": "šrafy frame"
+   },
+   "text_distance_m": 0.251,
+   "confidence": "high",
+   "notes": null,
+   "source": "dwg-extraction"
+  },
+  {
+   "id": "OP08",
+   "kind": "window",
+   "raw_text": "2500",
+   "text_format": "single",
+   "interpretation": "single number 2500 mm = height of the opening top above floor (head); no width, no sill written; elevation shows the opening starting at floor level, so sill 0",
+   "width_m": 2.15,
+   "width_source": "plan geometry: clear wall gap (no width in text)",
+   "height_m": 2.5,
+   "sill_m": 0.0,
+   "head_m": 2.5,
+   "center": [
+    5.725,
+    3.0
+   ],
+   "gap_clear_width_m": 2.15,
+   "gap_bounds": [
+    4.65,
+    2.9,
+    6.8,
+    3.1
+   ],
+   "wall_direction": "x",
+   "wall_segment_hint": [
+    [
+     226
+    ],
+    [
+     202
+    ]
+   ],
+   "rooms_between": [
+    "exterior",
+    "1.12 Pokoj"
+   ],
+   "on_outer_wall": true,
+   "door_swing_arc": null,
+   "companion_texts": null,
+   "elevation": {
+    "view": "POHLED JIHOVÝCHODNÍ",
+    "mark": "O2",
+    "mark_offset_m": -0.18,
+    "elev_x_range": [
+     -56.09,
+     -53.94
+    ],
+    "drawn_bottom_m": 0.04,
+    "drawn_top_m": 2.47,
+    "drawn_layers": "šrafy frame"
+   },
+   "text_distance_m": 0.49,
+   "confidence": "high",
+   "notes": [
+    "elevation mark O2 = window (Ox in the POHLEDY legend)"
+   ],
+   "source": "dwg-extraction"
+  },
+  {
+   "id": "OP09",
+   "kind": "door",
+   "raw_text": "800 | 2100",
+   "text_format": "pair",
+   "interpretation": "door width 800 mm | door height 2100 mm; head = door height (wall continuous above)",
+   "width_m": 0.8,
+   "width_source": "text",
+   "height_m": 2.1,
+   "sill_m": null,
+   "head_m": 2.1,
+   "center": [
+    5.688,
+    8.8
+   ],
+   "gap_clear_width_m": 0.9,
+   "gap_bounds": [
+    5.625,
+    8.35,
+    5.75,
+    9.25
+   ],
+   "wall_direction": "y",
+   "wall_segment_hint": [
+    [
+     216
+    ],
+    [
+     354
+    ]
+   ],
+   "rooms_between": [
+    "1.11 Ložnice",
+    "1.05 Chodba"
+   ],
+   "on_outer_wall": false,
+   "door_swing_arc": [
+    {
+     "center": [
+      5.625,
+      8.4
+     ],
+     "radius_m": 0.8
+    }
+   ],
+   "companion_texts": null,
+   "elevation": null,
+   "text_distance_m": 0.447,
+   "confidence": "high",
+   "notes": null,
+   "source": "dwg-extraction"
+  },
+  {
+   "id": "OP10",
+   "kind": "door",
+   "raw_text": "800 | 2100",
+   "text_format": "pair",
+   "interpretation": "door width 800 mm | door height 2100 mm; head = door height (wall continuous above)",
+   "width_m": 0.8,
+   "width_source": "text",
+   "height_m": 2.1,
+   "sill_m": null,
+   "head_m": 2.1,
+   "center": [
+    6.3,
+    8.137
+   ],
+   "gap_clear_width_m": 0.9,
+   "gap_bounds": [
+    5.85,
+    8.075,
+    6.75,
+    8.2
+   ],
+   "wall_direction": "x",
+   "wall_segment_hint": [
+    [
+     235
+    ],
+    [
+     195
+    ]
+   ],
+   "rooms_between": [
+    "1.12 Pokoj",
+    "1.05 Chodba"
+   ],
+   "on_outer_wall": false,
+   "door_swing_arc": [
+    {
+     "center": [
+      6.7,
+      8.075
+     ],
+     "radius_m": 0.8
+    }
+   ],
+   "companion_texts": [
+    "2250"
+   ],
+   "elevation": null,
+   "text_distance_m": 0.669,
+   "confidence": "high",
+   "notes": [
+    "companion single number(s) 2250 next to the opening; same style as window heights, so probably the structural-opening head height; not used for head_m"
+   ],
+   "source": "dwg-extraction"
+  },
+  {
+   "id": "OP11",
+   "kind": "door",
+   "raw_text": "800 | 2100",
+   "text_format": "pair",
+   "interpretation": "door width 800 mm | door height 2100 mm; head = door height (wall continuous above)",
+   "width_m": 0.8,
+   "width_source": "text",
+   "height_m": 2.1,
+   "sill_m": null,
+   "head_m": 2.1,
+   "center": [
+    8.5,
+    9.812
+   ],
+   "gap_clear_width_m": 1.0,
+   "gap_bounds": [
+    8.0,
+    9.475,
+    9.0,
+    10.15
+   ],
+   "wall_direction": "x",
+   "wall_segment_hint": [
+    [
+     359,
+     360
+    ],
+    [
+     443
+    ]
+   ],
+   "rooms_between": [
+    "1.05 Chodba",
+    "1.08 Prádelna"
+   ],
+   "on_outer_wall": false,
+   "door_swing_arc": [
+    {
+     "center": [
+      8.125,
+      9.5
+     ],
+     "radius_m": 0.8
+    }
+   ],
+   "companion_texts": null,
+   "elevation": null,
+   "text_distance_m": 0.0,
+   "confidence": "high",
+   "notes": null,
+   "source": "dwg-extraction"
+  },
+  {
+   "id": "OP12",
+   "kind": "window",
+   "raw_text": "750 (1750)",
+   "text_format": "paren",
+   "interpretation": "window height 750 mm, sill (parapet) 1750 mm in parentheses, head = 2500 mm",
+   "width_m": 0.9,
+   "width_source": "plan geometry: clear wall gap (no width in text)",
+   "height_m": 0.75,
+   "sill_m": 1.75,
+   "head_m": 2.5,
+   "center": [
+    8.55,
+    12.6
+   ],
+   "gap_clear_width_m": 0.9,
+   "gap_bounds": [
+    8.1,
+    12.5,
+    9.0,
+    12.7
+   ],
+   "wall_direction": "x",
+   "wall_segment_hint": [
+    [
+     367
+    ],
+    [
+     458
+    ]
+   ],
+   "rooms_between": [
+    "1.08 Prádelna",
+    "exterior"
+   ],
+   "on_outer_wall": true,
+   "door_swing_arc": null,
+   "companion_texts": null,
+   "elevation": {
+    "view": "POHLED SEVEROZÁPADNÍ",
+    "mark": "O6",
+    "mark_offset_m": 0.25,
+    "elev_x_range": [
+     -24.35,
+     -23.45
+    ],
+    "drawn_bottom_m": 1.78,
+    "drawn_top_m": 2.46,
+    "drawn_layers": "šrafy frame"
+   },
+   "text_distance_m": 0.251,
+   "confidence": "high",
+   "notes": null,
+   "source": "dwg-extraction"
+  },
+  {
+   "id": "OP13",
+   "kind": "window",
+   "raw_text": "2500",
+   "text_format": "single",
+   "interpretation": "single number 2500 mm = height of the opening top above floor (head); no width, no sill written; elevation shows the opening starting at floor level, so sill 0",
+   "width_m": 2.15,
+   "width_source": "plan geometry: clear wall gap (no width in text)",
+   "height_m": 2.5,
+   "sill_m": 0.0,
+   "head_m": 2.5,
+   "center": [
+    8.825,
+    3.0
+   ],
+   "gap_clear_width_m": 2.15,
+   "gap_bounds": [
+    7.75,
+    2.9,
+    9.9,
+    3.1
+   ],
+   "wall_direction": "x",
+   "wall_segment_hint": [
+    [
+     204
+    ],
+    [
+     182
+    ]
+   ],
+   "rooms_between": [
+    "exterior",
+    "1.13 Pokoj"
+   ],
+   "on_outer_wall": true,
+   "door_swing_arc": null,
+   "companion_texts": null,
+   "elevation": {
+    "view": "POHLED JIHOVÝCHODNÍ",
+    "mark": "O2",
+    "mark_offset_m": -0.18,
+    "elev_x_range": [
+     -52.99,
+     -50.84
+    ],
+    "drawn_bottom_m": 0.04,
+    "drawn_top_m": 2.47,
+    "drawn_layers": "šrafy frame"
+   },
+   "text_distance_m": 0.49,
+   "confidence": "high",
+   "notes": [
+    "elevation mark O2 = window (Ox in the POHLEDY legend)"
+   ],
+   "source": "dwg-extraction"
+  },
+  {
+   "id": "OP14",
+   "kind": "door",
+   "raw_text": "800 | 2100",
+   "text_format": "pair",
+   "interpretation": "door width 800 mm | door height 2100 mm; head = door height (wall continuous above)",
+   "width_m": 0.8,
+   "width_source": "text",
+   "height_m": 2.1,
+   "sill_m": null,
+   "head_m": 2.1,
+   "center": [
+    9.4,
+    8.137
+   ],
+   "gap_clear_width_m": 0.9,
+   "gap_bounds": [
+    8.95,
+    8.075,
+    9.85,
+    8.2
+   ],
+   "wall_direction": "x",
+   "wall_segment_hint": [
+    [
+     213
+    ],
+    [
+     175
+    ]
+   ],
+   "rooms_between": [
+    "1.13 Pokoj",
+    "1.05 Chodba"
+   ],
+   "on_outer_wall": false,
+   "door_swing_arc": [
+    {
+     "center": [
+      9.8,
+      8.075
+     ],
+     "radius_m": 0.8
+    }
+   ],
+   "companion_texts": [
+    "2250"
+   ],
+   "elevation": null,
+   "text_distance_m": 0.605,
+   "confidence": "high",
+   "notes": [
+    "companion single number(s) 2250 next to the opening; same style as window heights, so probably the structural-opening head height; not used for head_m"
+   ],
+   "source": "dwg-extraction"
+  },
+  {
+   "id": "OP15",
+   "kind": "window",
+   "raw_text": "750 (1750)",
+   "text_format": "paren",
+   "interpretation": "window height 750 mm, sill (parapet) 1750 mm in parentheses, head = 2500 mm",
+   "width_m": 2.9,
+   "width_source": "plan geometry: clear wall gap (no width in text)",
+   "height_m": 0.75,
+   "sill_m": 1.75,
+   "head_m": 2.5,
+   "center": [
+    11.4,
+    12.6
+   ],
+   "gap_clear_width_m": 2.9,
+   "gap_bounds": [
+    9.95,
+    12.5,
+    12.85,
+    12.7
+   ],
+   "wall_direction": "x",
+   "wall_segment_hint": [
+    [
+     456
+    ],
+    [
+     410
+    ]
+   ],
+   "rooms_between": [
+    "1.07 Koupelna",
+    "exterior"
+   ],
+   "on_outer_wall": true,
+   "door_swing_arc": null,
+   "companion_texts": null,
+   "elevation": {
+    "view": "POHLED SEVEROZÁPADNÍ",
+    "mark": "O7",
+    "mark_offset_m": 1.12,
+    "elev_x_range": [
+     -28.2,
+     -25.3
+    ],
+    "drawn_bottom_m": 1.78,
+    "drawn_top_m": 2.46,
+    "drawn_layers": "šrafy frame"
+   },
+   "text_distance_m": 0.251,
+   "confidence": "medium",
+   "notes": [
+    "wall gap is 2.9 m but elevation O7 shows a ~1.7 m window in it (and O6 ~0.8 m drawn ~1 m east of the 1.08 window); width uncertain"
+   ],
+   "source": "dwg-extraction"
+  },
+  {
+   "id": "OP16",
+   "kind": "window",
+   "raw_text": "2500",
+   "text_format": "single",
+   "interpretation": "single number 2500 mm = height of the opening top above floor (head); no width, no sill written; elevation shows the opening starting at floor level, so sill 0",
+   "width_m": 2.15,
+   "width_source": "plan geometry: clear wall gap (no width in text)",
+   "height_m": 2.5,
+   "sill_m": 0.0,
+   "head_m": 2.5,
+   "center": [
+    11.925,
+    3.0
+   ],
+   "gap_clear_width_m": 2.15,
+   "gap_bounds": [
+    10.85,
+    2.9,
+    13.0,
+    3.1
+   ],
+   "wall_direction": "x",
+   "wall_segment_hint": [
+    [
+     184
+    ],
+    [
+     162
+    ]
+   ],
+   "rooms_between": [
+    "exterior",
+    "1.14 Pokoj"
+   ],
+   "on_outer_wall": true,
+   "door_swing_arc": null,
+   "companion_texts": null,
+   "elevation": {
+    "view": "POHLED JIHOVÝCHODNÍ",
+    "mark": "O2",
+    "mark_offset_m": -0.18,
+    "elev_x_range": [
+     -49.89,
+     -47.74
+    ],
+    "drawn_bottom_m": 0.04,
+    "drawn_top_m": 2.47,
+    "drawn_layers": "šrafy frame"
+   },
+   "text_distance_m": 0.49,
+   "confidence": "high",
+   "notes": [
+    "elevation mark O2 = window (Ox in the POHLEDY legend)"
+   ],
+   "source": "dwg-extraction"
+  },
+  {
+   "id": "OP17",
+   "kind": "door",
+   "raw_text": "800 | 2100",
+   "text_format": "pair",
+   "interpretation": "door width 800 mm | door height 2100 mm; head = door height (wall continuous above)",
+   "width_m": 0.8,
+   "width_source": "text",
+   "height_m": 2.1,
+   "sill_m": null,
+   "head_m": 2.1,
+   "center": [
+    12.0,
+    9.812
+   ],
+   "gap_clear_width_m": 1.0,
+   "gap_bounds": [
+    11.5,
+    9.475,
+    12.5,
+    10.15
+   ],
+   "wall_direction": "x",
+   "wall_segment_hint": [
+    [
+     449
+    ],
+    [
+     417
+    ]
+   ],
+   "rooms_between": [
+    "1.05 Chodba",
+    "1.07 Koupelna"
+   ],
+   "on_outer_wall": false,
+   "door_swing_arc": [
+    {
+     "center": [
+      11.6,
+      9.5
+     ],
+     "radius_m": 0.8
+    }
+   ],
+   "companion_texts": null,
+   "elevation": null,
+   "text_distance_m": 0.0,
+   "confidence": "high",
+   "notes": null,
+   "source": "dwg-extraction"
+  },
+  {
+   "id": "OP18",
+   "kind": "door",
+   "raw_text": "800 | 2100",
+   "text_format": "pair",
+   "interpretation": "door width 800 mm | door height 2100 mm; head = door height (wall continuous above)",
+   "width_m": 0.8,
+   "width_source": "text",
+   "height_m": 2.1,
+   "sill_m": null,
+   "head_m": 2.1,
+   "center": [
+    12.5,
+    8.137
+   ],
+   "gap_clear_width_m": 0.9,
+   "gap_bounds": [
+    12.05,
+    8.075,
+    12.95,
+    8.2
+   ],
+   "wall_direction": "x",
+   "wall_segment_hint": [
+    [
+     193
+    ],
+    [
+     155
+    ]
+   ],
+   "rooms_between": [
+    "1.14 Pokoj",
+    "1.05 Chodba"
+   ],
+   "on_outer_wall": false,
+   "door_swing_arc": [
+    {
+     "center": [
+      12.9,
+      8.075
+     ],
+     "radius_m": 0.8
+    }
+   ],
+   "companion_texts": [
+    "2250"
+   ],
+   "elevation": null,
+   "text_distance_m": 0.605,
+   "confidence": "high",
+   "notes": [
+    "companion single number(s) 2250 next to the opening; same style as window heights, so probably the structural-opening head height; not used for head_m"
+   ],
+   "source": "dwg-extraction"
+  },
+  {
+   "id": "OP19",
+   "kind": "door",
+   "raw_text": "800 | 2100",
+   "text_format": "pair",
+   "interpretation": "door width 800 mm | door height 2100 mm; head = door height (wall continuous above)",
+   "width_m": 0.8,
+   "width_source": "text",
+   "height_m": 2.1,
+   "sill_m": null,
+   "head_m": 2.1,
+   "center": [
+    14.925,
+    9.525
+   ],
+   "gap_clear_width_m": 1.15,
+   "gap_bounds": [
+    14.35,
+    9.475,
+    15.5,
+    9.575
+   ],
+   "wall_direction": "x",
+   "wall_segment_hint": [
+    [
+     423
+    ],
+    [
+     428,
+     429
+    ]
+   ],
+   "rooms_between": [
+    "1.05 Chodba",
+    "1.06 WC"
+   ],
+   "on_outer_wall": false,
+   "door_swing_arc": [
+    {
+     "center": [
+      14.45,
+      9.5
+     ],
+     "radius_m": 0.8
+    }
+   ],
+   "companion_texts": null,
+   "elevation": null,
+   "text_distance_m": 0.133,
+   "confidence": "high",
+   "notes": null,
+   "source": "dwg-extraction"
+  },
+  {
+   "id": "OP20",
+   "kind": "door",
+   "raw_text": "850 | 2150",
+   "text_format": "pair",
+   "interpretation": "door width 850 mm | door height 2150 mm; head = door height (wall continuous above)",
+   "width_m": 0.85,
+   "width_source": "text",
+   "height_m": 2.15,
+   "sill_m": null,
+   "head_m": 2.15,
+   "center": [
+    15.4,
+    14.35
+   ],
+   "gap_clear_width_m": 0.9,
+   "gap_bounds": [
+    15.3,
+    13.9,
+    15.5,
+    14.8
+   ],
+   "wall_direction": "y",
+   "wall_segment_hint": [
+    [
+     407
+    ],
+    [
+     321
+    ]
+   ],
+   "rooms_between": [
+    "exterior",
+    "1.03 Spíž"
+   ],
+   "on_outer_wall": true,
+   "door_swing_arc": [
+    {
+     "center": [
+      15.58,
+      13.925
+     ],
+     "radius_m": 0.85
+    }
+   ],
+   "companion_texts": [
+    "2250"
+   ],
+   "elevation": {
+    "view": "POHLED JIHOZÁPADNÍ",
+    "mark": "D2",
+    "mark_offset_m": 0.57,
+    "elev_x_range": [
+     -59.47,
+     -58.57
+    ],
+    "drawn_bottom_m": -0.0,
+    "drawn_top_m": 2.21,
+    "drawn_layers": "šrafy frame"
+   },
+   "text_distance_m": 0.264,
+   "confidence": "high",
+   "notes": [
+    "exterior door",
+    "companion single number(s) 2250 next to the opening; same style as window heights, so probably the structural-opening head height; not used for head_m"
+   ],
+   "source": "dwg-extraction"
+  },
+  {
+   "id": "OP21",
+   "kind": "window",
+   "raw_text": "2500",
+   "text_format": "single",
+   "interpretation": "single number 2500 mm = height of the opening top above floor (head); no width, no sill written; elevation shows the opening starting at floor level, so sill 0",
+   "width_m": 3.55,
+   "width_source": "plan geometry: clear wall gap (no width in text)",
+   "height_m": 2.5,
+   "sill_m": 0.0,
+   "head_m": 2.5,
+   "center": [
+    15.725,
+    3.0
+   ],
+   "gap_clear_width_m": 3.55,
+   "gap_bounds": [
+    13.95,
+    2.9,
+    17.5,
+    3.1
+   ],
+   "wall_direction": "x",
+   "wall_segment_hint": [
+    [
+     164
+    ],
+    [
+     143
+    ]
+   ],
+   "rooms_between": [
+    "exterior",
+    "1.15 Pracovna"
+   ],
+   "on_outer_wall": true,
+   "door_swing_arc": null,
+   "companion_texts": null,
+   "elevation": {
+    "view": "POHLED JIHOVÝCHODNÍ",
+    "mark": "O1",
+    "mark_offset_m": -0.42,
+    "elev_x_range": [
+     -46.79,
+     -43.24
+    ],
+    "drawn_bottom_m": 0.04,
+    "drawn_top_m": 2.47,
+    "drawn_layers": "šrafy frame"
+   },
+   "text_distance_m": 0.49,
+   "confidence": "high",
+   "notes": [
+    "elevation mark O1 = window (Ox in the POHLEDY legend)"
+   ],
+   "source": "dwg-extraction"
+  },
+  {
+   "id": "OP22",
+   "kind": "door",
+   "raw_text": "800 | 2100",
+   "text_format": "pair",
+   "interpretation": "door width 800 mm | door height 2100 mm; head = door height (wall continuous above)",
+   "width_m": 0.8,
+   "width_source": "text",
+   "height_m": 2.1,
+   "sill_m": null,
+   "head_m": 2.1,
+   "center": [
+    16.75,
+    8.137
+   ],
+   "gap_clear_width_m": 0.9,
+   "gap_bounds": [
+    16.3,
+    8.075,
+    17.2,
+    8.2
+   ],
+   "wall_direction": "x",
+   "wall_segment_hint": [
+    [
+     173
+    ],
+    [
+     135
+    ]
+   ],
+   "rooms_between": [
+    "1.15 Pracovna",
+    "1.05 Chodba"
+   ],
+   "on_outer_wall": false,
+   "door_swing_arc": [
+    {
+     "center": [
+      17.15,
+      8.075
+     ],
+     "radius_m": 0.8
+    }
+   ],
+   "companion_texts": [
+    "2250"
+   ],
+   "elevation": null,
+   "text_distance_m": 0.678,
+   "confidence": "high",
+   "notes": [
+    "companion single number(s) 2250 next to the opening; same style as window heights, so probably the structural-opening head height; not used for head_m"
+   ],
+   "source": "dwg-extraction"
+  },
+  {
+   "id": "OP23",
+   "kind": "door",
+   "raw_text": "800 | 2100",
+   "text_format": "pair",
+   "interpretation": "door width 800 mm | door height 2100 mm; head = door height (wall continuous above)",
+   "width_m": 0.8,
+   "width_source": "text",
+   "height_m": 2.1,
+   "sill_m": null,
+   "head_m": 2.1,
+   "center": [
+    18.0,
+    11.412
+   ],
+   "gap_clear_width_m": 0.9,
+   "gap_bounds": [
+    17.55,
+    11.35,
+    18.45,
+    11.475
+   ],
+   "wall_direction": "x",
+   "wall_segment_hint": [
+    [
+     433
+    ],
+    [
+     330
+    ]
+   ],
+   "rooms_between": [
+    "1.05 Chodba",
+    "1.04 Technická místnost"
+   ],
+   "on_outer_wall": false,
+   "door_swing_arc": [
+    {
+     "center": [
+      18.4,
+      11.475
+     ],
+     "radius_m": 0.8
+    }
+   ],
+   "companion_texts": null,
+   "elevation": null,
+   "text_distance_m": 0.274,
+   "confidence": "high",
+   "notes": null,
+   "source": "dwg-extraction"
+  },
+  {
+   "id": "OP24",
+   "kind": "door",
+   "raw_text": "1100 | 2450",
+   "text_format": "pair",
+   "interpretation": "door width 1100 mm | door height 2450 mm; head = door height (wall continuous above)",
+   "width_m": 1.1,
+   "width_source": "text",
+   "height_m": 2.45,
+   "sill_m": null,
+   "head_m": 2.45,
+   "center": [
+    18.675,
+    10.8
+   ],
+   "gap_clear_width_m": 1.1,
+   "gap_bounds": [
+    18.55,
+    10.25,
+    18.8,
+    11.35
+   ],
+   "wall_direction": "y",
+   "wall_segment_hint": [
+    [
+     382
+    ],
+    [
+     332,
+     333
+    ]
+   ],
+   "rooms_between": [
+    "1.05 Chodba",
+    "1.02 Obývací pokoj+KK"
+   ],
+   "on_outer_wall": false,
+   "door_swing_arc": null,
+   "companion_texts": [
+    "2500"
+   ],
+   "elevation": null,
+   "text_distance_m": 0.0,
+   "confidence": "high",
+   "notes": [
+    "no door swing arc drawn (sliding door or plain opening?)",
+    "companion single number(s) 2500 next to the opening; same style as window heights, so probably the structural-opening head height; not used for head_m"
+   ],
+   "source": "dwg-extraction"
+  },
+  {
+   "id": "OP25",
+   "kind": "door",
+   "raw_text": "1100 | 2450",
+   "text_format": "pair",
+   "interpretation": "door width 1100 mm | door height 2450 mm; head = door height (wall continuous above)",
+   "width_m": 1.1,
+   "width_source": "text",
+   "height_m": 2.45,
+   "sill_m": null,
+   "head_m": 2.45,
+   "center": [
+    18.675,
+    14.4
+   ],
+   "gap_clear_width_m": 1.1,
+   "gap_bounds": [
+    18.55,
+    13.85,
+    18.8,
+    14.95
+   ],
+   "wall_direction": "y",
+   "wall_segment_hint": [
+    [
+     337,
+     338
+    ],
+    [
+     335,
+     336
+    ]
+   ],
+   "rooms_between": [
+    "1.03 Spíž",
+    "1.02 Obývací pokoj+KK"
+   ],
+   "on_outer_wall": false,
+   "door_swing_arc": null,
+   "companion_texts": [
+    "2500"
+   ],
+   "elevation": null,
+   "text_distance_m": 0.0,
+   "confidence": "high",
+   "notes": [
+    "no door swing arc drawn (sliding door or plain opening?)",
+    "companion single number(s) 2500 next to the opening; same style as window heights, so probably the structural-opening head height; not used for head_m"
+   ],
+   "source": "dwg-extraction"
+  },
+  {
+   "id": "OP26",
+   "kind": "window",
+   "raw_text": "2500",
+   "text_format": "single",
+   "interpretation": "fixed full-height window (Petr); text 2500 = head 2.50 m, sill 0",
+   "width_m": 1.15,
+   "width_source": "plan geometry: clear wall gap (no width in text)",
+   "height_m": 2.5,
+   "sill_m": 0.0,
+   "head_m": 2.5,
+   "center": [
+    18.9,
+    9.075
+   ],
+   "gap_clear_width_m": 1.15,
+   "gap_bounds": [
+    18.8,
+    8.5,
+    19.0,
+    9.65
+   ],
+   "wall_direction": "y",
+   "wall_segment_hint": [
+    [
+     150
+    ],
+    [
+     374
+    ]
+   ],
+   "rooms_between": [
+    "1.05 Chodba",
+    "exterior"
+   ],
+   "on_outer_wall": true,
+   "door_swing_arc": null,
+   "companion_texts": null,
+   "elevation": null,
+   "text_distance_m": 0.415,
+   "confidence": "high",
+   "notes": [
+    "Petr 2026-10-05: fixed full-height window, sill 0, head 2.50 (text 2500)"
+   ],
+   "source": "petr-2026-10-05"
+  },
+  {
+   "id": "OP27",
+   "kind": "window",
+   "raw_text": "2500",
+   "text_format": "single",
+   "interpretation": "single number 2500 mm = height of the opening top above floor (head); no width, no sill written",
+   "width_m": 2.45,
+   "width_source": "plan geometry: clear wall gap (no width in text)",
+   "height_m": null,
+   "sill_m": null,
+   "head_m": 2.5,
+   "center": [
+    20.725,
+    10.175
+   ],
+   "gap_clear_width_m": 2.45,
+   "gap_bounds": [
+    19.5,
+    10.125,
+    21.95,
+    10.225
+   ],
+   "wall_direction": "x",
+   "wall_segment_hint": [
+    [
+     380
+    ],
+    [
+     301
+    ]
+   ],
+   "rooms_between": [
+    "exterior",
+    "1.02 Obývací pokoj+KK"
+   ],
+   "on_outer_wall": true,
+   "door_swing_arc": null,
+   "companion_texts": null,
+   "elevation": {
+    "view": "POHLED JIHOVÝCHODNÍ",
+    "mark": null,
+    "mark_offset_m": null,
+    "elev_x_range": [
+     -41.24,
+     -38.79
+    ],
+    "drawn_bottom_m": 0.04,
+    "drawn_top_m": 2.47,
+    "drawn_layers": "šrafy frame"
+   },
+   "text_distance_m": 0.84,
+   "confidence": "medium",
+   "notes": [
+    "outer wall, window-style single-number text, no swing arc, no elevation mark found; full-height glazing could also be a glazed door",
+    "no elevation mark; POHLED JIHOVÝCHODNÍ has lines drawn 0.04-2.47 m above floor at this position (not used)"
+   ],
+   "source": "dwg-extraction"
+  },
+  {
+   "id": "OP28",
+   "kind": "window",
+   "raw_text": "2500",
+   "text_format": "single",
+   "interpretation": "single number 2500 mm = height of the opening top above floor (head); no width, no sill written; elevation shows the opening starting at floor level, so sill 0",
+   "width_m": 4.4,
+   "width_source": "plan geometry: clear wall gap (no width in text)",
+   "height_m": 2.5,
+   "sill_m": 0.0,
+   "head_m": 2.5,
+   "center": [
+    24.25,
+    10.175
+   ],
+   "gap_clear_width_m": 4.4,
+   "gap_bounds": [
+    22.05,
+    10.125,
+    26.45,
+    10.225
+   ],
+   "wall_direction": "x",
+   "wall_segment_hint": [
+    [
+     299
+    ],
+    [
+     303
+    ]
+   ],
+   "rooms_between": [
+    "exterior",
+    "1.02 Obývací pokoj+KK"
+   ],
+   "on_outer_wall": true,
+   "door_swing_arc": null,
+   "companion_texts": null,
+   "elevation": {
+    "view": "POHLED JIHOVÝCHODNÍ",
+    "mark": "O11",
+    "mark_offset_m": 0.41,
+    "elev_x_range": [
+     -38.69,
+     -34.29
+    ],
+    "drawn_bottom_m": 0.04,
+    "drawn_top_m": 2.47,
+    "drawn_layers": "šrafy frame"
+   },
+   "text_distance_m": 0.836,
+   "confidence": "high",
+   "notes": [
+    "elevation mark O11 = window (Ox in the POHLEDY legend)"
+   ],
+   "source": "dwg-extraction"
+  },
+  {
+   "id": "OP29",
+   "kind": "window",
+   "raw_text": "2500",
+   "text_format": "single",
+   "interpretation": "single number 2500 mm = height of the opening top above floor (head); no width, no sill written",
+   "width_m": 2.45,
+   "width_source": "plan geometry: clear wall gap (no width in text)",
+   "height_m": null,
+   "sill_m": null,
+   "head_m": 2.5,
+   "center": [
+    27.775,
+    10.175
+   ],
+   "gap_clear_width_m": 2.45,
+   "gap_bounds": [
+    26.55,
+    10.125,
+    29.0,
+    10.225
+   ],
+   "wall_direction": "x",
+   "wall_segment_hint": [
+    [
+     305
+    ],
+    [
+     121
+    ]
+   ],
+   "rooms_between": [
+    "exterior",
+    "1.02 Obývací pokoj+KK"
+   ],
+   "on_outer_wall": true,
+   "door_swing_arc": null,
+   "companion_texts": null,
+   "elevation": {
+    "view": "POHLED JIHOVÝCHODNÍ",
+    "mark": null,
+    "mark_offset_m": null,
+    "elev_x_range": [
+     -34.19,
+     -31.74
+    ],
+    "drawn_bottom_m": 0.04,
+    "drawn_top_m": 2.47,
+    "drawn_layers": "šrafy frame"
+   },
+   "text_distance_m": 0.84,
+   "confidence": "medium",
+   "notes": [
+    "outer wall, window-style single-number text, no swing arc, no elevation mark found; full-height glazing could also be a glazed door",
+    "no elevation mark; POHLED JIHOVÝCHODNÍ has lines drawn 0.04-2.47 m above floor at this position (not used)"
+   ],
+   "source": "dwg-extraction"
+  },
+  {
+   "id": "OP30",
+   "kind": "window",
+   "raw_text": "2250",
+   "text_format": "single",
+   "interpretation": "window height 0.75 m, sill 1.75 m, head 2.50 m (Petr), like the other 750 (1750) windows",
+   "width_m": 1.9,
+   "width_source": "plan geometry: clear wall gap (no width in text)",
+   "height_m": 0.75,
+   "sill_m": 1.75,
+   "head_m": 2.5,
+   "center": [
+    29.8,
+    4.175
+   ],
+   "gap_clear_width_m": 1.9,
+   "gap_bounds": [
+    29.7,
+    3.225,
+    29.9,
+    5.125
+   ],
+   "wall_direction": "y",
+   "wall_segment_hint": [
+    [
+     111
+    ],
+    [
+     487
+    ]
+   ],
+   "rooms_between": [
+    "exterior",
+    "1.23"
+   ],
+   "on_outer_wall": true,
+   "door_swing_arc": null,
+   "companion_texts": null,
+   "elevation": null,
+   "text_distance_m": 0.249,
+   "confidence": "high",
+   "notes": [
+    "Petr 2026-10-05: window, sill 1.75, height 0.75, head 2.50. Petr wrote sill 1759; treated as 1750",
+    "conflict with the DWG: the only text at this opening is 2250 (would be a 2.25 m opening top); Petr overrides it"
+   ],
+   "source": "petr-2026-10-05"
+  },
+  {
+   "id": "OP31",
+   "kind": "window",
+   "raw_text": "750 (1750)",
+   "text_format": "paren",
+   "interpretation": "window height 750 mm, sill (parapet) 1750 mm in parentheses, head = 2500 mm",
+   "width_m": 0.9,
+   "width_source": "plan geometry: clear wall gap (no width in text)",
+   "height_m": 0.75,
+   "sill_m": 1.75,
+   "head_m": 2.5,
+   "center": [
+    29.8,
+    7.25
+   ],
+   "gap_clear_width_m": 0.9,
+   "gap_bounds": [
+    29.7,
+    6.8,
+    29.9,
+    7.7
+   ],
+   "wall_direction": "y",
+   "wall_segment_hint": [
+    [
+     485
+    ],
+    [
+     293
+    ]
+   ],
+   "rooms_between": [
+    "exterior",
+    "1.20"
+   ],
+   "on_outer_wall": true,
+   "door_swing_arc": null,
+   "companion_texts": null,
+   "elevation": null,
+   "text_distance_m": 0.226,
+   "confidence": "medium",
+   "notes": null,
+   "source": "dwg-extraction"
+  },
+  {
+   "id": "OP32",
+   "kind": "door",
+   "raw_text": "2500",
+   "text_format": "single",
+   "interpretation": "single number 2500 mm = height of the opening top above floor (head); no width, no sill written",
+   "width_m": 1.15,
+   "width_source": "plan geometry: clear wall gap (no width in text)",
+   "height_m": 2.5,
+   "sill_m": null,
+   "head_m": 2.5,
+   "center": [
+    29.8,
+    9.075
+   ],
+   "gap_clear_width_m": 1.15,
+   "gap_bounds": [
+    29.7,
+    8.5,
+    29.9,
+    9.65
+   ],
+   "wall_direction": "y",
+   "wall_segment_hint": [
+    [
+     291
+    ],
+    [
+     127
+    ]
+   ],
+   "rooms_between": [
+    "exterior",
+    "1.01 Zádveří"
+   ],
+   "on_outer_wall": true,
+   "door_swing_arc": [
+    {
+     "center": [
+      29.9,
+      9.625
+     ],
+     "radius_m": 1.1
+    }
+   ],
+   "companion_texts": null,
+   "elevation": null,
+   "text_distance_m": 0.249,
+   "confidence": "medium",
+   "notes": [
+    "door swing arc drawn; only a single height number, no width|height pair"
+   ],
+   "source": "dwg-extraction"
+  },
+  {
+   "id": "OP33",
+   "kind": "door",
+   "raw_text": "1100 | 2450",
+   "text_format": "pair",
+   "interpretation": "door width 1100 mm | door height 2450 mm; head = door height (wall continuous above)",
+   "width_m": 1.1,
+   "width_source": "text",
+   "height_m": 2.45,
+   "sill_m": null,
+   "head_m": 2.45,
+   "center": [
+    30.025,
+    10.8
+   ],
+   "gap_clear_width_m": 1.1,
+   "gap_bounds": [
+    29.9,
+    10.25,
+    30.15,
+    11.35
+   ],
+   "wall_direction": "y",
+   "wall_segment_hint": [
+    [
+     132
+    ],
+    [
+     394,
+     395
+    ]
+   ],
+   "rooms_between": [
+    "1.02 Obývací pokoj+KK",
+    "1.01 Zádveří"
+   ],
+   "on_outer_wall": false,
+   "door_swing_arc": null,
+   "companion_texts": [
+    "2500"
+   ],
+   "elevation": null,
+   "text_distance_m": 0.0,
+   "confidence": "high",
+   "notes": [
+    "no door swing arc drawn (sliding door or plain opening?)",
+    "companion single number(s) 2500 next to the opening; same style as window heights, so probably the structural-opening head height; not used for head_m"
+   ],
+   "source": "dwg-extraction"
+  },
+  {
+   "id": "OP34",
+   "kind": "door",
+   "raw_text": "800 | 2100",
+   "text_format": "pair",
+   "interpretation": "door width 800 mm | door height 2100 mm; head = door height (wall continuous above)",
+   "width_m": 0.8,
+   "width_source": "text",
+   "height_m": 2.1,
+   "sill_m": null,
+   "head_m": 2.1,
+   "center": [
+    31.775,
+    8.137
+   ],
+   "gap_clear_width_m": 0.9,
+   "gap_bounds": [
+    31.325,
+    8.075,
+    32.225,
+    8.2
+   ],
+   "wall_direction": "x",
+   "wall_segment_hint": [
+    [
+     285
+    ],
+    [
+     476
+    ]
+   ],
+   "rooms_between": [
+    "1.20",
+    "1.01 Zádveří"
+   ],
+   "on_outer_wall": false,
+   "door_swing_arc": [
+    {
+     "center": [
+      32.175,
+      8.075
+     ],
+     "radius_m": 0.8
+    }
+   ],
+   "companion_texts": [
+    "2250"
+   ],
+   "elevation": null,
+   "text_distance_m": 0.605,
+   "confidence": "high",
+   "notes": [
+    "companion single number(s) 2250 next to the opening; same style as window heights, so probably the structural-opening head height; not used for head_m"
+   ],
+   "source": "dwg-extraction"
+  },
+  {
+   "id": "OP35",
+   "kind": "window",
+   "raw_text": "2500",
+   "text_format": "single",
+   "interpretation": "single number 2500 mm = height of the opening top above floor (head); no width, no sill written; elevation shows the opening starting at floor level, so sill 0",
+   "width_m": 3.1,
+   "width_source": "plan geometry: clear wall gap (no width in text)",
+   "height_m": 2.5,
+   "sill_m": 0.0,
+   "head_m": 2.5,
+   "center": [
+    32.45,
+    0.1
+   ],
+   "gap_clear_width_m": 3.1,
+   "gap_bounds": [
+    30.9,
+    0.0,
+    34.0,
+    0.2
+   ],
+   "wall_direction": "x",
+   "wall_segment_hint": [
+    [
+     115
+    ],
+    [
+     104
+    ]
+   ],
+   "rooms_between": [
+    "exterior",
+    "1.23"
+   ],
+   "on_outer_wall": true,
+   "door_swing_arc": null,
+   "companion_texts": null,
+   "elevation": {
+    "view": "POHLED JIHOVÝCHODNÍ",
+    "mark": "O10",
+    "mark_offset_m": 0.61,
+    "elev_x_range": [
+     -29.84,
+     -26.74
+    ],
+    "drawn_bottom_m": 0.04,
+    "drawn_top_m": 2.47,
+    "drawn_layers": "šrafy frame"
+   },
+   "text_distance_m": 0.466,
+   "confidence": "high",
+   "notes": [
+    "elevation mark O10 = window (Ox in the POHLEDY legend)"
+   ],
+   "source": "dwg-extraction"
+  },
+  {
+   "id": "OP36",
+   "kind": "opening",
+   "raw_text": "800 | 2100",
+   "text_format": "pair",
+   "interpretation": "opening without a door (Petr); head 2.10 m from the 800 | 2100 text, wall solid above",
+   "width_m": 0.9,
+   "width_source": "plan geometry: clear wall gap (door removed; door text width was 0.80 m)",
+   "height_m": 2.1,
+   "sill_m": null,
+   "head_m": 2.1,
+   "center": [
+    32.712,
+    4.325
+   ],
+   "gap_clear_width_m": 0.9,
+   "gap_bounds": [
+    32.65,
+    3.875,
+    32.775,
+    4.775
+   ],
+   "wall_direction": "y",
+   "wall_segment_hint": [
+    [
+     95
+    ],
+    [
+     495
+    ]
+   ],
+   "rooms_between": [
+    "1.23",
+    "1.22"
+   ],
+   "on_outer_wall": false,
+   "door_swing_arc": [
+    {
+     "center": [
+      32.775,
+      3.925
+     ],
+     "radius_m": 0.8
+    }
+   ],
+   "companion_texts": null,
+   "elevation": null,
+   "text_distance_m": 0.274,
+   "confidence": "high",
+   "notes": [
+    "Petr 2026-10-05: no door; plain opening at the same head height 2.10 m",
+    "the DWG still draws a door swing arc here (kept in door_swing_arc for reference)"
+   ],
+   "source": "petr-2026-10-05",
+   "door_text_width_m": 0.8
+  },
+  {
+   "id": "OP37",
+   "kind": "door",
+   "raw_text": "800 | 2100",
+   "text_format": "pair",
+   "interpretation": "door width 800 mm | door height 2100 mm; head = door height (wall continuous above)",
+   "width_m": 0.8,
+   "width_source": "text",
+   "height_m": 2.1,
+   "sill_m": null,
+   "head_m": 2.1,
+   "center": [
+    32.913,
+    8.75
+   ],
+   "gap_clear_width_m": 0.9,
+   "gap_bounds": [
+    32.85,
+    8.3,
+    32.975,
+    9.2
+   ],
+   "wall_direction": "y",
+   "wall_segment_hint": [
+    [
+     473
+    ],
+    [
+     463
+    ]
+   ],
+   "rooms_between": [
+    "1.01 Zádveří",
+    "1.19 WC"
+   ],
+   "on_outer_wall": false,
+   "door_swing_arc": [
+    {
+     "center": [
+      32.975,
+      8.35
+     ],
+     "radius_m": 0.8
+    }
+   ],
+   "companion_texts": [
+    "2250"
+   ],
+   "elevation": null,
+   "text_distance_m": 0.49,
+   "confidence": "high",
+   "notes": [
+    "companion single number(s) 2250 next to the opening; same style as window heights, so probably the structural-opening head height; not used for head_m"
+   ],
+   "source": "dwg-extraction"
+  },
+  {
+   "id": "OP38",
+   "kind": "door",
+   "raw_text": "900 | 2400",
+   "text_format": "pair",
+   "interpretation": "door width 900 mm | door height 2400 mm; head = door height (wall continuous above)",
+   "width_m": 0.9,
+   "width_source": "text",
+   "height_m": 2.4,
+   "sill_m": null,
+   "head_m": 2.4,
+   "center": [
+    32.975,
+    10.7
+   ],
+   "gap_clear_width_m": 1.1,
+   "gap_bounds": [
+    32.85,
+    10.15,
+    33.1,
+    11.25
+   ],
+   "wall_direction": "y",
+   "wall_segment_hint": [
+    [
+     461
+    ],
+    [
+     310,
+     311
+    ]
+   ],
+   "rooms_between": [
+    "1.01 Zádveří",
+    "1.17 Chodba"
+   ],
+   "on_outer_wall": false,
+   "door_swing_arc": [
+    {
+     "center": [
+      32.975,
+      10.25
+     ],
+     "radius_m": 0.9
+    }
+   ],
+   "companion_texts": [
+    "2500"
+   ],
+   "elevation": null,
+   "text_distance_m": 0.084,
+   "confidence": "high",
+   "notes": [
+    "companion single number(s) 2500 next to the opening; same style as window heights, so probably the structural-opening head height; not used for head_m"
+   ],
+   "source": "dwg-extraction"
+  },
+  {
+   "id": "OP39a",
+   "kind": "door",
+   "raw_text": "1000 | 2150",
+   "text_format": "pair",
+   "interpretation": "main entrance door 1000 x 2150 mm; head 2.15 m, wall solid above",
+   "width_m": 1.0,
+   "width_source": "text",
+   "height_m": 2.15,
+   "sill_m": null,
+   "head_m": 2.15,
+   "center": [
+    33.2,
+    12.45
+   ],
+   "gap_clear_width_m": 1.1,
+   "gap_bounds": [
+    33.1,
+    11.9,
+    33.3,
+    13.0
+   ],
+   "wall_direction": "y",
+   "wall_segment_hint": [
+    [
+     306
+    ],
+    []
+   ],
+   "rooms_between": [
+    "1.01 Zádveří",
+    "exterior"
+   ],
+   "on_outer_wall": true,
+   "door_swing_arc": [
+    {
+     "center": [
+      33.02,
+      11.925
+     ],
+     "radius_m": 1.0
+    }
+   ],
+   "companion_texts": [
+    "2500",
+    "2500"
+   ],
+   "text_distance_m": 0.525,
+   "confidence": "high",
+   "notes": [
+    "Petr 2026-10-05: south-east half of the 2.20 m entrance gap is the main door (1000 | 2150, head 2.15)",
+    "plan swing arc (hinge at y 11.925, r 1.0 m) puts the door leaf in this half: agrees",
+    "companion texts 2500, 2500 kept as before (both sit at the split line)",
+    "the other half of the gap is OP39b; the mullion between them is not drawn in the DWG"
+   ],
+   "source": "petr-2026-10-05",
+   "elevation": null
+  },
+  {
+   "id": "OP39b",
+   "kind": "window",
+   "raw_text": null,
+   "text_format": null,
+   "interpretation": "fixed glazed panel beside the entrance door (Petr); head 2.50 m. Sill 0 per the elevation (full-height panel, not a top light)",
+   "width_m": 1.1,
+   "width_source": "plan geometry: north-west half of the 2.20 m entrance gap",
+   "height_m": 2.5,
+   "sill_m": 0.0,
+   "head_m": 2.5,
+   "center": [
+    33.2,
+    13.55
+   ],
+   "gap_clear_width_m": 1.1,
+   "gap_bounds": [
+    33.1,
+    13.0,
+    33.3,
+    14.1
+   ],
+   "wall_direction": "y",
+   "wall_segment_hint": [
+    [],
+    [
+     401
+    ]
+   ],
+   "rooms_between": [
+    "1.01 Zádveří",
+    "exterior"
+   ],
+   "on_outer_wall": true,
+   "door_swing_arc": null,
+   "companion_texts": null,
+   "elevation": {
+    "view": "POHLED SEVEROVÝCHODNÍ",
+    "mark": "D1",
+    "elev_x_range": [
+     -14.15,
+     -13.05
+    ],
+    "drawn_bottom_m": 0.0,
+    "drawn_top_m": 2.5,
+    "drawn_layers": "tenka outline + šrafy frame"
+   },
+   "text_distance_m": null,
+   "confidence": "high",
+   "notes": [
+    "Petr 2026-10-05: north-west half of the entrance gap is a fixed glazed panel (window), head 2.50",
+    "no own size text in the DWG; head 2.50 from Petr (matches the 2500 companion texts and the D1 outline top)",
+    "elevation D1 shows this half full height from the floor, so sill recorded as 0.0 instead of unknown; it does not look like a top light"
+   ],
+   "source": "petr-2026-10-05",
+   "sill_source": "elevation POHLED SEVEROVÝCHODNÍ, D1: the part visible past the garage corner (plan y 13.1-14.2) is drawn with its frame from 0.05 m to 2.415 m (outline 0-2.50 m), no transom, and a \"+\" fixed-glazing symbol"
+  },
+  {
+   "id": "OP40",
+   "kind": "door",
+   "raw_text": "800 | 2100",
+   "text_format": "pair",
+   "interpretation": "door width 800 mm | door height 2100 mm; head = door height (wall continuous above)",
+   "width_m": 0.8,
+   "width_source": "text",
+   "height_m": 2.1,
+   "sill_m": null,
+   "head_m": 2.1,
+   "center": [
+    34.2,
+    5.838
+   ],
+   "gap_clear_width_m": 0.9,
+   "gap_bounds": [
+    33.75,
+    5.775,
+    34.65,
+    5.9
+   ],
+   "wall_direction": "x",
+   "wall_segment_hint": [
+    [
+     499
+    ],
+    [
+     508
+    ]
+   ],
+   "rooms_between": [
+    "1.22",
+    "1.21"
+   ],
+   "on_outer_wall": false,
+   "door_swing_arc": [
+    {
+     "center": [
+      34.6,
+      5.9
+     ],
+     "radius_m": 0.8
+    }
+   ],
+   "companion_texts": null,
+   "elevation": null,
+   "text_distance_m": 0.274,
+   "confidence": "high",
+   "notes": null,
+   "source": "dwg-extraction"
+  },
+  {
+   "id": "OP41",
+   "kind": "door",
+   "raw_text": "850 | 2150",
+   "text_format": "pair",
+   "interpretation": "door width 850 mm | door height 2150 mm; head = door height (wall continuous above)",
+   "width_m": 0.85,
+   "width_source": "text",
+   "height_m": 2.15,
+   "sill_m": null,
+   "head_m": 2.15,
+   "center": [
+    35.1,
+    4.375
+   ],
+   "gap_clear_width_m": 0.9,
+   "gap_bounds": [
+    35.0,
+    3.925,
+    35.2,
+    4.825
+   ],
+   "wall_direction": "y",
+   "wall_segment_hint": [
+    [
+     88
+    ],
+    [
+     515
+    ]
+   ],
+   "rooms_between": [
+    "1.22",
+    "exterior"
+   ],
+   "on_outer_wall": true,
+   "door_swing_arc": [
+    {
+     "center": [
+      34.92,
+      3.95
+     ],
+     "radius_m": 0.85
+    }
+   ],
+   "companion_texts": [
+    "2250"
+   ],
+   "elevation": null,
+   "text_distance_m": 0.552,
+   "confidence": "high",
+   "notes": [
+    "exterior door",
+    "companion single number(s) 2250 next to the opening; same style as window heights, so probably the structural-opening head height; not used for head_m"
+   ],
+   "source": "dwg-extraction"
+  },
+  {
+   "id": "OP42",
+   "kind": "window",
+   "raw_text": "750 (1750)",
+   "text_format": "paren",
+   "interpretation": "window height 750 mm, sill (parapet) 1750 mm in parentheses, head = 2500 mm",
+   "width_m": 2.9,
+   "width_source": "plan geometry: clear wall gap (no width in text)",
+   "height_m": 0.75,
+   "sill_m": 1.75,
+   "head_m": 2.5,
+   "center": [
+    35.5,
+    11.55
+   ],
+   "gap_clear_width_m": 2.9,
+   "gap_bounds": [
+    34.05,
+    11.5,
+    36.95,
+    11.6
+   ],
+   "wall_direction": "x",
+   "wall_segment_hint": [
+    [
+     315
+    ],
+    [
+     38
+    ]
+   ],
+   "rooms_between": [
+    "1.17 Chodba",
+    "exterior"
+   ],
+   "on_outer_wall": true,
+   "door_swing_arc": null,
+   "companion_texts": null,
+   "elevation": {
+    "view": "POHLED SEVEROZÁPADNÍ",
+    "mark": "O8",
+    "mark_offset_m": -0.08,
+    "elev_x_range": [
+     -52.3,
+     -49.4
+    ],
+    "drawn_bottom_m": 1.78,
+    "drawn_top_m": 2.46,
+    "drawn_layers": "šrafy frame"
+   },
+   "text_distance_m": 1.71,
+   "confidence": "high",
+   "notes": null,
+   "source": "dwg-extraction"
+  },
+  {
+   "id": "OP43",
+   "kind": "opening",
+   "raw_text": "2250",
+   "text_format": "single",
+   "interpretation": "opening without a door (Petr); head 2.25 m (text 2250)",
+   "width_m": 1.5,
+   "width_source": "plan geometry: clear wall gap (no width in text)",
+   "height_m": 2.25,
+   "sill_m": null,
+   "head_m": 2.25,
+   "center": [
+    36.45,
+    5.425
+   ],
+   "gap_clear_width_m": 1.5,
+   "gap_bounds": [
+    35.7,
+    5.3,
+    37.2,
+    5.55
+   ],
+   "wall_direction": "x",
+   "wall_segment_hint": [
+    [
+     518,
+     519
+    ],
+    [
+     74,
+     75
+    ]
+   ],
+   "rooms_between": [
+    "exterior",
+    "Sklad"
+   ],
+   "on_outer_wall": true,
+   "door_swing_arc": null,
+   "companion_texts": null,
+   "elevation": {
+    "view": "POHLED JIHOVÝCHODNÍ",
+    "mark": null,
+    "mark_offset_m": null,
+    "elev_x_range": [
+     -25.04,
+     -23.54
+    ],
+    "drawn_bottom_m": 0.0,
+    "drawn_top_m": 2.25,
+    "drawn_layers": "tenka outline"
+   },
+   "text_distance_m": 1.24,
+   "confidence": "high",
+   "notes": [
+    "Petr 2026-10-05: plain opening, no door, head 2.25",
+    "POHLED JIHOVÝCHODNÍ draws a plain rectangle 0-2.25 m here (no mark), consistent"
+   ],
+   "source": "petr-2026-10-05"
+  },
+  {
+   "id": "OP45",
+   "kind": "window",
+   "raw_text": "750 (1750)",
+   "text_format": "paren",
+   "interpretation": "window height 750 mm, sill (parapet) 1750 mm in parentheses, head = 2500 mm",
+   "width_m": 1.6,
+   "width_source": "plan geometry: clear wall gap (no width in text)",
+   "height_m": 0.75,
+   "sill_m": 1.75,
+   "head_m": 2.5,
+   "center": [
+    39.95,
+    3.4
+   ],
+   "gap_clear_width_m": 1.6,
+   "gap_bounds": [
+    39.15,
+    3.35,
+    40.75,
+    3.45
+   ],
+   "wall_direction": "x",
+   "wall_segment_hint": [
+    [
+     79
+    ],
+    [
+     69
+    ]
+   ],
+   "rooms_between": [
+    "exterior",
+    "1.16 Garáž"
+   ],
+   "on_outer_wall": true,
+   "door_swing_arc": null,
+   "companion_texts": null,
+   "elevation": {
+    "view": "POHLED JIHOVÝCHODNÍ",
+    "mark": "O9",
+    "mark_offset_m": 0.34,
+    "elev_x_range": [
+     -21.59,
+     -19.99
+    ],
+    "drawn_bottom_m": 1.79,
+    "drawn_top_m": 2.47,
+    "drawn_layers": "šrafy frame"
+   },
+   "text_distance_m": 0.566,
+   "confidence": "high",
+   "notes": null,
+   "source": "dwg-extraction"
+  },
+  {
+   "id": "OP46",
+   "kind": "window",
+   "raw_text": "750 (1750)",
+   "text_format": "paren",
+   "interpretation": "window height 750 mm, sill (parapet) 1750 mm in parentheses, head = 2500 mm",
+   "width_m": 1.6,
+   "width_source": "plan geometry: clear wall gap (no width in text)",
+   "height_m": 0.75,
+   "sill_m": 1.75,
+   "head_m": 2.5,
+   "center": [
+    39.95,
+    13.0
+   ],
+   "gap_clear_width_m": 1.6,
+   "gap_bounds": [
+    39.15,
+    12.95,
+    40.75,
+    13.05
+   ],
+   "wall_direction": "x",
+   "wall_segment_hint": [
+    [
+     49
+    ],
+    [
+     51
+    ]
+   ],
+   "rooms_between": [
+    "1.16 Garáž",
+    "exterior"
+   ],
+   "on_outer_wall": true,
+   "door_swing_arc": null,
+   "companion_texts": null,
+   "elevation": {
+    "view": "POHLED SEVEROZÁPADNÍ",
+    "mark": "O9",
+    "mark_offset_m": 0.37,
+    "elev_x_range": [
+     -56.1,
+     -54.5
+    ],
+    "drawn_bottom_m": 1.78,
+    "drawn_top_m": 2.46,
+    "drawn_layers": "šrafy frame"
+   },
+   "text_distance_m": 0.26,
+   "confidence": "high",
+   "notes": null,
+   "source": "dwg-extraction"
+  },
+  {
+   "id": "OP47",
+   "kind": "window",
+   "raw_text": "750 (1750)",
+   "text_format": "paren",
+   "interpretation": "window height 750 mm, sill (parapet) 1750 mm in parentheses, head = 2500 mm",
+   "width_m": 1.6,
+   "width_source": "plan geometry: clear wall gap (no width in text)",
+   "height_m": 0.75,
+   "sill_m": 1.75,
+   "head_m": 2.5,
+   "center": [
+    42.85,
+    3.4
+   ],
+   "gap_clear_width_m": 1.6,
+   "gap_bounds": [
+    42.05,
+    3.35,
+    43.65,
+    3.45
+   ],
+   "wall_direction": "x",
+   "wall_segment_hint": [
+    [
+     61
+    ],
+    [
+     280
+    ]
+   ],
+   "rooms_between": [
+    "exterior",
+    "1.16 Garáž"
+   ],
+   "on_outer_wall": true,
+   "door_swing_arc": null,
+   "companion_texts": null,
+   "elevation": {
+    "view": "POHLED JIHOVÝCHODNÍ",
+    "mark": "O9",
+    "mark_offset_m": 0.34,
+    "elev_x_range": [
+     -18.69,
+     -17.09
+    ],
+    "drawn_bottom_m": 1.79,
+    "drawn_top_m": 2.47,
+    "drawn_layers": "šrafy frame"
+   },
+   "text_distance_m": 0.566,
+   "confidence": "high",
+   "notes": null,
+   "source": "dwg-extraction"
+  },
+  {
+   "id": "OP48",
+   "kind": "window",
+   "raw_text": "750 (1750)",
+   "text_format": "paren",
+   "interpretation": "window height 750 mm, sill (parapet) 1750 mm in parentheses, head = 2500 mm",
+   "width_m": 1.6,
+   "width_source": "plan geometry: clear wall gap (no width in text)",
+   "height_m": 0.75,
+   "sill_m": 1.75,
+   "head_m": 2.5,
+   "center": [
+    42.85,
+    13.0
+   ],
+   "gap_clear_width_m": 1.6,
+   "gap_bounds": [
+    42.05,
+    12.95,
+    43.65,
+    13.05
+   ],
+   "wall_direction": "x",
+   "wall_segment_hint": [
+    [
+     59
+    ],
+    [
+     261
+    ]
+   ],
+   "rooms_between": [
+    "1.16 Garáž",
+    "exterior"
+   ],
+   "on_outer_wall": true,
+   "door_swing_arc": null,
+   "companion_texts": null,
+   "elevation": {
+    "view": "POHLED SEVEROZÁPADNÍ",
+    "mark": "O9",
+    "mark_offset_m": 0.37,
+    "elev_x_range": [
+     -59.0,
+     -57.4
+    ],
+    "drawn_bottom_m": 1.78,
+    "drawn_top_m": 2.46,
+    "drawn_layers": "šrafy frame"
+   },
+   "text_distance_m": 0.26,
+   "confidence": "high",
+   "notes": null,
+   "source": "dwg-extraction"
+  },
+  {
+   "id": "OP49",
+   "kind": "door",
+   "raw_text": "2250",
+   "text_format": "single",
+   "interpretation": "single number 2250 mm = height of the opening top above floor (head); no width, no sill written; elevation shows the opening starting at floor level, so sill 0",
+   "width_m": 2.1,
+   "width_source": "plan geometry: clear wall gap (no width in text)",
+   "height_m": 2.25,
+   "sill_m": null,
+   "head_m": 2.25,
+   "center": [
+    44.875,
+    5.4
+   ],
+   "gap_clear_width_m": 2.1,
+   "gap_bounds": [
+    44.7,
+    4.35,
+    45.05,
+    6.45
+   ],
+   "wall_direction": "y",
+   "wall_segment_hint": [
+    [
+     272,
+     273,
+     274
+    ],
+    [
+     534
+    ]
+   ],
+   "rooms_between": [
+    "1.16 Garáž",
+    "exterior"
+   ],
+   "on_outer_wall": true,
+   "door_swing_arc": null,
+   "companion_texts": null,
+   "elevation": {
+    "view": "POHLED SEVEROVÝCHODNÍ",
+    "mark": "D6",
+    "mark_offset_m": 0.13,
+    "elev_x_range": [
+     -22.9,
+     -20.8
+    ],
+    "drawn_bottom_m": -0.0,
+    "drawn_top_m": 2.2,
+    "drawn_layers": "šrafy frame"
+   },
+   "text_distance_m": 0.522,
+   "confidence": "medium",
+   "notes": [
+    "elevation mark D6 = door (Dx in the POHLEDY legend)"
+   ],
+   "source": "dwg-extraction"
+  },
+  {
+   "id": "OP50",
+   "kind": "door",
+   "raw_text": "2250",
+   "text_format": "single",
+   "interpretation": "single number 2250 mm = height of the opening top above floor (head); no width, no sill written; elevation shows the opening starting at floor level, so sill 0",
+   "width_m": 5.15,
+   "width_source": "plan geometry: clear wall gap (no width in text)",
+   "height_m": 2.25,
+   "sill_m": null,
+   "head_m": 2.25,
+   "center": [
+    44.875,
+    9.475
+   ],
+   "gap_clear_width_m": 5.15,
+   "gap_bounds": [
+    44.7,
+    6.9,
+    45.05,
+    12.05
+   ],
+   "wall_direction": "y",
+   "wall_segment_hint": [
+    [
+     532
+    ],
+    [
+     268
+    ]
+   ],
+   "rooms_between": [
+    "1.16 Garáž",
+    "exterior"
+   ],
+   "on_outer_wall": true,
+   "door_swing_arc": null,
+   "companion_texts": null,
+   "elevation": {
+    "view": "POHLED SEVEROVÝCHODNÍ",
+    "mark": "D5",
+    "mark_offset_m": 0.21,
+    "elev_x_range": [
+     -20.35,
+     -15.2
+    ],
+    "drawn_bottom_m": -0.0,
+    "drawn_top_m": 2.2,
+    "drawn_layers": "šrafy frame"
+   },
+   "text_distance_m": 0.522,
+   "confidence": "medium",
+   "notes": [
+    "elevation mark D5 = door (Dx in the POHLEDY legend)"
+   ],
+   "source": "dwg-extraction"
+  }
+ ],
+ "openings_without_size": [
+  "OP39b"
+ ],
+ "size_texts_without_opening": [
+  {
+   "raw_text": "2500",
+   "position": [
+    37.509,
+    10.623
+   ],
+   "handle": "35A6DF",
+   "layer": "koty",
+   "used": false,
+   "note": "was matched to OP44; Petr 2026-10-05: no wall or door there (see open_passages)"
+  }
+ ],
+ "size_texts": [
+  {
+   "raw_text": "900 | 2400",
+   "position": [
+    33.184,
+    10.7
+   ],
+   "handle": "34DB46",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "800 | 2100",
+   "position": [
+    33.465,
+    8.75
+   ],
+   "handle": "34DB54",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "800 | 2100",
+   "position": [
+    33.049,
+    4.325
+   ],
+   "handle": "34DBA7",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "850 | 2150",
+   "position": [
+    34.448,
+    4.375
+   ],
+   "handle": "34DBB9",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "800 | 2100",
+   "position": [
+    34.2,
+    6.174
+   ],
+   "handle": "34DD14",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "800 | 2100",
+   "position": [
+    31.775,
+    7.47
+   ],
+   "handle": "34DD23",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "1100 | 2450",
+   "position": [
+    30.074,
+    10.8
+   ],
+   "handle": "34DE01",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "1000 | 2150",
+   "position": [
+    32.575,
+    12.425
+   ],
+   "handle": "34DE03",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "1100 | 2450",
+   "position": [
+    18.706,
+    10.738
+   ],
+   "handle": "34DE31",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "800 | 2100",
+   "position": [
+    18.0,
+    11.749
+   ],
+   "handle": "34DE3C",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "850 | 2150",
+   "position": [
+    15.764,
+    14.35
+   ],
+   "handle": "34DE4F",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "800 | 2100",
+   "position": [
+    16.75,
+    7.397
+   ],
+   "handle": "34E05A",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "800 | 2100",
+   "position": [
+    12.5,
+    7.47
+   ],
+   "handle": "34E0A0",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "800 | 2100",
+   "position": [
+    9.4,
+    7.47
+   ],
+   "handle": "34E158",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "800 | 2100",
+   "position": [
+    6.3,
+    7.406
+   ],
+   "handle": "34E167",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "800 | 2100",
+   "position": [
+    5.178,
+    8.8
+   ],
+   "handle": "34E1DE",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "1800 | 2100",
+   "position": [
+    2.3,
+    9.562
+   ],
+   "handle": "34E1EB",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "700 | 2100",
+   "position": [
+    5.125,
+    9.899
+   ],
+   "handle": "34E204",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "800 | 2100",
+   "position": [
+    12.0,
+    9.75
+   ],
+   "handle": "34E2ED",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "800 | 2100",
+   "position": [
+    14.85,
+    9.708
+   ],
+   "handle": "34E2F7",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "750 (1750)",
+   "position": [
+    2.318,
+    12.951
+   ],
+   "handle": "34E654",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "750 (1750)",
+   "position": [
+    5.318,
+    12.951
+   ],
+   "handle": "34E655",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "750 (1750)",
+   "position": [
+    8.518,
+    12.951
+   ],
+   "handle": "34E656",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "750 (1750)",
+   "position": [
+    11.368,
+    12.951
+   ],
+   "handle": "34E657",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "2500",
+   "position": [
+    2.562,
+    2.41
+   ],
+   "handle": "34E658",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "2250",
+   "position": [
+    14.756,
+    14.35
+   ],
+   "handle": "34E659",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "2500",
+   "position": [
+    5.712,
+    2.41
+   ],
+   "handle": "34E65A",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "2500",
+   "position": [
+    8.812,
+    2.41
+   ],
+   "handle": "34E65B",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "2500",
+   "position": [
+    11.912,
+    2.41
+   ],
+   "handle": "34E65C",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "2500",
+   "position": [
+    15.712,
+    2.41
+   ],
+   "handle": "34E65D",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "2500",
+   "position": [
+    -0.267,
+    5.61
+   ],
+   "handle": "34E65E",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "2500",
+   "position": [
+    -0.267,
+    8.886
+   ],
+   "handle": "34E65F",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "2500",
+   "position": [
+    19.415,
+    9.078
+   ],
+   "handle": "34E660",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "2500",
+   "position": [
+    29.451,
+    9.078
+   ],
+   "handle": "34E661",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "2500",
+   "position": [
+    33.836,
+    13.003
+   ],
+   "handle": "34E662",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "750 (1750)",
+   "position": [
+    35.468,
+    13.31
+   ],
+   "handle": "34E663",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "750 (1750)",
+   "position": [
+    39.918,
+    13.31
+   ],
+   "handle": "34E664",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "750 (1750)",
+   "position": [
+    42.818,
+    13.31
+   ],
+   "handle": "34E665",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "750 (1750)",
+   "position": [
+    39.918,
+    2.784
+   ],
+   "handle": "34E666",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "750 (1750)",
+   "position": [
+    42.818,
+    2.784
+   ],
+   "handle": "34E667",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "2250",
+   "position": [
+    45.572,
+    9.457
+   ],
+   "handle": "34E668",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "2250",
+   "position": [
+    35.728,
+    4.464
+   ],
+   "handle": "34E66A",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "2250",
+   "position": [
+    36.453,
+    4.06
+   ],
+   "handle": "34E66B",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "2500",
+   "position": [
+    32.437,
+    -0.466
+   ],
+   "handle": "34E66C",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "750 (1750)",
+   "position": [
+    29.474,
+    7.317
+   ],
+   "handle": "34E66D",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "2250",
+   "position": [
+    29.451,
+    3.988
+   ],
+   "handle": "34E66E",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "1100 | 2450",
+   "position": [
+    18.781,
+    14.4
+   ],
+   "handle": "34F270",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "800 | 2100",
+   "position": [
+    8.525,
+    9.753
+   ],
+   "handle": "34F27F",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "2500",
+   "position": [
+    27.751,
+    9.285
+   ],
+   "handle": "34F671",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "2500",
+   "position": [
+    20.751,
+    9.285
+   ],
+   "handle": "34F672",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "2500",
+   "position": [
+    24.098,
+    9.289
+   ],
+   "handle": "34F673",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "2250",
+   "position": [
+    16.737,
+    7.031
+   ],
+   "handle": "35A529",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "2250",
+   "position": [
+    12.477,
+    7.031
+   ],
+   "handle": "35A548",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "2250",
+   "position": [
+    9.377,
+    7.031
+   ],
+   "handle": "35A549",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "2250",
+   "position": [
+    6.277,
+    7.031
+   ],
+   "handle": "35A54A",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "2500",
+   "position": [
+    18.044,
+    14.2
+   ],
+   "handle": "35A691",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "2500",
+   "position": [
+    18.04,
+    10.803
+   ],
+   "handle": "35A6BF",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "2500",
+   "position": [
+    29.324,
+    10.773
+   ],
+   "handle": "35A6DE",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "2500",
+   "position": [
+    37.509,
+    10.623
+   ],
+   "handle": "35A6DF",
+   "layer": "koty",
+   "used": false,
+   "note": "was matched to OP44; Petr 2026-10-05: no wall or door there (see open_passages)"
+  },
+  {
+   "raw_text": "2500",
+   "position": [
+    32.588,
+    10.673
+   ],
+   "handle": "35A758",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "2250",
+   "position": [
+    32.581,
+    8.74
+   ],
+   "handle": "35A759",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "2500",
+   "position": [
+    32.588,
+    12.973
+   ],
+   "handle": "35A75A",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "2250",
+   "position": [
+    31.787,
+    7.15
+   ],
+   "handle": "35A788",
+   "layer": "koty",
+   "used": true
+  },
+  {
+   "raw_text": "2250",
+   "position": [
+    45.572,
+    5.407
+   ],
+   "handle": "35EFC0",
+   "layer": "koty",
+   "used": true
+  }
+ ],
+ "rejected_candidates": [
+  {
+   "near": [
+    7.94,
+    8.84
+   ],
+   "reason": "corridor 1.05: space between a partition end and the corridor wall, not an opening"
+  },
+  {
+   "near": [
+    11.44,
+    8.84
+   ],
+   "reason": "corridor 1.05: space between a partition end and the corridor wall"
+  },
+  {
+   "near": [
+    14.29,
+    8.84
+   ],
+   "reason": "corridor 1.05: space between a partition end and the corridor wall"
+  },
+  {
+   "near": [
+    15.63,
+    8.84
+   ],
+   "reason": "corridor 1.05 east end: open floor, not an opening"
+  },
+  {
+   "near": [
+    10.25,
+    9.52
+   ],
+   "reason": "niche in the corridor wall (closed behind)"
+  },
+  {
+   "near": [
+    13.42,
+    9.52
+   ],
+   "reason": "niche in the corridor wall (closed behind)"
+  },
+  {
+   "near": [
+    17.15,
+    9.98
+   ],
+   "reason": "open hall in front of 1.04, not an opening"
+  },
+  {
+   "near": [
+    23.8,
+    15.4
+   ],
+   "reason": "recess between two pilasters on the living-room north wall"
+  },
+  {
+   "near": [
+    22.0,
+    12.91
+   ],
+   "reason": "inside 1.02 between a steel post and the north wall"
+  },
+  {
+   "near": [
+    26.5,
+    12.91
+   ],
+   "reason": "inside 1.02 between a steel post and the north wall"
+  },
+  {
+   "near": [
+    21.65,
+    3.21
+   ],
+   "reason": "open side of the terrace pergola between steel posts; no wall"
+  },
+  {
+   "near": [
+    27.06,
+    3.19
+   ],
+   "reason": "open side of the terrace pergola between steel posts; no wall"
+  },
+  {
+   "near": [
+    21.65,
+    8.08
+   ],
+   "reason": "open side of the terrace pergola between steel posts; no wall"
+  },
+  {
+   "near": [
+    27.06,
+    8.08
+   ],
+   "reason": "open side of the terrace pergola between steel posts; no wall"
+  },
+  {
+   "near": [
+    24.35,
+    5.64
+   ],
+   "reason": "open terrace between steel posts; no wall"
+  },
+  {
+   "near": [
+    31.38,
+    9.9
+   ],
+   "reason": "open floor of 1.01 Zádveří between wall stubs"
+  },
+  {
+   "near": [
+    31.5,
+    11.6
+   ],
+   "reason": "open floor of 1.01 Zádveří between wall stubs"
+  }
+ ],
+ "block_inserts_in_plan": [
+  {
+   "name": "octavia situ",
+   "x": 41.039,
+   "y": 8.03,
+   "layer": "zivot",
+   "attribs": []
+  },
+  {
+   "name": "octavia situ",
+   "x": 41.087,
+   "y": 11.029,
+   "layer": "zivot",
+   "attribs": []
+  }
+ ],
+ "door_arcs_without_opening": [],
+ "open_passages": [
+  {
+   "id": "PASS-1.17-1.16",
+   "former_id": "OP44",
+   "source": "petr-2026-10-05",
+   "confidence": "high",
+   "rooms": [
+    "1.17 Chodba",
+    "1.16 Garáž"
+   ],
+   "gap_bounds": [
+    37.85,
+    10.05,
+    38.1,
+    11.25
+   ],
+   "center": [
+    37.975,
+    10.65
+   ],
+   "width_m": 1.2,
+   "description": "Hallway 1.17 continues into the garage at full width (1.20 m, y 10.05-11.25) and full height. No wall, no door, no lintel.",
+   "model_build_rule": "Do not close this gap: no wall segment, no header or lintel and no door across x 37.85-38.10, y 10.05-11.25. The ground-floor.json walls at the gap ends are wall-end faces only: #85 (y 10.05) and #43 (y 11.25). Checked: no ground-floor.json segment lies inside or across the gap.",
+   "dwg_text_left_unused": "2500 (was matched to OP44)",
+   "checked_wall_segments_closing_gap": []
+  }
+ ],
+ "kinds": {
+  "door": "door leaf in the opening; wall solid above from the door height",
+  "window": "glazing; sill/head as given",
+  "opening": "wall opening without a door; wall solid above from head_m",
+  "unknown": "not decided"
+ },
+ "corrections": {
+  "source": "petr-2026-10-05",
+  "applied": [
+   "OP26 -> fixed window",
+   "OP36 -> opening (no door), head 2.10",
+   "OP30 -> window sill 1.75 / height 0.75 / head 2.50 (Petr wrote 1759)",
+   "OP43 -> opening (no door), head 2.25",
+   "OP44 deleted -> open_passages PASS-1.17-1.16",
+   "OP39 split -> OP39a door (SE half) + OP39b fixed window (NW half)"
+  ]
+ }
+}

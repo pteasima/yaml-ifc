@@ -1,0 +1,46 @@
+name: plan preview
+
+on:
+  pull_request:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: plan-preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install renderer dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libcairo2 fonts-dejavu-core
+          python -m pip install -r tools/requirements.txt
+
+      - name: Render samples
+        run: python tools/render_plan.py samples/*.yaml --out-dir dist
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: plan-previews
+          path: dist/*
+          if-no-files-found: error
+
+      - name: Publish the preview and update the pull request comment
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+          SHA: ${{ github.event.pull_request.head.sha }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+        run: bash tools/publish_preview.sh
