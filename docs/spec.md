@@ -28,7 +28,7 @@ Not in this version, and not started: `IfcSpace` and other rooms, slabs, ceiling
 
 ## File shape
 
-Top-level keys, in this order: `schema`, `units`, `project`, `site`, `building`, `storey`, `walls`, `openings`, `doors`, `windows`. One entity per list item. No YAML anchors or aliases. Comments are for people; a converter ignores them.
+Top-level keys, in this order: `schema`, `units`, `project`, `site`, `building`, `storey`, `walls`, `connections`, `openings`, `doors`, `windows`. `connections` is optional and omitted when the file has none. One entity per list item. No YAML anchors or aliases. Comments are for people; a converter ignores them.
 
 ```yaml
 schema: IFC4 ADD2 TC1
@@ -82,7 +82,7 @@ Plan coordinates are metres in the storey's XY. Z is up. A wall's base is `Eleva
 
 The list key `walls` selects `IfcWall`.
 
-Required: `id`, and an `Axis` with `Start` and `End` (two plan points, metres). The axis runs from the end with the smaller X, or, when X is equal, the smaller Y, toward increasing coordinates. The reference line is the centre of the wall.
+Required: `id`, and an `Axis` with `Start` and `End` (two plan points, metres). The axis runs from the end with the smaller X, or, when X is equal, the smaller Y, toward increasing coordinates. A wall parallel to the Y axis has the same X at both ends, so that tie-break is what places its start at the smaller Y. The reference line is the centre of the wall.
 
 Present when known, and omitted otherwise:
 
@@ -156,6 +156,29 @@ Required: `id`. `FillsOpening` is required when the door or window fills an open
 
 `IfcRelFillsElement`: `RelatingOpeningElement` is the opening, `RelatedBuildingElement` is the door or window. The filler is contained in the storey; the opening is not.
 
+## Connections
+
+The optional list `connections` is wall-to-wall joints. Each entry is an `IfcRelConnectsPathElements`. The names are the IFC attributes. There is no join-style field: every joint is a butt joint, and the relating wall runs through.
+
+```yaml
+connections:
+  - RelatingElement: W-001
+    RelatingConnectionType: ATEND
+    RelatedElement: W-002
+    RelatedConnectionType: ATSTART
+```
+
+| YAML | IFC |
+| --- | --- |
+| `RelatingElement` | `RelatingElement`, a wall `id` |
+| `RelatingConnectionType` | `ATSTART`, `ATEND`, or `ATPATH` |
+| `RelatedElement` | `RelatedElement`, a wall `id` |
+| `RelatedConnectionType` | `ATSTART` or `ATEND` |
+
+`ATSTART` is the axis end with the smaller X, or, when X is equal, the smaller Y. `ATEND` is the other end. A wall parallel to the Y axis has equal X, so `ATSTART` is its smaller Y and `ATEND` is its larger Y. `ATPATH` is a connection along the wall rather than at an end, and only the relating wall may use it. That is the wall the other one is joined into.
+
+An L corner is two ends, as in the example above. A T puts `ATPATH` on the relating wall, the one that runs through, and `ATSTART` or `ATEND` on the related wall. The related wall is trimmed back to the relating wall's face. The relating wall is not mitred and is not notched: its body continues through the joint.
+
 Optional on a door: `PredefinedType` (`DOOR`, `GATE`, `TRAPDOOR`, …), `OperationType`. Optional on a window: `PredefinedType` (`WINDOW`, `SKYLIGHT`, …), `PartitioningType`. Omitted when the drawing does not say.
 
 ## Optional extensions
@@ -224,6 +247,9 @@ Each property is an `IfcPropertySingleValue`: the key is `Name`, the YAML value 
 | `MaterialLayers` | `IfcMaterialLayerSetUsage` + `IfcMaterialLayer` |
 | `PropertySets` | `IfcPropertySet` + `IfcPropertySingleValue` |
 | `Footprint` / `Profile` | Body profile, `IfcArbitraryClosedProfileDef` |
+| `connections[]` | `IfcRelConnectsPathElements` |
+| `RelatingElement`, `RelatedElement` | The two walls. The relating wall runs through the butt joint |
+| `RelatingConnectionType`, `RelatedConnectionType` | `ATSTART`, `ATEND`, or, on the relating wall only, `ATPATH` |
 | storey containment | One `IfcRelContainedInSpatialStructure` on the storey, related elements = every wall, door, and window |
 
 ## Ground floor sample
@@ -238,7 +264,9 @@ Each property is an `IfcPropertySingleValue`: the key is `Name`, the YAML value 
 - An opening whose host has no `Thickness` and no `Depth`, but does have a `Height`, is cut **0.2 m** deep. That depth is not written back. `Depth` still defaults to the host `Thickness` when the host has one.
 - `HeadHeight` is not an IFC attribute. It is kept in a property set named `yaml-ifc` and restored on import. `Height` and `SillHeight` are not invented for that opening, and it has no solid.
 - The YAML `id` is stored on each `IfcObject` in that same `yaml-ifc` set (property `id`). `IfcProject` cannot own a property set, so its `id` is stored in `LongName`. The set is converter bookkeeping. It is not a YAML `PropertySets` entry. `Footprint` and `Profile` are marked there too, so a rectangular footprint is not read back as `Thickness`.
-- `GlobalId`, when omitted, is the UUID5 in the URL namespace of `yaml-ifc:` plus the `id`, compressed to the 22-character IFC form. On import it is omitted again when it matches that derivation.
+- A wall with `Thickness` and no `MaterialLayers`, `Footprint`, or `Profile` is given a one-layer `IfcMaterialLayerSet` / `IfcMaterialLayerSetUsage` of that thickness, centred (`OffsetFromReferenceLine` minus half the thickness). The layer is marked `MaterialFromThickness` in the `yaml-ifc` set and is not written back as `MaterialLayers`. A layer set that was actually in the file is. When a layer set is present and `Thickness` cannot be read from a centred rectangular profile, `Thickness` is the sum of the layer thicknesses.
+- Each `connections` entry is an `IfcRelConnectsPathElements`. The relating wall's layers outrank the related wall's at that joint, which is what makes the butt: the relating wall runs through, and the related wall is trimmed to its face. The trimmed body is generated with IfcOpenShell (`regenerate_wall_representation`). Regeneration also rewrites the axis curve, so a joined wall keeps its authored `Axis` in the `yaml-ifc` set and import restores that, not the trimmed curve.
+- `GlobalId`, when omitted, is the UUID5 in the URL namespace of `yaml-ifc:` plus the `id`, compressed to the 22-character IFC form. On import it is omitted again when it matches that derivation. For a connection, which has no `id`, the name is the four fields joined with colons.
 - `IfcOpeningElement.PredefinedType`, when omitted, is written `OPENING` and omitted again on import.
 - An imported `IfcWallStandardCase` is stored as a wall and written back as `IfcWall`. `PredefinedType` is kept.
 - YAML lengths are metres. An IFC file in millimetres is converted on the way in.
@@ -258,4 +286,4 @@ An IFC file also contains entities this subset does not store (slabs, spaces, ro
 9. **No host, no opening.** The hall-to-garage passage has no wall across it, so it is not an `IfcOpeningElement`. Confirm that is the right reading of `IfcRelVoidsElement`.
 10. **120 mm squares** on the wall layer are short `IfcWall`s. `IfcColumn` is deferred; they may want to move later.
 11. **Implicit storey containment** while there is only one storey. Confirm, or put `ContainedInStructure` on every element now.
-12. **Corner joints** are not mitred. An axis ends where its two faces stop overlapping, then continues through openings. A later pass could extend axes to a joint.
+12. **Corner joints** are butt joints, recorded in `connections`. The relating wall runs through and the related wall is trimmed to its face. There is no mitre and no join-style field. An axis in the drawing usually stops on the other wall's face, about half a thickness short of the centre-line intersection. `python -m yaml_ifc detect-connections` snaps those endpoints in the YAML, as a reviewed edit of the file, and shifts `AlongAxis` so a hosted opening stays where it was. The converter does not snap or extend axes itself.

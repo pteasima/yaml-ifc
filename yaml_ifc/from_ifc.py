@@ -13,8 +13,15 @@ import ifcopenshell.util.placement
 import ifcopenshell.util.unit
 import numpy as np
 
-from yaml_ifc.ids import is_derived
-from yaml_ifc.supported import ORIGINATING_SYSTEM, PSET_NAME, SCHEMA_NAME, SUPPORTED
+from yaml_ifc.ids import connection_yaml_id, is_derived
+from yaml_ifc.supported import (
+    ORIGINATING_SYSTEM,
+    PSET_AXIS,
+    PSET_MATERIAL_FROM_THICKNESS,
+    PSET_NAME,
+    SCHEMA_NAME,
+    SUPPORTED,
+)
 from yaml_ifc.yamlio import num
 
 TOL = 1e-5
@@ -115,6 +122,16 @@ def _body_tree(item):
         yield item
         return
     yield item
+
+
+def _curve_points(item):
+    if item is None:
+        return []
+    if item.is_a("IfcPolyline"):
+        return [tuple(point.Coordinates) for point in item.Points]
+    if item.is_a("IfcIndexedPolyCurve") and item.Points is not None:
+        return [tuple(point) for point in item.Points.CoordList]
+    return []
 
 
 def _items(product, identifier):
@@ -284,10 +301,8 @@ class Reader:
 
     def _axis_ends(self, wall):
         for item in _items(wall, "Axis"):
-            points = None
-            if item.is_a("IfcPolyline"):
-                points = [tuple(point.Coordinates) for point in item.Points]
-            if not points or len(points) < 2:
+            points = _curve_points(item)
+            if len(points) < 2:
                 continue
             start = self._to_storey(wall.ObjectPlacement, points[0])
             end = self._to_storey(wall.ObjectPlacement, points[-1])
@@ -325,29 +340,45 @@ class Reader:
             return None
         return num((max(ys) - min(ys)) * scale)
 
+    def _authored_axis(self, book):
+        if not all(key in book for key in PSET_AXIS):
+            return None
+        start = [book["AxisStartX"], book["AxisStartY"]]
+        end = [book["AxisEndX"], book["AxisEndY"]]
+        return {"Start": start, "End": end}
+
     def _wall(self, wall):
         book = _pset_map(wall)
         entity = self._common(wall, book)
+        # Regeneration trims the axis curve. The authored ends are in the pset.
+        authored = self._authored_axis(book)
         ends = self._axis_ends(wall)
-        if ends:
+        if authored:
+            entity["Axis"] = authored
+        elif ends:
             start, end = self._order_axis(*ends)
             entity["Axis"] = {"Start": [start[0], start[1]], "End": [end[0], end[1]]}
         solid = _extrusion(wall)
         points = _profile_points(solid.SweptArea) if solid is not None else []
         plan = book.get("PlanShape")
         thickness = self._centered_thickness(points, self.scale) if points else None
-        if plan == "footprint" and points and ends:
+        layers = _material_layers(wall, self.scale)
+        derived_layers = bool(book.get(PSET_MATERIAL_FROM_THICKNESS))
+        if plan == "footprint" and points and (ends or authored):
             entity["Footprint"] = self._footprint(wall, solid, points)
         elif plan == "profile" and points:
             entity["Profile"] = [[num(p[0] * self.scale), num(p[1] * self.scale)] for p in _unique(points)]
-        elif plan == "footprint" and points and not ends:
+        elif plan == "footprint" and points and not ends and not authored:
             entity["Footprint"] = [
                 [self._metres(p[0]), self._metres(p[1])] for p in _unique(points)
             ]
         elif thickness is not None:
             entity["Thickness"] = thickness
+        elif layers and plan not in ("footprint", "profile"):
+            # A butt joint replaces the rectangle with a trimmed profile.
+            entity["Thickness"] = num(sum(layer["LayerThickness"] for layer in layers["Layers"]))
         elif points:
-            entity["Footprint"] = self._footprint(wall, solid, points) if ends else [
+            entity["Footprint"] = self._footprint(wall, solid, points) if (ends or authored) else [
                 [self._metres(p[0]), self._metres(p[1])] for p in _unique(points)
             ]
         height = self._wall_height(wall)
@@ -357,8 +388,7 @@ class Reader:
         base = self._base_z(wall)
         if abs(base) > TOL:
             entity["Elevation"] = num(base)
-        layers = _material_layers(wall, self.scale)
-        if layers:
+        if layers and not derived_layers:
             entity["MaterialLayers"] = layers
         return _ordered_wall(entity)
 
@@ -500,6 +530,7 @@ class Reader:
             self._bind_spatial(element)
 
         walls = [_strip(self._wall(wall)) for wall in model.by_type("IfcWall")]
+        connections = self._connections()
         void_of = {}
         for rel in model.by_type("IfcRelVoidsElement"):
             void_of[rel.RelatedOpeningElement] = rel.RelatingBuildingElement
@@ -523,7 +554,7 @@ class Reader:
             storey_extra["Elevation"] = self._metres(self.storey.Elevation)
         project_extra = {"Aggregates": [self.by_product[site]]}
 
-        return {
+        document = {
             "schema": SCHEMA_NAME,
             "units": {"LengthUnit": "METRE"},
             "project": self._spatial_node(project, project_extra),
@@ -531,10 +562,31 @@ class Reader:
             "building": self._spatial_node(building, building_extra),
             "storey": self._spatial_node(self.storey, storey_extra),
             "walls": walls,
-            "openings": openings,
-            "doors": doors,
-            "windows": windows,
         }
+        if connections:
+            document["connections"] = connections
+        document["openings"] = openings
+        document["doors"] = doors
+        document["windows"] = windows
+        return document
+
+    def _connections(self):
+        rows = []
+        for rel in self.model.by_type("IfcRelConnectsPathElements"):
+            relating = self.by_product.get(rel.RelatingElement)
+            related = self.by_product.get(rel.RelatedElement)
+            if not relating or not related:
+                continue
+            row = {
+                "RelatingElement": relating,
+                "RelatingConnectionType": _enum(rel.RelatingConnectionType),
+                "RelatedElement": related,
+                "RelatedConnectionType": _enum(rel.RelatedConnectionType),
+            }
+            if rel.GlobalId and not is_derived(rel.GlobalId, connection_yaml_id(row)):
+                row["GlobalId"] = rel.GlobalId
+            rows.append(row)
+        return rows
 
     def _apply_depth_default(self, openings, walls):
         thickness = {}
