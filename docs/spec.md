@@ -140,7 +140,7 @@ The void's placement is relative to the wall: local X is `AlongAxis`, local Y is
 
 The list key selects the entity. A door or window fills exactly one opening. A plain opening has no entry here.
 
-Required: `id`, `FillsOpening`. `OverallWidth` and `OverallHeight` are the IFC attributes of that name, stored when known.
+Required: `id`. `FillsOpening` is required when the door or window fills an opening, and omitted when it does not. `OverallWidth` and `OverallHeight` are the IFC attributes of that name, stored when known.
 
 ```yaml
 - id: D-OP03
@@ -230,6 +230,21 @@ Each property is an `IfcPropertySingleValue`: the key is `Name`, the YAML value 
 
 `samples/ground-floor.yaml` is this schema applied to one real plan. Provenance is in `samples/source/`. Wall ids `W-001` upward are assigned by sorting horizontal axes by Y then X, then vertical axes by X then Y. Opening ids are the source ids (`OP03`, `OP39a`, …).
 
+## Converter
+
+`yaml_ifc` writes this file to IFC4 and reads IFC4 back. A few IFC rules have no YAML field. The converter fills those in, then drops them again on the way back, so a YAML file comes back with the same data:
+
+- A wall with `Thickness`, `Footprint`, or `Profile` and no `Height` is extruded **3 m**. That height is not written back.
+- An opening whose host has no `Thickness` and no `Depth`, but does have a `Height`, is cut **0.2 m** deep. That depth is not written back. `Depth` still defaults to the host `Thickness` when the host has one.
+- `HeadHeight` is not an IFC attribute. It is kept in a property set named `yaml-ifc` and restored on import. `Height` and `SillHeight` are not invented for that opening, and it has no solid.
+- The YAML `id` is stored on each `IfcObject` in that same `yaml-ifc` set (property `id`). `IfcProject` cannot own a property set, so its `id` is stored in `LongName`. The set is converter bookkeeping. It is not a YAML `PropertySets` entry. `Footprint` and `Profile` are marked there too, so a rectangular footprint is not read back as `Thickness`.
+- `GlobalId`, when omitted, is the UUID5 in the URL namespace of `yaml-ifc:` plus the `id`, compressed to the 22-character IFC form. On import it is omitted again when it matches that derivation.
+- `IfcOpeningElement.PredefinedType`, when omitted, is written `OPENING` and omitted again on import.
+- An imported `IfcWallStandardCase` is stored as a wall and written back as `IfcWall`. `PredefinedType` is kept.
+- YAML lengths are metres. An IFC file in millimetres is converted on the way in.
+
+An IFC file also contains entities this subset does not store (slabs, spaces, roofs, stairs, and the rest). Those are counted and reported, not written into the YAML. For the entities above, every instance is kept, matched by `GlobalId`.
+
 ## Open questions
 
 1. **Default wall geometry.** The stored form is a centreline plus `Thickness`, centred. The sample measures both from the double-line drawing. A footprint polygon would match the drawn edges more directly and would make the centreline a derived view. Which one should be the required core?
@@ -237,7 +252,7 @@ Each property is an `IfcPropertySingleValue`: the key is `Name`, the YAML value 
 3. **How far a "same axis" gap can be and still be one wall.** The sample joins collinear pieces when the gap is at most 0.36 m (a reveal the faces did not span) or when one or more openings cover the gap. That threshold is a judgment.
 4. **Void width versus leaf size.** `Width` on the opening is the measured hole. `OverallWidth` on the door can be smaller (the written leaf size). Confirm both should be kept.
 5. **`AlongAxis` is the start of the void**, the end nearer `Axis.Start`, rather than the centre.
-6. **Missing `Height` and missing `Thickness`.** The sample omits `Height` on every wall, and omits `Thickness` on the one wall whose opposite face is not drawn (`W-017`, host of `OP19`). Is a file in that state valid, or only a draft a validator should reject?
+6. **Missing `Height` and missing `Thickness`.** The sample omits `Height` on every wall, and omits `Thickness` on the one wall whose opposite face is not drawn (`W-017`, host of `OP19`). Is a file in that state valid, or only a draft a validator should reject? The converter accepts it: a wall with a thickness and no height is extruded 3 m in the IFC, and that height is not written back.
 7. **`HeadHeight`.** `OP27` and `OP29` know the head and not the sill or the height. Is a head-only field the right extension, or should those two stay as comments until the sill is known?
 8. **Glazed run `W-023`.** Thickness 0.10 m is the depth of the two posts; the long faces are not drawn. Worth a separate look.
 9. **No host, no opening.** The hall-to-garage passage has no wall across it, so it is not an `IfcOpeningElement`. Confirm that is the right reading of `IfcRelVoidsElement`.

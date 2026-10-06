@@ -28,7 +28,7 @@ jobs:
           python -m pip install -r tools/requirements.txt
 
       - name: Render samples
-        run: python tools/render_plan.py samples/*.yaml --out-dir dist
+        run: python tools/render_plan.py samples/*.yaml samples/external/*.yaml --out-dir dist
 
       - uses: actions/upload-artifact@v4
         with:
