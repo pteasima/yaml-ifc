@@ -1,6 +1,6 @@
 # yaml-ifc
 
-A YAML file for one house, edited as text. The names match IFC, so a later converter to a real IFC file can be mechanical. This version covers walls, the openings in them, and whole furnishing elements (kitchen modules, appliances, and loose furniture).
+A YAML file for one house, edited as text. The names match IFC, so a later converter to a real IFC file can be mechanical. This version covers walls, the openings in them, whole furnishing elements (kitchen modules, appliances, and loose furniture), and the electrical installation outside the panels.
 
 ## IFC version
 
@@ -12,7 +12,7 @@ Spatial container, the minimum IFC asks for:
 
 - `IfcProject`, `IfcSite`, `IfcBuilding`, `IfcBuildingStorey`
 - `IfcRelAggregates` along that chain
-- `IfcRelContainedInSpatialStructure` from the storey to each wall, door, and window, and to each furnishing element that names no room
+- `IfcRelContainedInSpatialStructure` from the storey to each wall, door, and window, and to each furnishing or electrical element that names no room
 - `IfcSpace`, aggregated under the storey, and `IfcRelContainedInSpatialStructure` from a space to the furnishings in that room
 
 Elements and the relationships between them:
@@ -21,17 +21,20 @@ Elements and the relationships between them:
 - `IfcOpeningElement`, joined to its wall by `IfcRelVoidsElement`
 - `IfcDoor` and `IfcWindow`, joined to an opening by `IfcRelFillsElement`
 - `IfcFurniture`, `IfcSystemFurnitureElement`, `IfcSanitaryTerminal`, `IfcElectricAppliance`, `IfcLightFixture`, `IfcCovering`
+- `IfcSwitchingDevice`, `IfcSensor`, `IfcOutlet`, `IfcActuator`, `IfcElectricDistributionBoard`, `IfcCableSegment`
+- `IfcDistributionPort`, nested by `IfcRelNests` and joined by `IfcRelConnectsPorts`
+- `IfcDistributionCircuit`, with members assigned by `IfcRelAssignsToGroup`
 - The matching type object (`IfcFurnitureType`, and the others), one per catalogue entry, joined by `IfcRelDefinesByType`
 
 Units are metres, declared once in the header.
 
 ## Deferred
 
-Not in this version, and not started: slabs, roofs, stairs, ramps, columns, beams, MEP, openings in anything other than a wall, more than one storey, sites with a map conversion, DWG import, and viewers. A space has no body. Coverings other than a placed box (a floor build-up, a ceiling, cladding) are not modeled. Furniture parts — hinges, fronts, drawers, the L of a sectional — are not entities. `IfcFurnishingElement` itself, when it is neither `IfcFurniture` nor `IfcSystemFurnitureElement`, is not stored.
+Not in this version, and not started: slabs, roofs, stairs, ramps, columns, beams, pipes, ducts, cable carriers, the devices inside a distribution board, openings in anything other than a wall, more than one storey, sites with a map conversion, DWG import, and viewers. A space has no body. Coverings other than a placed box (a floor build-up, a ceiling, cladding) are not modeled. Furniture parts — hinges, fronts, drawers, the L of a sectional — are not entities. `IfcFurnishingElement` itself, when it is neither `IfcFurniture` nor `IfcSystemFurnitureElement`, is not stored. A light source for rendering (`IfcLightSource` and its subtypes) is not stored: the goniometric source can hold one colour temperature, and only together with a colour, a flux, an emission source, and a distribution that this file does not have.
 
 ## File shape
 
-Top-level keys, in this order: `schema`, `units`, `project`, `site`, `building`, `storey`, `spaces`, `walls`, `connections`, `openings`, `doors`, `windows`, `furniture`, `systemFurniture`, `sanitaryTerminals`, `electricAppliances`, `lightFixtures`, `coverings`. `walls`, `openings`, `doors`, and `windows` are present even when empty. `connections`, `spaces`, and the furnishing lists are omitted when the file has none. One entity per list item. No YAML anchors or aliases. Comments are for people; a converter ignores them.
+Top-level keys, in this order: `schema`, `units`, `project`, `site`, `building`, `storey`, `spaces`, `walls`, `connections`, `openings`, `doors`, `windows`, `furniture`, `systemFurniture`, `sanitaryTerminals`, `electricAppliances`, `lightFixtures`, `coverings`, `switchingDevices`, `sensors`, `outlets`, `actuators`, `distributionBoards`, `cables`, `circuits`. `walls`, `openings`, `doors`, and `windows` are present even when empty. `connections`, `spaces`, the furnishing lists, and the electrical lists are omitted when the file has none. One entity per list item. No YAML anchors or aliases. Comments are for people; a converter ignores them.
 
 ```yaml
 schema: IFC4 ADD2 TC1
@@ -45,7 +48,7 @@ Every entity has a stable `id`, unique in the file. `Name` is optional; the expo
 
 List order in a hand-written file is the author's. A canonical writer sorts each list by `id`, then writes keys in the order below, so a round trip comes back identical.
 
-With one storey, every `IfcWall`, `IfcDoor`, and `IfcWindow` is contained in that storey. Openings are not contained in the storey; they void a wall. A furnishing element is contained in the space named by `ContainedInStructure`, or in the storey when that field is omitted. A second storey would need the same field on walls, doors, and windows. Multi-storey files are still deferred.
+With one storey, every `IfcWall`, `IfcDoor`, and `IfcWindow` is contained in that storey. Openings are not contained in the storey; they void a wall. A furnishing or electrical element, including a cable and a distribution board, is contained in the space named by `ContainedInStructure`, or in the storey when that field is omitted. A port is nested in its element and is not contained in the storey. A circuit is a group, not a contained element. A second storey would need the same field on walls, doors, and windows. Multi-storey files are still deferred.
 
 A value the source does not contain is left out. It is not filled with a guess. Derived values that the file does store (`SillHeight` when head and height are both known, `GlobalId`, the `Name` fallback) are listed below.
 
@@ -295,7 +298,153 @@ These names are the ones the example uses. They are not a closed list. Each one 
 | Hanging plant shelf | `IfcFurniture` | `SHELF` | `HangingPlantShelf` |
 | Track light | `IfcLightFixture` | `DIRECTIONSOURCE` | `TrackLight` |
 
+Wattage and the tunable CCT range are electrical properties of a light. They are specified in the next section. The furnishing example leaves them out.
+
 A run of cabinets is one element per module, not one element for the run. A stack of ovens is one `BuiltInOven` per oven. The island is one system-furniture element; the cooktop and the sink are separate products sitting in its volume, not voids cut out of it. The sectional's L, and every front and handle, is generated later from `ObjectType`. The box is the extent.
+
+## Electrical
+
+The electrical installation outside the panels. A device is one whole element: the same placement and box as a furnishing. The inside of a distribution board — breakers, busbars, terminals — is not modeled. IFC is the only store. A value the schema can already carry uses that entity, predefined type, or property set. Anything it cannot carry goes in one project set, `Pset_YamlIfc`. That set is project data. It is not the converter's `yaml-ifc` bookkeeping set, and it is not a second inventory beside the file.
+
+The list key selects the class. `lightFixtures` is the same list as in furnishings.
+
+| YAML key | IFC |
+| --- | --- |
+| `lightFixtures` | `IfcLightFixture` |
+| `switchingDevices` | `IfcSwitchingDevice` |
+| `sensors` | `IfcSensor` |
+| `outlets` | `IfcOutlet` |
+| `actuators` | `IfcActuator` |
+| `distributionBoards` | `IfcElectricDistributionBoard` |
+| `cables` | `IfcCableSegment` |
+| `circuits` | `IfcDistributionCircuit` |
+
+Placed elements (everything except circuits) use the furnishing fields: `id`, `Name`, `GlobalId`, `Description`, `Tag`, `PredefinedType`, `ObjectType`, `ContainedInStructure`, `Origin`, `Elevation`, `RefDirection`, `Width`, `Depth`, `Height`, `PropertySets`. `ObjectType` is a family name and carries no size. Occurrences that share a class, a `PredefinedType`, and an `ObjectType` share one type object, by the same rule as furnishings. Each of these type entities requires a `PredefinedType`, so an occurrence that names none has no type object.
+
+`PredefinedType` values, by class. These are the IFC4 ADD2 TC1 enums.
+
+| Class | `PredefinedType` |
+| --- | --- |
+| `IfcSwitchingDevice` | `CONTACTOR`, `DIMMERSWITCH`, `EMERGENCYSTOP`, `KEYPAD`, `MOMENTARYSWITCH`, `SELECTORSWITCH`, `STARTER`, `SWITCHDISCONNECTOR`, `TOGGLESWITCH`, `USERDEFINED`, `NOTDEFINED` |
+| `IfcSensor` | `COSENSOR`, `CO2SENSOR`, `CONDUCTANCESENSOR`, `CONTACTSENSOR`, `FIRESENSOR`, `FLOWSENSOR`, `FROSTSENSOR`, `GASSENSOR`, `HEATSENSOR`, `HUMIDITYSENSOR`, `IDENTIFIERSENSOR`, `IONCONCENTRATIONSENSOR`, `LEVELSENSOR`, `LIGHTSENSOR`, `MOISTURESENSOR`, `MOVEMENTSENSOR`, `PHSENSOR`, `PRESSURESENSOR`, `RADIATIONSENSOR`, `RADIOACTIVITYSENSOR`, `SMOKESENSOR`, `SOUNDSENSOR`, `TEMPERATURESENSOR`, `WINDSENSOR`, `USERDEFINED`, `NOTDEFINED` |
+| `IfcOutlet` | `AUDIOVISUALOUTLET`, `COMMUNICATIONSOUTLET`, `POWEROUTLET`, `DATAOUTLET`, `TELEPHONEOUTLET`, `USERDEFINED`, `NOTDEFINED` |
+| `IfcActuator` | `ELECTRICACTUATOR`, `HANDOPERATEDACTUATOR`, `HYDRAULICACTUATOR`, `PNEUMATICACTUATOR`, `THERMOSTATICACTUATOR`, `USERDEFINED`, `NOTDEFINED` |
+| `IfcElectricDistributionBoard` | `CONSUMERUNIT`, `DISTRIBUTIONBOARD`, `MOTORCONTROLCENTRE`, `SWITCHBOARD`, `USERDEFINED`, `NOTDEFINED` |
+| `IfcCableSegment` | `BUSBARSEGMENT`, `CABLESEGMENT`, `CONDUCTORSEGMENT`, `CORESEGMENT`, `USERDEFINED`, `NOTDEFINED` |
+| `IfcDistributionCircuit` | `IfcDistributionSystemEnum`, including `ELECTRICAL`, `LIGHTING`, `CONTROL`, `EARTHING`, `USERDEFINED`, `NOTDEFINED` |
+
+A wall button is an `IfcSwitchingDevice`. IFC4 has no `PUSHBUTTON` predefined type (and IFC4.3 does not add one either). A momentary push button is `MOMENTARYSWITCH` and the family name is `ObjectType`, for example `PushButton`. A maintained switch is `TOGGLESWITCH`. The standard set `Pset_SwitchingDeviceTypeToggleSwitch` does have a `ToggleSwitchType` value `PUSHBUTTON`, and it applies to a `TOGGLESWITCH`, so a latching push button can be written there by an author. The converter does not infer that from the family name.
+
+A presence sensor is `IfcSensor` / `MOVEMENTSENSOR`. `Pset_SensorTypeMovementSensor.MovementSensingType` lists `PHOTOELECTRICCELL` and `PRESSUREPAD` only, so mmWave is not an enum value. The family name carries it (`MmWavePresence`). A door or window contact is `CONTACTSENSOR`, for example `DoorContact`.
+
+An outlet is `IfcOutlet`. A mains socket is `POWEROUTLET`.
+
+A blind actuator is `IfcActuator` / `ELECTRICACTUATOR`, not `IfcElectricMotor`. The product in the room is the actuator that drives the blind. `IfcElectricMotorTypeEnum` classifies a motor (`DC`, `INDUCTION`, and the rest) and has no blind value. `Pset_ActuatorTypeCommon.Application` already has `SUNBLINDACTUATOR`, and `Pset_ActuatorTypeElectricActuator.ElectricActuatorType` has `MOTORDRIVE`. Those are authored `PropertySets`. The converter does not parse `ObjectType` to fill them.
+
+A panel is one `IfcElectricDistributionBoard`. `DISTRIBUTIONBOARD` is the ordinary household board. Nothing is nested inside it except the ports of the cables that leave it.
+
+### Light output
+
+On a light fixture only:
+
+- `Wattage` — watts, written as `Pset_LightFixtureTypeCommon.TotalWattage`, an `IfcPowerMeasure`. The project gains an `IfcSIUnit` `POWERUNIT` / `WATT` when any such measure is written. The property sits on the occurrence, so two fixtures of one family can differ. Type property sets are dropped on import, so the wattage is not stored on the type.
+- `CctMin`, `CctMax` — the tunable correlated colour temperature, in kelvin. Written as `Pset_YamlIfc.CctMin` and `Pset_YamlIfc.CctMax`, each an `IfcThermodynamicTemperatureMeasure`. The project gains `THERMODYNAMICTEMPERATUREUNIT` / `KELVIN` when either bound is written. Either bound may be omitted. When both are present, `CctMin` is not above `CctMax`.
+
+Standard IFC has single colour temperatures and no range. `IfcLightSourceGoniometric.ColourTemperature` is one kelvin value, and that entity also requires a colour, a position, a luminous flux, an emission source, and a distribution data source. `Pset_LampTypeCommon.ColorTemperature` is also one value, and its applicable entity is `IfcLamp`, which IFC4 does not contain. Neither is written. A guessed midpoint of the range would come back as if it had been measured.
+
+`Wattage` and the two bounds are not also repeated inside `PropertySets`. Putting `TotalWattage` on `Pset_LightFixtureTypeCommon`, or `CctMin` / `CctMax` on `Pset_YamlIfc`, in addition to the field is rejected. Other properties in those sets are kept. An authored property whose name is `TotalWattage`, `ActuatorInputPower`, `CctMin`, or `CctMax` is written as the measure type above rather than a bare real.
+
+### Cables and ports
+
+`connections` is already the wall-joint list, so a cable is not a connection. Each cable is an `IfcCableSegment` with `From` and `To`, the ids of the elements it joins. Both are required. An endpoint has to be a distribution element already in the file: a light, a switch, a sensor, an outlet, an actuator, a board, an appliance, a sanitary terminal, or another cable. A wall or a chair is not.
+
+`Route` is optional. It is the path of that one segment, a polyline of `[x, y, z]` points in metres. X and Y are the storey plan, the same coordinates as `Origin`. Z is height above the storey, the same coordinate as `Elevation`. The file has one length unit, so `2.5` is 2.5 m and a millimetre is `0.001`. At least two points. A segment of zero length is rejected. The first point is the `From` end and the last point is the `To` end.
+
+The path stays one `IfcCableSegment`. `IfcCableFitting` is a junction between two segments, and a bend is not a junction, so the bend is a vertex of the polyline rather than a fitting. The curve is the segment axis: an `IfcShapeRepresentation` with `RepresentationIdentifier` `Axis`, `RepresentationType` `Curve3D`, and one `IfcPolyline`, on a model subcontext (`Axis` / `GRAPH_VIEW`). The body is an `IfcSweptDiskSolid` along that same curve, `RepresentationIdentifier` `Body`, `RepresentationType` `AdvancedSweptSolid`. `IfcSweptDiskSolidPolygonal` would fillet those bends, and it is not in IFC4. The disk radius is 5 mm. That radius is a nominal solid so the cable has a body. It is not a measured diameter, and it is not written back. A cable with no `Route` has no axis and no body.
+
+The polyline is stored in the cable's local placement. `Origin`, `Elevation`, and `RefDirection` still place the cable. Import transforms the curve back into storey coordinates, so a cable whose origin is not `[0, 0]` keeps the same `Route` points. The inlet port is the `SINK` at the start of the curve and the outlet port is the `SOURCE` at the end, which matches the flow direction IFC gives a segment axis. The ports themselves stay unplaced.
+
+`NumberOfCores` is optional, a positive integer. It is `Pset_CableSegmentTypeCableSegment.NumberOfCores`, an `IfcInteger`, on the occurrence. That is the IFC4 ADD2 TC1 type of the property. IFC4.3 later changed the same name to `IfcCountMeasure`; this file stays on IFC4, so the value stays an integer. In IFC4 the related sets do not carry a core count: `Pset_CableSegmentTypeBusBarSegment` has none, and `Pset_CableSegmentTypeConductorSegment` gained `NumberOfCores` only in IFC4.3. The value does not go in `Pset_YamlIfc`. Putting `NumberOfCores` on that set inside `PropertySets` as well as the field is rejected. Import lifts the property back into the field and does not also leave it in `PropertySets`. Other properties in the set are kept.
+
+Ports are not written in the YAML. For each cable the converter nests four `IfcDistributionPort` entities with `IfcRelNests` and joins them with `IfcRelConnectsPorts`:
+
+| Port | `FlowDirection` | Nested in |
+| --- | --- | --- |
+| upstream | `SOURCE` | `From` |
+| cable inlet | `SINK` | the cable |
+| cable outlet | `SOURCE` | the cable |
+| downstream | `SINK` | `To` |
+
+`PredefinedType` on every port is `CABLE`. `SystemType` is the `PredefinedType` of the circuits that list the cable, when those types agree, or `ELECTRICAL` when the cable is on none or the types disagree. That system type is derived. It is not a YAML field. `RealizingElement` is left unset: the cable is already in the chain through its own ports. One `IfcRelNests` per element holds all of that element's ports. `IfcRelConnectsPortToElement` is the older port link and is not used.
+
+The segment's own inlet is named `{id}:sink` and its own outlet `{id}:source`. A cable that is itself an end of some other cable also carries that other cable's port, and the name is what keeps the two apart. Import rebuilds `From` and `To` from those two named ports. A cable with exactly one unlabelled sink and one unlabelled source uses those instead.
+
+### Circuits
+
+A circuit is an `IfcDistributionCircuit`. Required: `id`. Present when known: `Name`, `GlobalId`, `Description`, `ObjectType`, `LongName`, `PredefinedType`, `PropertySets`, and `Assigns`.
+
+`Assigns` is a list of element ids. The converter writes one `IfcRelAssignsToGroup` with `RelatedObjectsType` `PRODUCT`. The list is omitted when the circuit has no members, and an empty list is rejected. A board may appear on more than one circuit. Order in the list is the author's.
+
+```yaml
+- id: LIGHT-down
+  Name: Downlight
+  PredefinedType: POINTSOURCE
+  ObjectType: Downlight
+  ContainedInStructure: SPACE-room
+  Origin: [1.2, 1.6]
+  Elevation: 2.4
+  Width: 0.12
+  Depth: 0.12
+  Height: 0.05
+  Wattage: 12
+  CctMin: 2700
+  CctMax: 6500
+- id: SW-bed
+  Name: Bed button
+  PredefinedType: MOMENTARYSWITCH
+  ObjectType: PushButton
+  ContainedInStructure: SPACE-room
+  Origin: [2.4, 0.1]
+  Elevation: 0.8
+  Width: 0.08
+  Depth: 0.01
+  Height: 0.08
+- id: CBL-light
+  PredefinedType: CABLESEGMENT
+  ObjectType: LightingCable
+  From: DB-main
+  To: LIGHT-down
+  Route:
+    - [0.16, 0.15, 2]
+    - [0.16, -0.04, 2]
+    - [0.16, -0.04, 2.5]
+    - [1.26, -0.04, 2.5]
+    - [1.26, 1.66, 2.5]
+    - [1.26, 1.66, 2.4]
+  NumberOfCores: 3
+- id: CIR-lights
+  Name: Lights
+  PredefinedType: LIGHTING
+  Assigns: [DB-main, LIGHT-down, CBL-light]
+```
+
+`samples/electrical.yaml` is one board, a downlight, a toggle switch, a push button, an mmWave presence sensor, a door contact, a socket, a blind actuator, a nominal room of four walls, and the cables and circuits that join the devices. Each cable has a route in the wall at 2.5 m, including a drop from that height to a switch and from the ceiling to the downlight, and a core count. The sizes are nominal, not a survey.
+
+These names are the ones the example uses. They are not a closed list. Each one is a family, with no width, depth, or height written into it.
+
+| Piece | IFC | `PredefinedType` | `ObjectType` |
+| --- | --- | --- | --- |
+| Downlight | `IfcLightFixture` | `POINTSOURCE` | `Downlight` |
+| Toggle switch | `IfcSwitchingDevice` | `TOGGLESWITCH` | `ToggleSwitch` |
+| Push button | `IfcSwitchingDevice` | `MOMENTARYSWITCH` | `PushButton` |
+| mmWave presence | `IfcSensor` | `MOVEMENTSENSOR` | `MmWavePresence` |
+| Door contact | `IfcSensor` | `CONTACTSENSOR` | `DoorContact` |
+| Socket | `IfcOutlet` | `POWEROUTLET` | `Socket` |
+| Blind actuator | `IfcActuator` | `ELECTRICACTUATOR` | `BlindActuator` |
+| Main board | `IfcElectricDistributionBoard` | `DISTRIBUTIONBOARD` | `MainBoard` |
+| Lighting cable | `IfcCableSegment` | `CABLESEGMENT` | `LightingCable` |
+| Power cable | `IfcCableSegment` | `CABLESEGMENT` | `PowerCable` |
+| Signal cable | `IfcCableSegment` | `CABLESEGMENT` | `SignalCable` |
 
 ## Optional extensions
 
@@ -362,6 +511,19 @@ Each property is an `IfcPropertySingleValue`: the key is `Name`, the YAML value 
 | `electricAppliances[]` | `IfcElectricAppliance` |
 | `lightFixtures[]` | `IfcLightFixture` |
 | `coverings[]` | `IfcCovering` |
+| `switchingDevices[]` | `IfcSwitchingDevice` |
+| `sensors[]` | `IfcSensor` |
+| `outlets[]` | `IfcOutlet` |
+| `actuators[]` | `IfcActuator` |
+| `distributionBoards[]` | `IfcElectricDistributionBoard` |
+| `cables[]` | `IfcCableSegment`. `From` and `To` are element ids |
+| `Route` | Axis `Curve3D` `IfcPolyline`, body `IfcSweptDiskSolid` on that curve |
+| `NumberOfCores` | `Pset_CableSegmentTypeCableSegment.NumberOfCores`, `IfcInteger` |
+| `circuits[]` | `IfcDistributionCircuit` |
+| `Assigns` | `IfcRelAssignsToGroup.RelatedObjects` |
+| `Wattage` | `Pset_LightFixtureTypeCommon.TotalWattage`, watts |
+| `CctMin`, `CctMax` | `Pset_YamlIfc`, kelvin. IFC4 has no CCT range |
+| cable ports | Derived `IfcDistributionPort`, `IfcRelNests`, `IfcRelConnectsPorts` |
 | `ObjectType` | `IfcObject.ObjectType`, and `ElementType` on the derived type |
 | `ContainedInStructure` | `IfcRelContainedInSpatialStructure.RelatingStructure`, a space |
 | `Origin`, `RefDirection`, `Elevation` | Placement of the box corner. Local X is `RefDirection`, local Z is up |
@@ -377,7 +539,7 @@ Each property is an `IfcPropertySingleValue`: the key is `Name`, the YAML value 
 | `connections[]` | `IfcRelConnectsPathElements` |
 | `RelatingElement`, `RelatedElement` | The two walls. The relating wall runs through the butt joint |
 | `RelatingConnectionType`, `RelatedConnectionType` | `ATSTART`, `ATEND`, or, on the relating wall only, `ATPATH` |
-| storey containment | One `IfcRelContainedInSpatialStructure` on the storey for every wall, door, window, and furnishing that names no space |
+| storey containment | One `IfcRelContainedInSpatialStructure` on the storey for every wall, door, window, furnishing, and electrical element that names no space |
 | space containment | One `IfcRelContainedInSpatialStructure` per space that has furnishings |
 | type object | One `IfcFurnitureType` (or the matching type class) per distinct class, `PredefinedType`, and `ObjectType`, via `IfcRelDefinesByType` |
 
@@ -388,6 +550,8 @@ Each property is an `IfcPropertySingleValue`: the key is `Name`, the YAML value 
 `samples/ground-floor.yaml` is this schema applied to one real plan. Provenance is in `samples/source/`. Wall ids `W-001` upward are assigned by sorting horizontal axes by Y then X, then vertical axes by X then Y. Opening ids are the source ids (`OP03`, `OP39a`, …). It has no spaces and no furnishings.
 
 `samples/furnishings.yaml` is the furnishing lists applied to one open kitchen, dining, and living room. The sizes are nominal module dimensions, not a survey of that room.
+
+`samples/electrical.yaml` is one distribution board, a nominal four-wall room, and the devices, routed cables, and circuits outside the board. The sizes are nominal, not a survey, and the file is not a real house. `python tools/render_electrical.py samples/electrical.yaml -o samples/electrical.png` draws a top view and an isometric of that file.
 
 ## Converter
 
@@ -406,6 +570,11 @@ Each property is an `IfcPropertySingleValue`: the key is `Name`, the YAML value 
 - `Origin`, `Elevation`, `RefDirection`, `Width`, `Depth`, and `Height` are copied into the `yaml-ifc` set when the file has them, including zeros, and restored from that set on import. Omitted defaults (`Origin` `[0, 0]`, `Elevation` `0`, `RefDirection` `[1, 0]`) are not added to the set and not invented on the way back.
 - Each distinct class, `PredefinedType`, and `ObjectType` becomes one type object. `IfcFurnitureType.AssemblyPlace` is `NOTDEFINED`. The type's property sets and representation maps are not stored. On import, an occurrence with no `ObjectType` takes the type's `ElementType`, and an occurrence with no `PredefinedType` takes the type's. A file this converter did not write is read from placement and from that corner-origin box; other geometry keeps the placement only.
 - An imported `IfcWallStandardCase` is stored as a wall and written back as `IfcWall`. `PredefinedType` is kept.
+- A light's `Wattage` is `Pset_LightFixtureTypeCommon.TotalWattage` (`IfcPowerMeasure`, watts). `CctMin` and `CctMax` are `Pset_YamlIfc` properties (`IfcThermodynamicTemperatureMeasure`, kelvin). Import lifts those properties back into the fields and does not also leave them in `PropertySets`. The `WATT` and `KELVIN` units are emitted only when a measure of that kind is written.
+- Each cable becomes an `IfcCableSegment` plus four nested `IfcDistributionPort` entities and two `IfcRelConnectsPorts`. The ports are not YAML. Their `SystemType` follows the circuit that assigns the cable, or `ELECTRICAL`. The segment's own ports are named `{id}:sink` and `{id}:source`, and import restores `From` and `To` from those. A port nested in a supported element is not reported as a skipped product.
+- A cable `Route` is one axis polyline and one `IfcSweptDiskSolid` of radius 5 mm along that same curve. The radius is not written back. Import restores `Route` from the axis, in storey metres, and falls back to the swept-disk directrix when the file has a body and no axis. No `IfcCableFitting` is written. The 3D axis subcontext is created only when a route is written.
+- `NumberOfCores` is `Pset_CableSegmentTypeCableSegment.NumberOfCores` (`IfcInteger`). Import lifts it back into the field.
+- Each circuit is an `IfcDistributionCircuit`. `Assigns` is one `IfcRelAssignsToGroup`. Members this subset does not store are dropped on import.
 - YAML lengths are metres. An IFC file in millimetres is converted on the way in.
 
 An IFC file also contains entities this subset does not store (slabs, roofs, stairs, and the rest). Those are counted and reported, not written into the YAML. For the entities above, every instance is kept, matched by `GlobalId`. A bare `IfcFurnishingElement` is one of the counted leftovers.
@@ -434,3 +603,11 @@ An IFC file also contains entities this subset does not store (slabs, roofs, sta
 20. **Type objects are derived.** They are not YAML entries. `AssemblyPlace` is the filler `NOTDEFINED`, not a claim about factory or site assembly. Type property sets and mapped geometry are dropped on import.
 21. **Space bodies.** A room is an id, a name, and a predefined type, so furniture can be contained. A footprint and a clear height are not stored. Wall `Height` in the ground-floor sample is still omitted for that reason.
 22. **The TV is the unit.** `TvUnit` is `IfcFurniture`. The screen is not an `IfcAudioVisualAppliance`. The hanging plant shelf is `IfcFurniture` / `SHELF`, not a suspended member.
+23. **CCT is a range in `Pset_YamlIfc`.** Standard IFC stores one colour temperature, and the goniometric light source requires colour, flux, and a distribution this file does not have. `IfcLamp` is not in IFC4, so `Pset_LampTypeCommon.ColorTemperature` has no entity to sit on. Confirm the two bounds are the right record, rather than a single kelvin plus a separate tunable flag.
+24. **Push buttons.** `PUSHBUTTON` is not an `IfcSwitchingDeviceTypeEnum` value. The example uses `MOMENTARYSWITCH` / `PushButton`. A latching push button could instead be `TOGGLESWITCH` plus `Pset_SwitchingDeviceTypeToggleSwitch.ToggleSwitchType` `PUSHBUTTON`. Confirm which one the wall buttons in the house are.
+25. **mmWave.** `MovementSensingType` has no mmWave value. The family name `MmWavePresence` is the record. A controlled token in `Pset_YamlIfc` would say it again. Confirm the family name is enough.
+26. **Blind actuator.** `IfcActuator` / `ELECTRICACTUATOR`, with `SUNBLINDACTUATOR` and `MOTORDRIVE` available as standard properties. `IfcElectricMotor` was the other candidate and was not used. Confirm the actuator is the product to count, not the motor inside it.
+27. **Conduit is not stored.** A measured route is one `IfcCableSegment` polyline, and `NumberOfCores` is the IFC4 integer on `Pset_CableSegmentTypeCableSegment`. A carrier or a conduit is still deferred. The swept-disk radius is a nominal 5 mm, not a measured diameter. Confirm that radius can stay nominal until `OverallDiameter` is authored.
+28. **Panel interiors.** The board is one element. Breakers, RCDs, and busbars are deferred. A circuit names the board, the devices, and the cables, and does not name a breaker.
+29. **Devices are not hosted in a wall.** A switch has a box in the room, the same way a cabinet does. There is no opening voided for the back box. Confirm that stays until a wall host is needed.
+30. **Circuit membership** is an `Assigns` list. A board may sit on several circuits. Load, phase, and protective device are not on the circuit.

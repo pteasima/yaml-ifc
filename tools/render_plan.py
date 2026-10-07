@@ -30,8 +30,9 @@ MUTED = "#6a645c"
 FURN_FILL = "#e4d7c3"
 FURN_EDGE = "#8a5a32"
 
-# Plan boxes for the furnishing lists. Coverings (a rug) are drawn under the
-# pieces that sit on them. The converter owns the IFC; this is only the picture.
+# Plan boxes for furnishing and electrical lists. Coverings (a rug) are drawn
+# under the pieces that sit on them. Cables have no box. The converter owns
+# the IFC; this is only the picture.
 FURNISHING_KEYS = (
     "coverings",
     "systemFurniture",
@@ -39,6 +40,11 @@ FURNISHING_KEYS = (
     "sanitaryTerminals",
     "electricAppliances",
     "lightFixtures",
+    "switchingDevices",
+    "sensors",
+    "outlets",
+    "actuators",
+    "distributionBoards",
 )
 
 HEADER = 44

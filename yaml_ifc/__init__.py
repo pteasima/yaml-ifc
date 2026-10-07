@@ -1,4 +1,4 @@
-"""Convert the yaml-ifc subset (walls, openings, furnishings) to and from IFC4."""
+"""Convert the yaml-ifc subset (walls, openings, furnishings, electrical) to and from IFC4."""
 
 from yaml_ifc.from_ifc import read_ifc
 from yaml_ifc.joints import footprints
