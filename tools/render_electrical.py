@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """Draw devices and cable routes from a yaml-ifc electrical file.
 
-Two views in one PNG: the storey plan, and an isometric. Walls are the
-centreline band. A device is the box from Origin, Width, Depth, and
-Elevation. A cable Route is a polyline in that same frame, metres.
+Two views in one PNG: the storey plan, and an isometric. The plan draws
+each wall as a centreline band. The isometric extrudes that footprint
+from the floor to Height, with z up. A device is the box from Origin,
+Width, Depth, and Elevation. A cable Route is a polyline in that same
+frame, metres.
 Needs libcairo2 and tools/requirements.txt (cairosvg).
 """
 
@@ -89,7 +91,12 @@ def device_box(item):
 
 
 def iso(x, y, z):
-    return (x - y) * 0.8660254037844386, (x + y) * 0.5 - z
+    """Plan x to the right, plan y to the left, z up.
+
+    ``_fit`` treats the second axis as up and flips it into SVG. z is added
+    so a higher Elevation lands higher on the page.
+    """
+    return (x - y) * 0.8660254037844386, z - (x + y) * 0.5
 
 
 class Canvas:
@@ -213,8 +220,8 @@ def render_document(doc):
     panel_title(right, 34, "Isometric")
 
     def draw_walls(project, isometric):
-        for corners, wall_height, _wall_id in walls:
-            if not isometric:
+        if not isometric:
+            for corners, _wall_height, _wall_id in walls:
                 canvas.el(
                     "polygon",
                     points=_points(project(*corner) for corner in corners),
@@ -222,17 +229,21 @@ def render_document(doc):
                     stroke=WALL_EDGE,
                     **{"stroke-width": "1"},
                 )
-                continue
-            base = [project(*iso(x, y, 0)) for x, y in corners]
-            cap = [project(*iso(x, y, wall_height)) for x, y in corners]
+            return
+        # Wireframe extrusion: base at z=0, head at Height, vertical corners.
+        # Filled side faces cover the room and hide the routes.
+        ordered = sorted(walls, key=lambda row: sum(x + y for x, y in row[0]) / len(row[0]), reverse=True)
+        for corners, wall_height, _wall_id in ordered:
+            base = [project(*iso(x, y, 0.0)) for x, y in corners]
+            top = [project(*iso(x, y, wall_height)) for x, y in corners]
             canvas.el(
                 "polygon",
-                points=_points(cap),
-                fill=WALL,
+                points=_points(base),
+                fill="none",
                 stroke=WALL_EDGE,
-                **{"stroke-width": "1"},
+                **{"stroke-width": "1.2"},
             )
-            for start, end in zip(base, cap):
+            for start, end in zip(base, top):
                 canvas.el(
                     "line",
                     x1=f"{start[0]:.1f}",
@@ -240,8 +251,15 @@ def render_document(doc):
                     x2=f"{end[0]:.1f}",
                     y2=f"{end[1]:.1f}",
                     stroke=WALL_EDGE,
-                    **{"stroke-width": "1"},
+                    **{"stroke-width": "1.6"},
                 )
+            canvas.el(
+                "polygon",
+                points=_points(top),
+                fill=WALL,
+                stroke=WALL_EDGE,
+                **{"stroke-width": "1.6"},
+            )
 
     def draw_routes(project, isometric):
         for cable in cables:
@@ -255,7 +273,7 @@ def render_document(doc):
                 points=_points(mapped),
                 fill="none",
                 stroke=color,
-                **{"stroke-width": "2.6", "stroke-linejoin": "round", "stroke-linecap": "round"},
+                **{"stroke-width": "3.2", "stroke-linejoin": "round", "stroke-linecap": "round"},
             )
             end = mapped[-1]
             canvas.el(
@@ -272,7 +290,10 @@ def render_document(doc):
             canvas.tag(mark[0] + 6, mark[1] - 4, cable.get("id") or "", color, size=11)
 
     def draw_devices(project, isometric):
-        for key, item, (x, y, z, box_w, box_d, box_h) in devices:
+        ordered = devices
+        if isometric:
+            ordered = sorted(devices, key=lambda row: row[2][0] + row[2][1], reverse=True)
+        for key, item, (x, y, z, box_w, box_d, box_h) in ordered:
             fill = DEVICE_FILL[key]
             edge = DEVICE_EDGE[key]
             name = item.get("id") or ""
@@ -302,10 +323,11 @@ def render_document(doc):
                 for iy, py in enumerate(ys)
                 for iz, pz in enumerate(zs)
             }
+            # Top, the west face, and the south face: the three sides toward the viewer.
             faces = (
                 ((0, 0, 1), (1, 0, 1), (1, 1, 1), (0, 1, 1)),
                 ((0, 0, 0), (0, 1, 0), (0, 1, 1), (0, 0, 1)),
-                ((1, 0, 0), (1, 0, 1), (1, 1, 1), (1, 1, 0)),
+                ((0, 0, 0), (1, 0, 0), (1, 0, 1), (0, 0, 1)),
             )
             for face in faces:
                 canvas.el(
