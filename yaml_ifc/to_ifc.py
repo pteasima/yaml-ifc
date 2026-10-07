@@ -14,14 +14,19 @@ from yaml_ifc.supported import (
     DEFAULT_OPENING_DEPTH,
     DEFAULT_WALL_HEIGHT,
     DERIVED_MATERIAL_NAME,
+    FURNISHINGS,
+    FURNISHING_SIZE,
+    FURNITURE_TYPE_CLASS,
     HEADER_FILE_NAME,
     HEADER_TIMESTAMP,
     ORIGINATING_SYSTEM,
+    PREDEFINED_TYPES,
     PSET_AXIS,
     PSET_MATERIAL_FROM_THICKNESS,
     PSET_NAME,
     RELATED_CONNECTION_TYPES,
     RELATING_CONNECTION_TYPES,
+    TYPE_PREDEFINED_REQUIRED,
 )
 
 TOL = 1e-9
@@ -61,6 +66,25 @@ def _layer_count(product):
     return 0
 
 
+def _number(value, where):
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise ValueError(f"{where} must be a number")
+    return value
+
+
+def _check_predefined(element, ifc_class):
+    predefined = element.get("PredefinedType")
+    if predefined is None:
+        return
+    allowed = PREDEFINED_TYPES[ifc_class]
+    if predefined not in allowed:
+        raise ValueError(
+            f"{element['id']} PredefinedType {predefined} is not valid for {ifc_class}"
+        )
+    if predefined == "USERDEFINED" and not element.get("ObjectType"):
+        raise ValueError(f"{element['id']} PredefinedType USERDEFINED needs an ObjectType")
+
+
 def validation_errors(model):
     logger = ifcopenshell.validate.json_logger()
     ifcopenshell.validate.validate(model, logger)
@@ -79,11 +103,15 @@ class Builder:
         self.file = ifcopenshell.file(schema="IFC4")
         self.products = {}
         self.placements = {}
+        self.space_ids = set()
+        self.typed = {}
         self.connected_ids = _connected_ids(doc)
         self._stamp_header()
         self._units_and_context()
         self._spatial()
+        self._spaces()
         self._elements()
+        self._types()
         self._connections()
         self._containment()
 
@@ -323,6 +351,15 @@ class Builder:
         for kind, key in (("door", "doors"), ("window", "windows")):
             for element in self.doc.get(key) or []:
                 contained.append(self._filler(element, kind))
+        self.contained_by_space = {}
+        for key, ifc_class, type_class in FURNISHINGS:
+            for element in self.doc.get(key) or []:
+                product = self._furnishing(element, ifc_class, type_class)
+                container = element.get("ContainedInStructure")
+                if container:
+                    self.contained_by_space.setdefault(container, []).append(product)
+                else:
+                    contained.append(product)
         self.contained = contained
 
     def _wall_frame(self, wall):
@@ -653,15 +690,174 @@ class Builder:
                 height=float(height),
             )
 
-    def _containment(self):
-        if not self.contained:
-            return
-        self.file.create_entity(
-            "IfcRelContainedInSpatialStructure",
-            GlobalId=self._gid("containment", self.doc["storey"]["id"]),
-            RelatedElements=self.contained,
-            RelatingStructure=self.storey,
+    def _spaces(self):
+        products = []
+        for space in self.doc.get("spaces") or []:
+            yaml_id = space["id"]
+            if yaml_id in self.products:
+                raise ValueError(f"duplicate id {yaml_id}")
+            _check_predefined(space, "IfcSpace")
+            placement = self._local((0.0, 0.0, 0.0), (1.0, 0.0, 0.0), self.storey_placement)
+            values = {
+                "GlobalId": global_id(yaml_id, space.get("GlobalId")),
+                "Name": self._named(space, yaml_id),
+                "ObjectPlacement": placement,
+                "CompositionType": "ELEMENT",
+            }
+            for key in ("Description", "ObjectType", "LongName", "PredefinedType"):
+                if space.get(key) is not None:
+                    values[key] = space[key]
+            if space.get("ElevationWithFlooring") is not None:
+                values["ElevationWithFlooring"] = float(
+                    _number(space["ElevationWithFlooring"], f"{yaml_id} ElevationWithFlooring")
+                )
+            product = self.file.create_entity("IfcSpace", **values)
+            self._pset(product, {"id": yaml_id}, yaml_id)
+            self._user_psets(product, space)
+            self.products[yaml_id] = product
+            self.placements[yaml_id] = placement
+            self.space_ids.add(yaml_id)
+            products.append(product)
+        if products:
+            self._aggregate(self.doc["storey"], products)
+
+    def _box(self, width, depth, height):
+        position = self.file.create_entity(
+            "IfcAxis2Placement2D",
+            Location=self._point(float(width) / 2.0, float(depth) / 2.0),
         )
+        profile = self.file.create_entity(
+            "IfcRectangleProfileDef",
+            ProfileType="AREA",
+            Position=position,
+            XDim=float(width),
+            YDim=float(depth),
+        )
+        return self._extrusion(profile, height)
+
+    def _furnishing(self, element, ifc_class, type_class):
+        yaml_id = element["id"]
+        if yaml_id in self.products:
+            raise ValueError(f"duplicate id {yaml_id}")
+        _check_predefined(element, ifc_class)
+        origin = element.get("Origin")
+        if origin is None:
+            ox = oy = 0.0
+        else:
+            if not isinstance(origin, (list, tuple)) or len(origin) != 2:
+                raise ValueError(f"{yaml_id} Origin must be [x, y]")
+            ox = float(_number(origin[0], f"{yaml_id} Origin"))
+            oy = float(_number(origin[1], f"{yaml_id} Origin"))
+        elevation = element.get("Elevation")
+        z = 0.0 if elevation is None else float(_number(elevation, f"{yaml_id} Elevation"))
+        ref = element.get("RefDirection")
+        if ref is None:
+            ux, uy = 1.0, 0.0
+        else:
+            if not isinstance(ref, (list, tuple)) or len(ref) != 2:
+                raise ValueError(f"{yaml_id} RefDirection must be [x, y]")
+            ux = float(_number(ref[0], f"{yaml_id} RefDirection"))
+            uy = float(_number(ref[1], f"{yaml_id} RefDirection"))
+            if math.hypot(ux, uy) < TOL:
+                raise ValueError(f"{yaml_id} RefDirection has zero length")
+        container = element.get("ContainedInStructure")
+        if container is not None and container not in self.space_ids:
+            raise ValueError(f"{yaml_id} is contained in unknown space {container}")
+        parent = self.placements[container] if container else self.storey_placement
+        placement = self._local((ox, oy, z), (ux, uy, 0.0), parent)
+        sizes = []
+        for key in FURNISHING_SIZE:
+            if element.get(key) is None:
+                sizes.append(None)
+                continue
+            value = _number(element[key], f"{yaml_id} {key}")
+            if float(value) <= 0:
+                raise ValueError(f"{yaml_id} {key} must be positive")
+            sizes.append(value)
+        shape = None
+        if all(size is not None for size in sizes):
+            shape = self._shape(
+                [("Body", "SweptSolid", self.body, self._box(sizes[0], sizes[1], sizes[2]))]
+            )
+        values = {
+            "GlobalId": global_id(yaml_id, element.get("GlobalId")),
+            "Name": self._named(element, yaml_id),
+            "ObjectPlacement": placement,
+            "Representation": shape,
+        }
+        for key in ("Description", "Tag", "ObjectType", "PredefinedType"):
+            if element.get(key) is not None:
+                values[key] = element[key]
+        product = self.file.create_entity(ifc_class, **values)
+        book = {"id": yaml_id}
+        if origin is not None:
+            book["OriginX"] = origin[0]
+            book["OriginY"] = origin[1]
+        if elevation is not None:
+            book["Elevation"] = elevation
+        if ref is not None:
+            book["RefDirectionX"] = ref[0]
+            book["RefDirectionY"] = ref[1]
+        for key, size in zip(FURNISHING_SIZE, sizes):
+            if size is not None:
+                book[key] = size
+        self._pset(product, book, yaml_id)
+        self._user_psets(product, element)
+        self._note_type(element, type_class, product)
+        self.products[yaml_id] = product
+        self.placements[yaml_id] = placement
+        return product
+
+    def _note_type(self, element, type_class, product):
+        predefined = element.get("PredefinedType")
+        object_type = element.get("ObjectType")
+        if predefined is None and not object_type:
+            return
+        if type_class in TYPE_PREDEFINED_REQUIRED and predefined is None:
+            return
+        key = (type_class, predefined, object_type)
+        self.typed.setdefault(key, []).append(product)
+
+    def _types(self):
+        for (type_class, predefined, object_type), products in self.typed.items():
+            token = f"{type_class}:{predefined or ''}:{object_type or ''}"
+            values = {
+                "GlobalId": global_id(f"type:{token}"),
+                "Name": object_type or predefined,
+            }
+            if predefined is not None:
+                values["PredefinedType"] = predefined
+            if object_type:
+                values["ElementType"] = object_type
+            if type_class == FURNITURE_TYPE_CLASS:
+                # Required attribute. Not a measured assembly place.
+                values["AssemblyPlace"] = "NOTDEFINED"
+            created = self.file.create_entity(type_class, **values)
+            self.file.create_entity(
+                "IfcRelDefinesByType",
+                GlobalId=global_id(f"rel:defines-type:{token}"),
+                RelatedObjects=products,
+                RelatingType=created,
+            )
+
+    def _containment(self):
+        if self.contained:
+            self.file.create_entity(
+                "IfcRelContainedInSpatialStructure",
+                GlobalId=self._gid("containment", self.doc["storey"]["id"]),
+                RelatedElements=self.contained,
+                RelatingStructure=self.storey,
+            )
+        for space in self.doc.get("spaces") or []:
+            products = self.contained_by_space.get(space["id"])
+            if not products:
+                continue
+            self.file.create_entity(
+                "IfcRelContainedInSpatialStructure",
+                GlobalId=self._gid("containment", space["id"]),
+                RelatedElements=products,
+                RelatingStructure=self.products[space["id"]],
+            )
 
 
 def build_ifc(doc):

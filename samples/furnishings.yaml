@@ -1,0 +1,230 @@
+# Nominal catalogue pieces for one open kitchen, dining, and living room.
+# Sizes are round module dimensions, not a survey. RD Šíma's ground floor
+# stays in samples/ground-floor.yaml and is not furnished here.
+# See docs/spec.md for the entity each piece uses.
+schema: IFC4 ADD2 TC1
+units:
+  LengthUnit: METRE
+project:
+  id: PRJ
+  Name: Furnishings example
+  Aggregates: [SITE]
+site:
+  id: SITE
+  Aggregates: [BLD]
+building:
+  id: BLD
+  Aggregates: [STOREY-1NP]
+storey:
+  id: STOREY-1NP
+  Name: "1.NP"
+  Elevation: 0
+spaces:
+  - id: SPACE-kitchen
+    Name: Kitchen
+    PredefinedType: INTERNAL
+  - id: SPACE-dining
+    Name: Dining
+    PredefinedType: INTERNAL
+  - id: SPACE-living
+    Name: Living
+    PredefinedType: INTERNAL
+walls: []
+openings: []
+doors: []
+windows: []
+furniture:
+  - id: TABLE
+    Name: Dining table
+    PredefinedType: TABLE
+    ObjectType: DiningTable
+    ContainedInStructure: SPACE-dining
+    Origin: [0.4, 3.2]
+    Width: 1.8
+    Depth: 0.9
+    Height: 0.75
+  - id: CHAIR-1
+    Name: Dining chair
+    PredefinedType: CHAIR
+    ObjectType: DiningChair
+    ContainedInStructure: SPACE-dining
+    Origin: [0.55, 2.65]
+    Width: 0.45
+    Depth: 0.5
+    Height: 0.9
+  - id: CHAIR-2
+    Name: Dining chair
+    PredefinedType: CHAIR
+    ObjectType: DiningChair
+    ContainedInStructure: SPACE-dining
+    Origin: [1.15, 2.65]
+    Width: 0.45
+    Depth: 0.5
+    Height: 0.9
+  - id: SOFA
+    Name: Sectional sofa
+    PredefinedType: SOFA
+    ObjectType: SectionalSofa
+    ContainedInStructure: SPACE-living
+    Origin: [5.2, 1.2]
+    Width: 2.6
+    Depth: 1.6
+    Height: 0.85
+  - id: SIDE-TABLE
+    Name: Side table
+    PredefinedType: TABLE
+    ObjectType: SideTable
+    ContainedInStructure: SPACE-living
+    Origin: [7.9, 1.2]
+    Width: 0.4
+    Depth: 0.4
+    Height: 0.5
+  - id: SHELF
+    Name: Wall shelf
+    PredefinedType: SHELF
+    ObjectType: WallShelf
+    ContainedInStructure: SPACE-living
+    Origin: [4.7, 0.2]
+    RefDirection: [0, 1]
+    Elevation: 1.6
+    Width: 2.4
+    Depth: 0.3
+    Height: 0.25
+  - id: SIDEBOARD
+    Name: Sideboard
+    PredefinedType: USERDEFINED
+    ObjectType: Sideboard
+    ContainedInStructure: SPACE-living
+    Origin: [5, 3.4]
+    Width: 1.8
+    Depth: 0.45
+    Height: 0.8
+  - id: TV
+    Name: TV unit
+    PredefinedType: USERDEFINED
+    ObjectType: TvUnit
+    ContainedInStructure: SPACE-living
+    Origin: [7, 3.4]
+    Width: 1.4
+    Depth: 0.4
+    Height: 0.45
+  - id: PLANT
+    Name: Plant shelf
+    PredefinedType: SHELF
+    ObjectType: HangingPlantShelf
+    ContainedInStructure: SPACE-living
+    Origin: [8.6, 0.2]
+    Elevation: 2
+    Width: 0.9
+    Depth: 0.25
+    Height: 0.12
+systemFurniture:
+  - id: CAB-base
+    Name: Base cabinet
+    PredefinedType: USERDEFINED
+    ObjectType: BaseCabinet
+    ContainedInStructure: SPACE-kitchen
+    Origin: [0, 0]
+    Width: 0.6
+    Depth: 0.6
+    Height: 0.9
+  - id: CAB-wall
+    Name: Wall cabinet
+    PredefinedType: USERDEFINED
+    ObjectType: WallCabinet
+    ContainedInStructure: SPACE-kitchen
+    Origin: [0, 0]
+    Elevation: 1.4
+    Width: 0.6
+    Depth: 0.35
+    Height: 0.72
+  - id: CAB-tall
+    Name: Tall cabinet
+    PredefinedType: USERDEFINED
+    ObjectType: TallCabinet
+    ContainedInStructure: SPACE-kitchen
+    Origin: [0.6, 0]
+    Width: 0.6
+    Depth: 0.6
+    Height: 2.2
+  - id: ISLAND
+    Name: Island
+    PredefinedType: USERDEFINED
+    ObjectType: Island
+    ContainedInStructure: SPACE-kitchen
+    Origin: [2.6, 1.2]
+    Width: 2
+    Depth: 0.9
+    Height: 0.9
+sanitaryTerminals:
+  - id: SINK
+    Name: Sink
+    PredefinedType: SINK
+    ObjectType: KitchenSink
+    ContainedInStructure: SPACE-kitchen
+    Origin: [3.8, 1.45]
+    Elevation: 0.9
+    Width: 0.5
+    Depth: 0.4
+    Height: 0.2
+electricAppliances:
+  - id: COOKTOP
+    Name: Cooktop
+    PredefinedType: ELECTRICCOOKER
+    ObjectType: Cooktop
+    ContainedInStructure: SPACE-kitchen
+    Origin: [2.9, 1.45]
+    Elevation: 0.9
+    Width: 0.6
+    Depth: 0.52
+    Height: 0.05
+  - id: FRIDGE
+    Name: Fridge
+    PredefinedType: REFRIGERATOR
+    ObjectType: BuiltInFridge
+    ContainedInStructure: SPACE-kitchen
+    Origin: [1.2, 0]
+    Width: 0.6
+    Depth: 0.6
+    Height: 2.1
+  - id: OVEN
+    Name: Oven
+    PredefinedType: USERDEFINED
+    ObjectType: BuiltInOven
+    ContainedInStructure: SPACE-kitchen
+    Origin: [1.8, 0]
+    Elevation: 0.4
+    Width: 0.6
+    Depth: 0.6
+    Height: 0.6
+  - id: HOOD
+    Name: Hood
+    PredefinedType: USERDEFINED
+    ObjectType: CeilingHood
+    ContainedInStructure: SPACE-kitchen
+    Origin: [2.9, 1.4]
+    Elevation: 1.5
+    Width: 0.9
+    Depth: 0.6
+    Height: 0.3
+lightFixtures:
+  - id: TRACK
+    Name: Track light
+    PredefinedType: DIRECTIONSOURCE
+    ObjectType: TrackLight
+    ContainedInStructure: SPACE-living
+    Origin: [5.4, 2.2]
+    Elevation: 2.4
+    Width: 1.5
+    Depth: 0.08
+    Height: 0.1
+coverings:
+  - id: RUG
+    Name: Rug
+    PredefinedType: USERDEFINED
+    ObjectType: Rug
+    ContainedInStructure: SPACE-living
+    Origin: [5, 1]
+    Width: 3
+    Depth: 2
+    Height: 0.01

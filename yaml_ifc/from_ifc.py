@@ -15,6 +15,8 @@ import numpy as np
 
 from yaml_ifc.ids import connection_yaml_id, is_derived
 from yaml_ifc.supported import (
+    FURNISHINGS,
+    FURNISHING_SIZE,
     ORIGINATING_SYSTEM,
     PSET_AXIS,
     PSET_MATERIAL_FROM_THICKNESS,
@@ -67,6 +69,23 @@ def _pset_map(element):
             if prop.is_a("IfcPropertySingleValue"):
                 found[prop.Name] = _plain(prop.NominalValue)
     return found
+
+
+def _defining_type(element):
+    for rel in getattr(element, "IsTypedBy", []) or []:
+        if rel.is_a("IfcRelDefinesByType") and rel.RelatingType:
+            return rel.RelatingType
+    return None
+
+
+def _object_type_text(element):
+    if getattr(element, "ObjectType", None):
+        return str(element.ObjectType)
+    typed = _defining_type(element)
+    element_type = getattr(typed, "ElementType", None) if typed is not None else None
+    if element_type:
+        return str(element_type)
+    return None
 
 
 def _user_psets(element):
@@ -472,6 +491,111 @@ class Reader:
             self._opening_from_geometry(opening, host, entity)
         return _ordered_opening(entity)
 
+    def _direction_ratios(self, direction):
+        if direction is None:
+            return None
+        return [float(value) for value in direction.DirectionRatios]
+
+    def _placement_is_identity(self, placement):
+        if placement is None:
+            return True
+        location = placement.Location.Coordinates if placement.Location else (0.0, 0.0, 0.0)
+        if any(abs(float(value)) > 1e-6 for value in location):
+            return False
+        axis = self._direction_ratios(getattr(placement, "Axis", None))
+        if axis is not None and (
+            len(axis) < 3 or abs(axis[0]) > 1e-4 or abs(axis[1]) > 1e-4 or abs(axis[2] - 1.0) > 1e-4
+        ):
+            return False
+        ref = self._direction_ratios(getattr(placement, "RefDirection", None))
+        if ref is not None and (len(ref) < 2 or abs(ref[0] - 1.0) > 1e-4 or abs(ref[1]) > 1e-4):
+            return False
+        return True
+
+    def _corner_box(self, profile):
+        """Width and depth of a rectangle whose corner, not its centre, is the origin."""
+        if profile is None or not profile.is_a("IfcRectangleProfileDef"):
+            return None
+        position = profile.Position
+        if position is None or position.Location is None:
+            return None
+        ref = self._direction_ratios(getattr(position, "RefDirection", None))
+        if ref is not None and (len(ref) < 2 or abs(ref[0] - 1.0) > 1e-4 or abs(ref[1]) > 1e-4):
+            return None
+        centre = position.Location.Coordinates
+        xdim, ydim = float(profile.XDim), float(profile.YDim)
+        if abs(float(centre[0]) - xdim / 2.0) > 1e-4 or abs(float(centre[1]) - ydim / 2.0) > 1e-4:
+            return None
+        return xdim, ydim
+
+    def _furnishing_from_geometry(self, product, entity):
+        """Placement and the corner-origin box, for a file this writer did not make."""
+        if not product.ObjectPlacement:
+            return
+        origin = self._to_storey(product.ObjectPlacement, (0.0, 0.0, 0.0))
+        along = self._to_storey(product.ObjectPlacement, (1.0, 0.0, 0.0))
+        entity["Origin"] = [self._metres(origin[0]), self._metres(origin[1])]
+        elevation = self._metres(origin[2])
+        if abs(float(elevation)) > TOL:
+            entity["Elevation"] = elevation
+        dx = float(along[0]) - float(origin[0])
+        dy = float(along[1]) - float(origin[1])
+        length = math.hypot(dx, dy)
+        if length > TOL and (abs(dx / length - 1.0) > 1e-4 or abs(dy / length) > 1e-4):
+            entity["RefDirection"] = [num(dx / length), num(dy / length)]
+        solid = _extrusion(product)
+        if solid is None or not self._placement_is_identity(solid.Position):
+            return
+        extruded = self._direction_ratios(solid.ExtrudedDirection)
+        if extruded is not None and (
+            len(extruded) < 3
+            or abs(extruded[0]) > 1e-4
+            or abs(extruded[1]) > 1e-4
+            or float(extruded[2]) <= 0
+        ):
+            return
+        box = self._corner_box(solid.SweptArea)
+        if box is None:
+            return
+        entity["Width"] = self._metres(box[0])
+        entity["Depth"] = self._metres(box[1])
+        entity["Height"] = self._metres(solid.Depth)
+
+    def _space(self, space):
+        book = _pset_map(space)
+        entity = self._common(space, book)
+        _put(entity, "ObjectType", _object_type_text(space))
+        _put(entity, "LongName", getattr(space, "LongName", None))
+        if space.ElevationWithFlooring is not None:
+            entity["ElevationWithFlooring"] = self._metres(space.ElevationWithFlooring)
+        return _ordered_space(entity)
+
+    def _furnishing(self, element, contained_in):
+        book = _pset_map(element)
+        entity = self._common(element, book)
+        _put(entity, "ObjectType", _object_type_text(element))
+        if "PredefinedType" not in entity:
+            typed = _defining_type(element)
+            fallback = _enum(getattr(typed, "PredefinedType", None)) if typed is not None else None
+            if fallback:
+                entity["PredefinedType"] = fallback
+        if book.get("id"):
+            if "OriginX" in book or "OriginY" in book:
+                entity["Origin"] = [book.get("OriginX"), book.get("OriginY")]
+            if "Elevation" in book:
+                entity["Elevation"] = book["Elevation"]
+            if "RefDirectionX" in book or "RefDirectionY" in book:
+                entity["RefDirection"] = [book.get("RefDirectionX"), book.get("RefDirectionY")]
+            for key in FURNISHING_SIZE:
+                if key in book:
+                    entity[key] = book[key]
+        else:
+            self._furnishing_from_geometry(element, entity)
+        container = contained_in.get(element)
+        if container is not None and container.is_a("IfcSpace"):
+            entity["ContainedInStructure"] = self.by_product.get(container) or self._id_for(container)
+        return _ordered_furnishing(entity)
+
     def _filler(self, element, fill_of):
         book = _pset_map(element)
         entity = self._common(element, book)
@@ -543,6 +667,18 @@ class Reader:
             fill_of[rel.RelatedBuildingElement] = rel.RelatingOpeningElement
         doors = [_strip(self._filler(door, fill_of)) for door in model.by_type("IfcDoor")]
         windows = [_strip(self._filler(window, fill_of)) for window in model.by_type("IfcWindow")]
+        # Spaces first, so a furnishing can name the room that contains it.
+        spaces = [_strip(self._space(space)) for space in model.by_type("IfcSpace")]
+        contained_in = {}
+        for rel in model.by_type("IfcRelContainedInSpatialStructure"):
+            for related in rel.RelatedElements or []:
+                contained_in[related] = rel.RelatingStructure
+        furnishing_lists = {}
+        for key, ifc_class, _type_class in FURNISHINGS:
+            furnishing_lists[key] = [
+                _strip(self._furnishing(element, contained_in))
+                for element in model.by_type(ifc_class)
+            ]
 
         site_extra = {}
         if site.RefElevation is not None:
@@ -561,13 +697,20 @@ class Reader:
             "site": self._spatial_node(site, site_extra),
             "building": self._spatial_node(building, building_extra),
             "storey": self._spatial_node(self.storey, storey_extra),
-            "walls": walls,
         }
+        if spaces:
+            document["spaces"] = spaces
+        # The original lists stay present when empty, so a walls-only file
+        # comes back with openings, doors, and windows still written.
+        document["walls"] = walls
         if connections:
             document["connections"] = connections
         document["openings"] = openings
         document["doors"] = doors
         document["windows"] = windows
+        for key, _ifc_class, _type_class in FURNISHINGS:
+            if furnishing_lists[key]:
+                document[key] = furnishing_lists[key]
         return document
 
     def _connections(self):
@@ -664,6 +807,46 @@ def _ordered_wall(entity):
             "Footprint",
             "Profile",
             "MaterialLayers",
+            "PropertySets",
+        ),
+    )
+
+
+def _ordered_space(entity):
+    return _pick(
+        entity,
+        (
+            "id",
+            "Name",
+            "GlobalId",
+            "Description",
+            "ObjectType",
+            "LongName",
+            "PredefinedType",
+            "ElevationWithFlooring",
+            "PropertySets",
+        ),
+    )
+
+
+def _ordered_furnishing(entity):
+    return _pick(
+        entity,
+        (
+            "id",
+            "Name",
+            "GlobalId",
+            "Description",
+            "Tag",
+            "PredefinedType",
+            "ObjectType",
+            "ContainedInStructure",
+            "Origin",
+            "Elevation",
+            "RefDirection",
+            "Width",
+            "Depth",
+            "Height",
             "PropertySets",
         ),
     )
