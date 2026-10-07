@@ -221,7 +221,7 @@ Present when known, and omitted otherwise:
 
 - `Name`, `GlobalId`, `Description`, `Tag`
 - `PredefinedType` — the enum of that class (the table below)
-- `ObjectType` — the catalogue token, for example `BaseCabinet600`. Required when `PredefinedType` is `USERDEFINED`. Allowed beside any other predefined type, where the enum is the class and the token is the product
+- `ObjectType` — the family name, for example `BaseCabinet`. Required when `PredefinedType` is `USERDEFINED`. Allowed beside any other predefined type, where the enum is the class and the name is the product. A family name carries no size: a 600 mm base cabinet and an 800 mm base cabinet are both `BaseCabinet`. `Width`, `Depth`, and `Height` are the only dimensions
 - `ContainedInStructure` — a space `id`. Omitted means the storey
 - `Origin` — `[x, y]` in the storey plan, the corner of the box. Omitted means `[0, 0]`
 - `Elevation` — base Z above the storey. Omitted means `0`
@@ -250,7 +250,7 @@ The box is not an IFC attribute. `OverallWidth` belongs to doors and windows, no
 - id: CAB-base
   Name: Base cabinet
   PredefinedType: USERDEFINED
-  ObjectType: BaseCabinet600
+  ObjectType: BaseCabinet
   ContainedInStructure: SPACE-kitchen
   Origin: [0, 0]
   Width: 0.6
@@ -271,11 +271,11 @@ Occurrences that share a class, a `PredefinedType`, and an `ObjectType` share on
 
 `samples/furnishings.yaml` is one of each piece below, plus a second dining chair so the shared type is visible. The sizes are nominal module dimensions, not a measured plan. `samples/ground-floor.yaml` is not furnished.
 
-These tokens are the ones the example uses. They are not a closed list. The converter stores any `ObjectType` string.
+These names are the ones the example uses. They are not a closed list. Each one is a family, with no width, depth, or height written into it. The converter stores the string as written and does not parse it, so a digit in the name would be kept, and it would still be the wrong place for a size.
 
 | Piece | IFC | `PredefinedType` | `ObjectType` |
 | --- | --- | --- | --- |
-| Base cabinet | `IfcSystemFurnitureElement` | `USERDEFINED` | `BaseCabinet600` |
+| Base cabinet | `IfcSystemFurnitureElement` | `USERDEFINED` | `BaseCabinet` |
 | Wall cabinet | `IfcSystemFurnitureElement` | `USERDEFINED` | `WallCabinet` |
 | Tall cabinet | `IfcSystemFurnitureElement` | `USERDEFINED` | `TallCabinet` |
 | Island | `IfcSystemFurnitureElement` | `USERDEFINED` | `Island` |
@@ -424,7 +424,7 @@ An IFC file also contains entities this subset does not store (slabs, roofs, sta
 10. **120 mm squares** on the wall layer are short `IfcWall`s. `IfcColumn` is deferred; they may want to move later.
 11. **Implicit storey containment** while there is only one storey. Confirm, or put `ContainedInStructure` on every element now.
 12. **Corner joints** are butt joints, recorded in `connections`. The relating wall runs through and the related wall is trimmed to its face. There is no mitre and no join-style field. An axis in the drawing usually stops on the other wall's face, about half a thickness short of the centre-line intersection. `python -m yaml_ifc detect-connections` snaps those endpoints in the YAML, as a reviewed edit of the file, and shifts `AlongAxis` so a hosted opening stays where it was. The converter does not snap or extend axes itself.
-13. **Cabinet granularity.** The example is one element per module (`BaseCabinet600`), not one element per run of cabinets. A stack of ovens is one appliance per oven. Confirm that Blueprints wants the module, not the run.
+13. **Cabinet granularity.** The example is one element per module (`BaseCabinet`), not one element per run of cabinets. A stack of ovens is one appliance per oven. Confirm that Blueprints wants the module, not the run.
 14. **The island is not voided.** The cooktop and the sink are separate products placed in the island's volume. There is no opening relationship. The cut-out is generated from the type.
 15. **Non-rectangular plans.** A sectional is `SOFA` / `SectionalSofa` and one box, the extent. The L is not stored. A footprint polygon on a furnishing element would carry it, and would no longer be "a box plus a type string".
 16. **Rug versus flooring.** A rug is `IfcCovering` / `USERDEFINED` / `Rug`. `FLOORING` is the room's floor finish. Both predefined types are accepted. Confirm the rug should stay `USERDEFINED`.
@@ -433,5 +433,4 @@ An IFC file also contains entities this subset does not store (slabs, roofs, sta
 19. **Nominal property sets.** `Pset_FurnitureTypeCommon` can store `NominalLength`, `NominalDepth`, `NominalHeight`, and `IsBuiltIn`. The converter does not fill it. The box is the size. Should a later writer copy the box into that set?
 20. **Type objects are derived.** They are not YAML entries. `AssemblyPlace` is the filler `NOTDEFINED`, not a claim about factory or site assembly. Type property sets and mapped geometry are dropped on import.
 21. **Space bodies.** A room is an id, a name, and a predefined type, so furniture can be contained. A footprint and a clear height are not stored. Wall `Height` in the ground-floor sample is still omitted for that reason.
-22. **`ObjectType` and `Width` can disagree.** `BaseCabinet600` does not have to be 0.6 m wide. The converter stores both and does not parse the token.
-23. **The TV is the unit.** `TvUnit` is `IfcFurniture`. The screen is not an `IfcAudioVisualAppliance`. The hanging plant shelf is `IfcFurniture` / `SHELF`, not a suspended member.
+22. **The TV is the unit.** `TvUnit` is `IfcFurniture`. The screen is not an `IfcAudioVisualAppliance`. The hanging plant shelf is `IfcFurniture` / `SHELF`, not a suspended member.
