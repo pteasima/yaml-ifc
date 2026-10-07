@@ -4,7 +4,7 @@ from pathlib import Path
 
 import yaml
 
-FLOW_KEYS = {"Start", "End"}
+FLOW_KEYS = {"Start", "End", "Origin", "RefDirection"}
 
 
 class _Flow(list):

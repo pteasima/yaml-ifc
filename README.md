@@ -1,10 +1,10 @@
 # yaml-ifc
 
-A YAML format, shaped like IFC, for one house's building elements. Agents edit it as text. This version is walls and openings only.
+A YAML format, shaped like IFC, for one house's building elements. Agents edit it as text. This version is walls, openings, and furnishings.
 
 Process for working in this repo is in [AGENTS.md](AGENTS.md).
 
-The format is [docs/spec.md](docs/spec.md). The ground floor of RD Šíma is [samples/ground-floor.yaml](samples/ground-floor.yaml).
+The format is [docs/spec.md](docs/spec.md). The ground floor of RD Šíma is [samples/ground-floor.yaml](samples/ground-floor.yaml) (walls and openings only). A small furnishings example, with nominal sizes rather than a survey, is [samples/furnishings.yaml](samples/furnishings.yaml).
 
 Render a plan locally with `pip install -r tools/requirements.txt` (needs libcairo2) and `python tools/render_plan.py samples/ground-floor.yaml --out-dir dist`.
 

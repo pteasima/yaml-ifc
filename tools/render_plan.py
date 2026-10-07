@@ -5,6 +5,7 @@ Reads the walls-and-openings subset in docs/spec.md and writes an SVG plus a
 PNG (via cairosvg). Walls are the centreline axis with Thickness drawn as a
 filled band. A wall with no thickness is a thin line. Openings are cut out of
 the host wall; doors, windows, and plain openings are drawn differently.
+Furnishings are rectangles from Origin, Width, and Depth.
 """
 
 import argparse
@@ -26,6 +27,19 @@ PLAIN = "#2a8f4a"
 PLAIN_FILL = "#d9efe1"
 INK = "#2b2824"
 MUTED = "#6a645c"
+FURN_FILL = "#e4d7c3"
+FURN_EDGE = "#8a5a32"
+
+# Plan boxes for the furnishing lists. Coverings (a rug) are drawn under the
+# pieces that sit on them. The converter owns the IFC; this is only the picture.
+FURNISHING_KEYS = (
+    "coverings",
+    "systemFurniture",
+    "furniture",
+    "sanitaryTerminals",
+    "electricAppliances",
+    "lightFixtures",
+)
 
 HEADER = 44
 MARGIN = 28
@@ -217,6 +231,32 @@ def opening_depth(opening, thickness):
     return 0.16
 
 
+def furnishing_rect(item):
+    origin = item.get("Origin")
+    if not isinstance(origin, (list, tuple)) or len(origin) < 2:
+        return None
+    ox, oy = float(origin[0]), float(origin[1])
+    width, depth = item.get("Width"), item.get("Depth")
+    if width is None or depth is None:
+        return [
+            (ox, oy),
+            (ox + 0.15, oy),
+            (ox + 0.15, oy + 0.15),
+            (ox, oy + 0.15),
+        ]
+    ref = item.get("RefDirection") or [1.0, 0.0]
+    ux, uy = float(ref[0]), float(ref[1])
+    length = math.hypot(ux, uy) or 1.0
+    ux, uy = ux / length, uy / length
+    px, py = -uy, ux
+    width, depth = float(width), float(depth)
+
+    def corner(x, y):
+        return (ox + x * ux + y * px, oy + x * uy + y * py)
+
+    return [corner(0, 0), corner(width, 0), corner(width, depth), corner(0, depth)]
+
+
 def collect_bounds(points, bounds):
     for x, y in points:
         bounds[0] = min(bounds[0], x)
@@ -305,7 +345,18 @@ def render_document(doc, filename):
             }
         )
 
-    if not prepared or bounds[0] is math.inf:
+    pieces = []
+    for key in FURNISHING_KEYS:
+        for item in doc.get(key) or []:
+            if not isinstance(item, dict):
+                continue
+            rect = furnishing_rect(item)
+            if rect is None:
+                continue
+            collect_bounds(rect, bounds)
+            pieces.append((item, rect))
+
+    if (not prepared and not pieces) or bounds[0] is math.inf:
         raise ValueError("nothing to draw")
 
     pad = 1.2
@@ -429,11 +480,45 @@ def render_document(doc, filename):
             },
         )
 
+    for item, rect in pieces:
+        canvas.path(
+            [rect],
+            fill=FURN_FILL,
+            stroke=FURN_EDGE,
+            **{"stroke-width": "1.2", "stroke-linejoin": "miter"},
+        )
+        label = item.get("id") or ""
+        if not label:
+            continue
+        cx = sum(point[0] for point in rect) / len(rect)
+        cy = sum(point[1] for point in rect) / len(rect)
+        sx, sy = canvas.xy((cx, cy))
+        if any(math.hypot(sx - px, sy - py) < 18 for _text, px, py in placed):
+            continue
+        placed.append((label, sx, sy))
+        canvas.text(
+            sx,
+            sy,
+            label,
+            **{
+                "text-anchor": "middle",
+                "dominant-baseline": "middle",
+                "font-family": "DejaVu Sans, sans-serif",
+                "font-size": "8",
+                "fill": INK,
+                "stroke": BG,
+                "stroke-width": "3",
+                "paint-order": "stroke",
+            },
+        )
+
     plain = sum(1 for opening in openings if kind_of(opening.get("id"), doors, windows) == "plain")
     title = (
         f"{filename} · {len(walls)} walls · {len(openings)} openings · "
         f"{len(doors)} doors · {len(windows)} windows · {plain} plain"
     )
+    if pieces:
+        title += f" · {len(pieces)} furnishings"
     canvas.text(
         MARGIN,
         26,

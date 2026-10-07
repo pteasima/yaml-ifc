@@ -1,6 +1,6 @@
 # yaml-ifc
 
-A YAML file for one house, edited as text. The names match IFC, so a later converter to a real IFC file can be mechanical. This version covers walls and the openings in them.
+A YAML file for one house, edited as text. The names match IFC, so a later converter to a real IFC file can be mechanical. This version covers walls, the openings in them, and whole furnishing elements (kitchen modules, appliances, and loose furniture).
 
 ## IFC version
 
@@ -12,23 +12,26 @@ Spatial container, the minimum IFC asks for:
 
 - `IfcProject`, `IfcSite`, `IfcBuilding`, `IfcBuildingStorey`
 - `IfcRelAggregates` along that chain
-- `IfcRelContainedInSpatialStructure` from the storey to each wall, door, and window
+- `IfcRelContainedInSpatialStructure` from the storey to each wall, door, and window, and to each furnishing element that names no room
+- `IfcSpace`, aggregated under the storey, and `IfcRelContainedInSpatialStructure` from a space to the furnishings in that room
 
-Elements and the two relationships between them:
+Elements and the relationships between them:
 
 - `IfcWall`
 - `IfcOpeningElement`, joined to its wall by `IfcRelVoidsElement`
 - `IfcDoor` and `IfcWindow`, joined to an opening by `IfcRelFillsElement`
+- `IfcFurniture`, `IfcSystemFurnitureElement`, `IfcSanitaryTerminal`, `IfcElectricAppliance`, `IfcLightFixture`, `IfcCovering`
+- The matching type object (`IfcFurnitureType`, and the others), one per catalogue entry, joined by `IfcRelDefinesByType`
 
 Units are metres, declared once in the header.
 
 ## Deferred
 
-Not in this version, and not started: `IfcSpace` and other rooms, slabs, ceilings, coverings, roofs, stairs, ramps, furniture, columns, beams, MEP, openings in anything other than a wall, more than one storey, sites with a map conversion, DWG import, and viewers.
+Not in this version, and not started: slabs, roofs, stairs, ramps, columns, beams, MEP, openings in anything other than a wall, more than one storey, sites with a map conversion, DWG import, and viewers. A space has no body. Coverings other than a placed box (a floor build-up, a ceiling, cladding) are not modeled. Furniture parts — hinges, fronts, drawers, the L of a sectional — are not entities. `IfcFurnishingElement` itself, when it is neither `IfcFurniture` nor `IfcSystemFurnitureElement`, is not stored.
 
 ## File shape
 
-Top-level keys, in this order: `schema`, `units`, `project`, `site`, `building`, `storey`, `walls`, `connections`, `openings`, `doors`, `windows`. `connections` is optional and omitted when the file has none. One entity per list item. No YAML anchors or aliases. Comments are for people; a converter ignores them.
+Top-level keys, in this order: `schema`, `units`, `project`, `site`, `building`, `storey`, `spaces`, `walls`, `connections`, `openings`, `doors`, `windows`, `furniture`, `systemFurniture`, `sanitaryTerminals`, `electricAppliances`, `lightFixtures`, `coverings`. `walls`, `openings`, `doors`, and `windows` are present even when empty. `connections`, `spaces`, and the furnishing lists are omitted when the file has none. One entity per list item. No YAML anchors or aliases. Comments are for people; a converter ignores them.
 
 ```yaml
 schema: IFC4 ADD2 TC1
@@ -42,7 +45,7 @@ Every entity has a stable `id`, unique in the file. `Name` is optional; the expo
 
 List order in a hand-written file is the author's. A canonical writer sorts each list by `id`, then writes keys in the order below, so a round trip comes back identical.
 
-With one storey, every `IfcWall`, `IfcDoor`, and `IfcWindow` is contained in that storey. Openings are not contained in the storey; they void a wall. A second storey would need an explicit `ContainedInStructure` on each element. That field is deferred with multi-storey files.
+With one storey, every `IfcWall`, `IfcDoor`, and `IfcWindow` is contained in that storey. Openings are not contained in the storey; they void a wall. A furnishing element is contained in the space named by `ContainedInStructure`, or in the storey when that field is omitted. A second storey would need the same field on walls, doors, and windows. Multi-storey files are still deferred.
 
 A value the source does not contain is left out. It is not filled with a guess. Derived values that the file does store (`SillHeight` when head and height are both known, `GlobalId`, the `Name` fallback) are listed below.
 
@@ -76,7 +79,25 @@ storey:
 | `site.RefElevation` | `IfcSite.RefElevation`, metres above the map datum |
 | `storey.Elevation` | `IfcBuildingStorey.Elevation`, metres above the project origin |
 
-Plan coordinates are metres in the storey's XY. Z is up. A wall's base is `Elevation` when that field is set, otherwise the storey's `Elevation`.
+Plan coordinates are metres in the storey's XY. Z is up. A wall's base is `Elevation` when that field is set, otherwise the storey's `Elevation`. A space is placed at the storey origin, so a furnishing's coordinates are storey coordinates whether or not it names a room.
+
+## IfcSpace
+
+The list key `spaces` selects `IfcSpace`. A space is a room that furnishings can belong to. It has no body in this version: no footprint and no height. Every space is aggregated under the one storey.
+
+Required: `id`.
+
+Present when known, and omitted otherwise: `Name`, `GlobalId`, `Description`, `ObjectType`, `LongName`, `PredefinedType`, `ElevationWithFlooring`, `PropertySets`.
+
+`PredefinedType` is `IfcSpaceTypeEnum`: `SPACE`, `PARKING`, `GFA`, `INTERNAL`, `EXTERNAL`, `USERDEFINED`, `NOTDEFINED`. `USERDEFINED` requires `ObjectType`. `INTERNAL` is a room inside the building.
+
+```yaml
+- id: SPACE-kitchen
+  Name: Kitchen
+  PredefinedType: INTERNAL
+```
+
+`CompositionType` is written `ELEMENT` and dropped on import, the same way it is for the site, building, and storey. `ElevationWithFlooring` is the IFC attribute, in metres. It is not a placement.
 
 ## IfcWall
 
@@ -181,6 +202,101 @@ An L corner is two ends, as in the example above. A T puts `ATPATH` on the relat
 
 Optional on a door: `PredefinedType` (`DOOR`, `GATE`, `TRAPDOOR`, …), `OperationType`. Optional on a window: `PredefinedType` (`WINDOW`, `SKYLIGHT`, …), `PartitioningType`. Omitted when the drawing does not say.
 
+## Furnishings
+
+A furnishing entry is one whole element: placement, a box, a name, and a catalogue string. Hinges, fronts, drawers, and the generated shape of a type stay out of the file. The list key selects the IFC class.
+
+| YAML key | IFC |
+| --- | --- |
+| `furniture` | `IfcFurniture` |
+| `systemFurniture` | `IfcSystemFurnitureElement` |
+| `sanitaryTerminals` | `IfcSanitaryTerminal` |
+| `electricAppliances` | `IfcElectricAppliance` |
+| `lightFixtures` | `IfcLightFixture` |
+| `coverings` | `IfcCovering` |
+
+Required: `id`.
+
+Present when known, and omitted otherwise:
+
+- `Name`, `GlobalId`, `Description`, `Tag`
+- `PredefinedType` — the enum of that class (the table below)
+- `ObjectType` — the catalogue token, for example `BaseCabinet600`. Required when `PredefinedType` is `USERDEFINED`. Allowed beside any other predefined type, where the enum is the class and the token is the product
+- `ContainedInStructure` — a space `id`. Omitted means the storey
+- `Origin` — `[x, y]` in the storey plan, the corner of the box. Omitted means `[0, 0]`
+- `Elevation` — base Z above the storey. Omitted means `0`
+- `RefDirection` — plan direction of local X, the width axis. Omitted means `[1, 0]`
+- `Width`, `Depth`, `Height` — the box, in metres. Local X is the width, local Y the depth, local Z the height. The placement origin is the minimum corner. A solid is written only when all three are present. A partial size is kept and has no solid
+- `PropertySets`
+
+A written zero is kept. The omitted defaults above are not written back.
+
+`PredefinedType` values, by class:
+
+| Class | `PredefinedType` |
+| --- | --- |
+| `IfcFurniture` | `CHAIR`, `TABLE`, `DESK`, `BED`, `FILECABINET`, `SHELF`, `SOFA`, `USERDEFINED`, `NOTDEFINED` |
+| `IfcSystemFurnitureElement` | `PANEL`, `WORKSURFACE`, `USERDEFINED`, `NOTDEFINED` |
+| `IfcSanitaryTerminal` | `BATH`, `BIDET`, `CISTERN`, `SHOWER`, `SINK`, `SANITARYFOUNTAIN`, `TOILETPAN`, `URINAL`, `WASHHANDBASIN`, `WCSEAT`, `USERDEFINED`, `NOTDEFINED` |
+| `IfcElectricAppliance` | `DISHWASHER`, `ELECTRICCOOKER`, `FREESTANDINGELECTRICHEATER`, `FREESTANDINGFAN`, `FREESTANDINGWATERHEATER`, `FREESTANDINGWATERCOOLER`, `FREEZER`, `FRIDGE_FREEZER`, `HANDDRYER`, `KITCHENMACHINE`, `MICROWAVE`, `PHOTOCOPIER`, `REFRIGERATOR`, `TUMBLEDRYER`, `VENDINGMACHINE`, `WASHINGMACHINE`, `USERDEFINED`, `NOTDEFINED` |
+| `IfcLightFixture` | `POINTSOURCE`, `DIRECTIONSOURCE`, `SECURITYLIGHTING`, `USERDEFINED`, `NOTDEFINED` |
+| `IfcCovering` | `CEILING`, `FLOORING`, `CLADDING`, `ROOFING`, `MOLDING`, `SKIRTINGBOARD`, `INSULATION`, `MEMBRANE`, `SLEEVING`, `WRAPPING`, `USERDEFINED`, `NOTDEFINED` |
+
+Kitchen modules are `IfcSystemFurnitureElement`. The enum has no cabinet value, so a cabinet is `USERDEFINED` and the module name is `ObjectType`. `PANEL` and `WORKSURFACE` are the two values the enum does name. A loose chair, table, shelf, or sofa is `IfcFurniture` with the matching predefined type. A product the enum does not name (`Sideboard`, `TvUnit`, a rug, an oven, a hood) is `USERDEFINED` plus `ObjectType`.
+
+The box is not an IFC attribute. `OverallWidth` belongs to doors and windows, not to these classes. Standard property sets can carry a nominal size (`Pset_FurnitureTypeCommon` has `NominalLength`, `NominalDepth`, `NominalHeight`; the system-furniture set has no depth; appliances have none). Those sets are not filled in by the converter. An author can still add `PropertySets`. The box is the size every class can share.
+
+```yaml
+- id: CAB-base
+  Name: Base cabinet
+  PredefinedType: USERDEFINED
+  ObjectType: BaseCabinet600
+  ContainedInStructure: SPACE-kitchen
+  Origin: [0, 0]
+  Width: 0.6
+  Depth: 0.6
+  Height: 0.9
+- id: SOFA
+  Name: Sectional sofa
+  PredefinedType: SOFA
+  ObjectType: SectionalSofa
+  ContainedInStructure: SPACE-living
+  Origin: [5.2, 1.2]
+  Width: 2.6
+  Depth: 1.6
+  Height: 0.85
+```
+
+Occurrences that share a class, a `PredefinedType`, and an `ObjectType` share one type object (`IfcFurnitureType`, `IfcSystemFurnitureElementType`, `IfcSanitaryTerminalType`, `IfcElectricApplianceType`, `IfcLightFixtureType`, or `IfcCoveringType`), linked by `IfcRelDefinesByType`. The type's `Name` is `ObjectType` when that is set, otherwise `PredefinedType`. Its `ElementType` is `ObjectType`. Its `PredefinedType` matches the occurrence. The type is not a YAML entry. It is rebuilt from the occurrences. `IfcFurnitureType.AssemblyPlace` is required by the schema and is written `NOTDEFINED`; that filler is not a measured value and is not written back. A sanitary terminal, appliance, light, or covering with no `PredefinedType` has no type object, because those type entities require one.
+
+`samples/furnishings.yaml` is one of each piece below, plus a second dining chair so the shared type is visible. The sizes are nominal module dimensions, not a measured plan. `samples/ground-floor.yaml` is not furnished.
+
+These tokens are the ones the example uses. They are not a closed list. The converter stores any `ObjectType` string.
+
+| Piece | IFC | `PredefinedType` | `ObjectType` |
+| --- | --- | --- | --- |
+| Base cabinet | `IfcSystemFurnitureElement` | `USERDEFINED` | `BaseCabinet600` |
+| Wall cabinet | `IfcSystemFurnitureElement` | `USERDEFINED` | `WallCabinet` |
+| Tall cabinet | `IfcSystemFurnitureElement` | `USERDEFINED` | `TallCabinet` |
+| Island | `IfcSystemFurnitureElement` | `USERDEFINED` | `Island` |
+| Cooktop | `IfcElectricAppliance` | `ELECTRICCOOKER` | `Cooktop` |
+| Sink | `IfcSanitaryTerminal` | `SINK` | `KitchenSink` |
+| Built-in fridge | `IfcElectricAppliance` | `REFRIGERATOR` | `BuiltInFridge` |
+| Built-in oven | `IfcElectricAppliance` | `USERDEFINED` | `BuiltInOven` |
+| Ceiling hood | `IfcElectricAppliance` | `USERDEFINED` | `CeilingHood` |
+| Dining table | `IfcFurniture` | `TABLE` | `DiningTable` |
+| Dining chair | `IfcFurniture` | `CHAIR` | `DiningChair` |
+| Sectional sofa | `IfcFurniture` | `SOFA` | `SectionalSofa` |
+| Side table | `IfcFurniture` | `TABLE` | `SideTable` |
+| Rug | `IfcCovering` | `USERDEFINED` | `Rug` |
+| Wall shelf | `IfcFurniture` | `SHELF` | `WallShelf` |
+| Sideboard | `IfcFurniture` | `USERDEFINED` | `Sideboard` |
+| TV unit | `IfcFurniture` | `USERDEFINED` | `TvUnit` |
+| Hanging plant shelf | `IfcFurniture` | `SHELF` | `HangingPlantShelf` |
+| Track light | `IfcLightFixture` | `DIRECTIONSOURCE` | `TrackLight` |
+
+A run of cabinets is one element per module, not one element for the run. A stack of ovens is one `BuiltInOven` per oven. The island is one system-furniture element; the cooktop and the sink are separate products sitting in its volume, not voids cut out of it. The sectional's L, and every front and handle, is generated later from `ObjectType`. The box is the extent.
+
 ## Optional extensions
 
 Absent unless a file adds them.
@@ -239,6 +355,17 @@ Each property is an `IfcPropertySingleValue`: the key is `Name`, the YAML value 
 | `VoidsElement` | `IfcRelVoidsElement.RelatingBuildingElement` |
 | `AlongAxis`, `SillHeight` | Opening placement, relative to the wall |
 | `Width`, `Height`, `Depth` | Opening body. `Depth` defaults to the host `Thickness` |
+| `spaces[]` | `IfcSpace`, aggregated under the storey |
+| `furniture[]` | `IfcFurniture` |
+| `systemFurniture[]` | `IfcSystemFurnitureElement` |
+| `sanitaryTerminals[]` | `IfcSanitaryTerminal` |
+| `electricAppliances[]` | `IfcElectricAppliance` |
+| `lightFixtures[]` | `IfcLightFixture` |
+| `coverings[]` | `IfcCovering` |
+| `ObjectType` | `IfcObject.ObjectType`, and `ElementType` on the derived type |
+| `ContainedInStructure` | `IfcRelContainedInSpatialStructure.RelatingStructure`, a space |
+| `Origin`, `RefDirection`, `Elevation` | Placement of the box corner. Local X is `RefDirection`, local Z is up |
+| `Width`, `Depth`, `Height` | Box body. `Width` along local X, `Depth` along local Y, `Height` extruded up |
 | `doors[]`, `windows[]` | `IfcDoor`, `IfcWindow` |
 | `FillsOpening` | `IfcRelFillsElement.RelatingOpeningElement` |
 | `OverallWidth`, `OverallHeight` | The same attributes on `IfcDoor` / `IfcWindow` |
@@ -250,11 +377,17 @@ Each property is an `IfcPropertySingleValue`: the key is `Name`, the YAML value 
 | `connections[]` | `IfcRelConnectsPathElements` |
 | `RelatingElement`, `RelatedElement` | The two walls. The relating wall runs through the butt joint |
 | `RelatingConnectionType`, `RelatedConnectionType` | `ATSTART`, `ATEND`, or, on the relating wall only, `ATPATH` |
-| storey containment | One `IfcRelContainedInSpatialStructure` on the storey, related elements = every wall, door, and window |
+| storey containment | One `IfcRelContainedInSpatialStructure` on the storey for every wall, door, window, and furnishing that names no space |
+| space containment | One `IfcRelContainedInSpatialStructure` per space that has furnishings |
+| type object | One `IfcFurnitureType` (or the matching type class) per distinct class, `PredefinedType`, and `ObjectType`, via `IfcRelDefinesByType` |
+
+## Samples
 
 ## Ground floor sample
 
-`samples/ground-floor.yaml` is this schema applied to one real plan. Provenance is in `samples/source/`. Wall ids `W-001` upward are assigned by sorting horizontal axes by Y then X, then vertical axes by X then Y. Opening ids are the source ids (`OP03`, `OP39a`, …).
+`samples/ground-floor.yaml` is this schema applied to one real plan. Provenance is in `samples/source/`. Wall ids `W-001` upward are assigned by sorting horizontal axes by Y then X, then vertical axes by X then Y. Opening ids are the source ids (`OP03`, `OP39a`, …). It has no spaces and no furnishings.
+
+`samples/furnishings.yaml` is the furnishing lists applied to one open kitchen, dining, and living room. The sizes are nominal module dimensions, not a survey of that room.
 
 ## Converter
 
@@ -268,10 +401,14 @@ Each property is an `IfcPropertySingleValue`: the key is `Name`, the YAML value 
 - Each `connections` entry is an `IfcRelConnectsPathElements`. The relating wall's layers outrank the related wall's at that joint, which is what makes the butt: the relating wall runs through, and the related wall is trimmed to its face. The trimmed body is generated with IfcOpenShell (`regenerate_wall_representation`). Regeneration also rewrites the axis curve, so a joined wall keeps its authored `Axis` in the `yaml-ifc` set and import restores that, not the trimmed curve.
 - `GlobalId`, when omitted, is the UUID5 in the URL namespace of `yaml-ifc:` plus the `id`, compressed to the 22-character IFC form. On import it is omitted again when it matches that derivation. For a connection, which has no `id`, the name is the four fields joined with colons.
 - `IfcOpeningElement.PredefinedType`, when omitted, is written `OPENING` and omitted again on import.
+- A space is an `IfcSpace` with `CompositionType` `ELEMENT` and a placement at the storey origin. Neither is written back. `ElevationWithFlooring` is an attribute and is written back, including zero. Spaces are aggregated under the storey. A space body is not stored.
+- A furnishing with `Width`, `Depth`, and `Height` is a rectangular extrusion. The profile centre is half the width and half the depth, so the placement origin is the minimum corner. Local X follows `RefDirection`. One or two sizes, with the third missing, produce no solid.
+- `Origin`, `Elevation`, `RefDirection`, `Width`, `Depth`, and `Height` are copied into the `yaml-ifc` set when the file has them, including zeros, and restored from that set on import. Omitted defaults (`Origin` `[0, 0]`, `Elevation` `0`, `RefDirection` `[1, 0]`) are not added to the set and not invented on the way back.
+- Each distinct class, `PredefinedType`, and `ObjectType` becomes one type object. `IfcFurnitureType.AssemblyPlace` is `NOTDEFINED`. The type's property sets and representation maps are not stored. On import, an occurrence with no `ObjectType` takes the type's `ElementType`, and an occurrence with no `PredefinedType` takes the type's. A file this converter did not write is read from placement and from that corner-origin box; other geometry keeps the placement only.
 - An imported `IfcWallStandardCase` is stored as a wall and written back as `IfcWall`. `PredefinedType` is kept.
 - YAML lengths are metres. An IFC file in millimetres is converted on the way in.
 
-An IFC file also contains entities this subset does not store (slabs, spaces, roofs, stairs, and the rest). Those are counted and reported, not written into the YAML. For the entities above, every instance is kept, matched by `GlobalId`.
+An IFC file also contains entities this subset does not store (slabs, roofs, stairs, and the rest). Those are counted and reported, not written into the YAML. For the entities above, every instance is kept, matched by `GlobalId`. A bare `IfcFurnishingElement` is one of the counted leftovers.
 
 ## Open questions
 
@@ -287,3 +424,14 @@ An IFC file also contains entities this subset does not store (slabs, spaces, ro
 10. **120 mm squares** on the wall layer are short `IfcWall`s. `IfcColumn` is deferred; they may want to move later.
 11. **Implicit storey containment** while there is only one storey. Confirm, or put `ContainedInStructure` on every element now.
 12. **Corner joints** are butt joints, recorded in `connections`. The relating wall runs through and the related wall is trimmed to its face. There is no mitre and no join-style field. An axis in the drawing usually stops on the other wall's face, about half a thickness short of the centre-line intersection. `python -m yaml_ifc detect-connections` snaps those endpoints in the YAML, as a reviewed edit of the file, and shifts `AlongAxis` so a hosted opening stays where it was. The converter does not snap or extend axes itself.
+13. **Cabinet granularity.** The example is one element per module (`BaseCabinet600`), not one element per run of cabinets. A stack of ovens is one appliance per oven. Confirm that Blueprints wants the module, not the run.
+14. **The island is not voided.** The cooktop and the sink are separate products placed in the island's volume. There is no opening relationship. The cut-out is generated from the type.
+15. **Non-rectangular plans.** A sectional is `SOFA` / `SectionalSofa` and one box, the extent. The L is not stored. A footprint polygon on a furnishing element would carry it, and would no longer be "a box plus a type string".
+16. **Rug versus flooring.** A rug is `IfcCovering` / `USERDEFINED` / `Rug`. `FLOORING` is the room's floor finish. Both predefined types are accepted. Confirm the rug should stay `USERDEFINED`.
+17. **Missing appliance enums.** IFC4 has `ELECTRICCOOKER` and `REFRIGERATOR`, and no oven and no hood. Those two are `USERDEFINED`. A fridge-freezer column may be `FRIDGE_FREEZER` rather than `REFRIGERATOR`.
+18. **Track lights.** One `IfcLightFixture` per track run, `DIRECTIONSOURCE` / `TrackLight`, not one entity per head. `USERDEFINED` would drop the enum.
+19. **Nominal property sets.** `Pset_FurnitureTypeCommon` can store `NominalLength`, `NominalDepth`, `NominalHeight`, and `IsBuiltIn`. The converter does not fill it. The box is the size. Should a later writer copy the box into that set?
+20. **Type objects are derived.** They are not YAML entries. `AssemblyPlace` is the filler `NOTDEFINED`, not a claim about factory or site assembly. Type property sets and mapped geometry are dropped on import.
+21. **Space bodies.** A room is an id, a name, and a predefined type, so furniture can be contained. A footprint and a clear height are not stored. Wall `Height` in the ground-floor sample is still omitted for that reason.
+22. **`ObjectType` and `Width` can disagree.** `BaseCabinet600` does not have to be 0.6 m wide. The converter stores both and does not parse the token.
+23. **The TV is the unit.** `TvUnit` is `IfcFurniture`. The screen is not an `IfcAudioVisualAppliance`. The hanging plant shelf is `IfcFurniture` / `SHELF`, not a suspended member.
