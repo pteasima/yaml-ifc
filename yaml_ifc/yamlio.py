@@ -51,7 +51,7 @@ def _flow_points(value):
                 out[key] = [_Flow(num(v) for v in point) for point in item]
             elif key == "Profile" and isinstance(item, list):
                 out[key] = [_Flow(num(v) for v in point) for point in item]
-            elif key == "Aggregates" and isinstance(item, list):
+            elif key in ("Aggregates", "Assigns") and isinstance(item, list):
                 out[key] = _Flow(item)
             else:
                 out[key] = _flow_points(item)

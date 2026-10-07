@@ -11,21 +11,27 @@ import ifcopenshell.validate
 from yaml_ifc.ids import connection_yaml_id, global_id
 from yaml_ifc.joints import install_priority_fix
 from yaml_ifc.supported import (
+    CUSTOM_PSET,
     DEFAULT_OPENING_DEPTH,
     DEFAULT_WALL_HEIGHT,
     DERIVED_MATERIAL_NAME,
+    ELECTRICAL,
     FURNISHINGS,
     FURNISHING_SIZE,
     FURNITURE_TYPE_CLASS,
     HEADER_FILE_NAME,
     HEADER_TIMESTAMP,
+    LIGHT_FIXTURE_PSET,
+    MEASURED_PROPERTIES,
     ORIGINATING_SYSTEM,
+    POWER_MEASURE,
     PREDEFINED_TYPES,
     PSET_AXIS,
     PSET_MATERIAL_FROM_THICKNESS,
     PSET_NAME,
     RELATED_CONNECTION_TYPES,
     RELATING_CONNECTION_TYPES,
+    TEMPERATURE_MEASURE,
     TYPE_PREDEFINED_REQUIRED,
 )
 
@@ -85,6 +91,30 @@ def _check_predefined(element, ifc_class):
         raise ValueError(f"{element['id']} PredefinedType USERDEFINED needs an ObjectType")
 
 
+def _uses_measure(doc, measure):
+    names = {name for name, kind in MEASURED_PROPERTIES.items() if kind == measure}
+
+    def walk(value):
+        if isinstance(value, dict):
+            props = value.get("Properties")
+            if isinstance(props, dict) and any(name in props for name in names):
+                return True
+            return any(walk(item) for item in value.values())
+        if isinstance(value, list):
+            return any(walk(item) for item in value)
+        return False
+
+    if measure == POWER_MEASURE:
+        for light in doc.get("lightFixtures") or []:
+            if light.get("Wattage") is not None:
+                return True
+    if measure == TEMPERATURE_MEASURE:
+        for light in doc.get("lightFixtures") or []:
+            if light.get("CctMin") is not None or light.get("CctMax") is not None:
+                return True
+    return walk(doc)
+
+
 def validation_errors(model):
     logger = ifcopenshell.validate.json_logger()
     ifcopenshell.validate.validate(model, logger)
@@ -111,9 +141,11 @@ class Builder:
         self._spatial()
         self._spaces()
         self._elements()
+        self._ports()
         self._types()
         self._connections()
         self._containment()
+        self._circuits()
 
     def _stamp_header(self):
         header = self.file.header
@@ -151,7 +183,11 @@ class Builder:
             values["PlacementRelTo"] = parent
         return self.file.create_entity("IfcLocalPlacement", **values)
 
-    def _nominal(self, value):
+    def _nominal(self, value, measure=None):
+        if measure:
+            if isinstance(value, bool) or not isinstance(value, (int, float)):
+                raise ValueError(f"{measure} needs a number")
+            return self.file.create_entity(measure, float(value))
         if isinstance(value, bool):
             wrapped = self.file.create_entity("IfcBoolean", bool(value))
         elif isinstance(value, int):
@@ -193,7 +229,15 @@ class Builder:
         area = f.create_entity("IfcSIUnit", UnitType="AREAUNIT", Name="SQUARE_METRE")
         volume = f.create_entity("IfcSIUnit", UnitType="VOLUMEUNIT", Name="CUBIC_METRE")
         angle = f.create_entity("IfcSIUnit", UnitType="PLANEANGLEUNIT", Name="RADIAN")
-        units = f.create_entity("IfcUnitAssignment", Units=[length, area, volume, angle])
+        assigned = [length, area, volume, angle]
+        # Declared only when a measure needs them, so a walls-only file stays put.
+        if _uses_measure(self.doc, POWER_MEASURE):
+            assigned.append(f.create_entity("IfcSIUnit", UnitType="POWERUNIT", Name="WATT"))
+        if _uses_measure(self.doc, TEMPERATURE_MEASURE):
+            assigned.append(
+                f.create_entity("IfcSIUnit", UnitType="THERMODYNAMICTEMPERATUREUNIT", Name="KELVIN")
+            )
+        units = f.create_entity("IfcUnitAssignment", Units=assigned)
         origin = self._point(0.0, 0.0, 0.0)
         wcs = f.create_entity(
             "IfcAxis2Placement3D",
@@ -314,26 +358,34 @@ class Builder:
             RelatedObjects=children,
         )
 
-    def _user_psets(self, product, entity):
-        for index, pset in enumerate(entity.get("PropertySets") or []):
-            props = []
-            for name, value in (pset.get("Properties") or {}).items():
-                props.append(
+    def _user_psets(self, product, entity, groups=None):
+        if groups is None:
+            groups = []
+            for pset in entity.get("PropertySets") or []:
+                props = [
+                    (str(name), MEASURED_PROPERTIES.get(str(name)), value)
+                    for name, value in (pset.get("Properties") or {}).items()
+                ]
+                groups.append((pset.get("Name") or "Pset", props))
+        for index, (name, props) in enumerate(groups):
+            created_props = []
+            for prop_name, measure, value in props:
+                created_props.append(
                     self.file.create_entity(
                         "IfcPropertySingleValue",
-                        Name=str(name),
-                        NominalValue=self._nominal(value),
+                        Name=prop_name,
+                        NominalValue=self._nominal(value, measure),
                     )
                 )
             created = self.file.create_entity(
                 "IfcPropertySet",
-                GlobalId=self._gid(f"userpset:{index}:{pset.get('Name')}", entity["id"]),
-                Name=pset.get("Name") or "Pset",
-                HasProperties=props,
+                GlobalId=self._gid(f"userpset:{index}:{name}", entity["id"]),
+                Name=name,
+                HasProperties=created_props,
             )
             self.file.create_entity(
                 "IfcRelDefinesByProperties",
-                GlobalId=self._gid(f"userdefines:{index}:{pset.get('Name')}", entity["id"]),
+                GlobalId=self._gid(f"userdefines:{index}:{name}", entity["id"]),
                 RelatedObjects=[product],
                 RelatingPropertyDefinition=created,
             )
@@ -352,7 +404,7 @@ class Builder:
             for element in self.doc.get(key) or []:
                 contained.append(self._filler(element, kind))
         self.contained_by_space = {}
-        for key, ifc_class, type_class in FURNISHINGS:
+        for key, ifc_class, type_class in (*FURNISHINGS, *ELECTRICAL):
             for element in self.doc.get(key) or []:
                 product = self._furnishing(element, ifc_class, type_class)
                 container = element.get("ContainedInStructure")
@@ -802,11 +854,176 @@ class Builder:
             if size is not None:
                 book[key] = size
         self._pset(product, book, yaml_id)
-        self._user_psets(product, element)
+        self._user_psets(product, element, self._property_groups(element, ifc_class))
         self._note_type(element, type_class, product)
         self.products[yaml_id] = product
         self.placements[yaml_id] = placement
         return product
+
+    def _property_groups(self, element, ifc_class):
+        groups = []
+        for pset in element.get("PropertySets") or []:
+            props = [
+                (str(name), MEASURED_PROPERTIES.get(str(name)), value)
+                for name, value in (pset.get("Properties") or {}).items()
+            ]
+            groups.append([pset.get("Name") or "Pset", props])
+        if ifc_class != "IfcLightFixture":
+            if any(element.get(key) is not None for key in ("Wattage", "CctMin", "CctMax")):
+                raise ValueError(f"{element['id']} Wattage and CCT belong on a light fixture")
+            return [(name, props) for name, props in groups]
+        extras = []
+        if element.get("Wattage") is not None:
+            wattage = _number(element["Wattage"], f"{element['id']} Wattage")
+            if float(wattage) < 0:
+                raise ValueError(f"{element['id']} Wattage must not be negative")
+            extras.append((LIGHT_FIXTURE_PSET, [("TotalWattage", POWER_MEASURE, wattage)]))
+        bounds = []
+        for key in ("CctMin", "CctMax"):
+            if element.get(key) is None:
+                continue
+            bound = _number(element[key], f"{element['id']} {key}")
+            if float(bound) < 0:
+                raise ValueError(f"{element['id']} {key} must not be negative")
+            bounds.append((key, TEMPERATURE_MEASURE, bound))
+        if (
+            element.get("CctMin") is not None
+            and element.get("CctMax") is not None
+            and float(element["CctMin"]) > float(element["CctMax"])
+        ):
+            raise ValueError(f"{element['id']} CctMin is above CctMax")
+        if bounds:
+            extras.append((CUSTOM_PSET, bounds))
+        for name, props in extras:
+            for group in groups:
+                if group[0] != name:
+                    continue
+                existing = {prop[0] for prop in group[1]}
+                for prop in props:
+                    if prop[0] in existing:
+                        raise ValueError(f"{element['id']} {name}.{prop[0]} is set twice")
+                    group[1].append(prop)
+                break
+            else:
+                groups.append([name, list(props)])
+        return [(name, props) for name, props in groups]
+
+    def _cable_system(self, cable_id):
+        found = []
+        for circuit in self.doc.get("circuits") or []:
+            if cable_id not in (circuit.get("Assigns") or []):
+                continue
+            predefined = circuit.get("PredefinedType")
+            if predefined:
+                allowed = PREDEFINED_TYPES["IfcDistributionCircuit"]
+                if predefined not in allowed:
+                    raise ValueError(
+                        f"{circuit['id']} PredefinedType {predefined} is not valid for IfcDistributionCircuit"
+                    )
+                found.append(predefined)
+        if len(set(found)) == 1:
+            return found[0]
+        return "ELECTRICAL"
+
+    def _port(self, token, flow, system):
+        return self.file.create_entity(
+            "IfcDistributionPort",
+            GlobalId=global_id(f"port:{token}"),
+            Name=token,
+            FlowDirection=flow,
+            PredefinedType="CABLE",
+            SystemType=system,
+        )
+
+    def _connect_ports(self, token, relating, related):
+        self.file.create_entity(
+            "IfcRelConnectsPorts",
+            GlobalId=global_id(f"ports:{token}"),
+            RelatingPort=relating,
+            RelatedPort=related,
+        )
+
+    def _ports(self):
+        """One cable is four ports: source, cable in, cable out, sink.
+
+        IfcRelNests owns the ports. IfcRelConnectsPorts joins them. The cable
+        is not a RealizingElement, because it is already in the chain.
+        """
+        nested = {}
+        for cable in self.doc.get("cables") or []:
+            yaml_id = cable["id"]
+            src_id = cable.get("From")
+            dst_id = cable.get("To")
+            if not src_id or not dst_id:
+                raise ValueError(f"{yaml_id} needs From and To")
+            if src_id == dst_id or src_id == yaml_id or dst_id == yaml_id:
+                raise ValueError(f"{yaml_id} cannot connect an endpoint to itself")
+            system = self._cable_system(yaml_id)
+            segment = self.products.get(yaml_id)
+            src = self.products.get(src_id)
+            dst = self.products.get(dst_id)
+            if segment is None:
+                raise ValueError(f"unknown cable {yaml_id}")
+            for ref, product in ((src_id, src), (dst_id, dst)):
+                if product is None:
+                    raise ValueError(f"{yaml_id} endpoint {ref} is unknown")
+                if not product.is_a("IfcDistributionElement"):
+                    raise ValueError(f"{yaml_id} endpoint {ref} is not a distribution element")
+            src_port = self._port(f"{src_id}:{yaml_id}:source", "SOURCE", system)
+            cable_in = self._port(f"{yaml_id}:sink", "SINK", system)
+            cable_out = self._port(f"{yaml_id}:source", "SOURCE", system)
+            dst_port = self._port(f"{dst_id}:{yaml_id}:sink", "SINK", system)
+            nested.setdefault(src_id, []).append(src_port)
+            nested.setdefault(yaml_id, []).extend((cable_in, cable_out))
+            nested.setdefault(dst_id, []).append(dst_port)
+            self._connect_ports(f"{yaml_id}:up", src_port, cable_in)
+            self._connect_ports(f"{yaml_id}:down", cable_out, dst_port)
+        for owner_id, ports in nested.items():
+            self.file.create_entity(
+                "IfcRelNests",
+                GlobalId=global_id(f"nest:{owner_id}"),
+                RelatingObject=self.products[owner_id],
+                RelatedObjects=ports,
+            )
+
+    def _circuits(self):
+        for circuit in self.doc.get("circuits") or []:
+            yaml_id = circuit["id"]
+            if yaml_id in self.products:
+                raise ValueError(f"duplicate id {yaml_id}")
+            _check_predefined(circuit, "IfcDistributionCircuit")
+            values = {
+                "GlobalId": global_id(yaml_id, circuit.get("GlobalId")),
+                "Name": self._named(circuit, yaml_id),
+            }
+            for key in ("Description", "ObjectType", "LongName", "PredefinedType"):
+                if circuit.get(key) is not None:
+                    values[key] = circuit[key]
+            product = self.file.create_entity("IfcDistributionCircuit", **values)
+            self._pset(product, {"id": yaml_id}, yaml_id)
+            self._user_psets(product, circuit)
+            assigns = circuit.get("Assigns")
+            if assigns:
+                related = []
+                seen = set()
+                for ref in assigns:
+                    if ref in seen:
+                        raise ValueError(f"{yaml_id} assigns {ref} twice")
+                    seen.add(ref)
+                    target = self.products.get(ref)
+                    if target is None:
+                        raise ValueError(f"{yaml_id} assigns unknown element {ref}")
+                    related.append(target)
+                self.file.create_entity(
+                    "IfcRelAssignsToGroup",
+                    GlobalId=self._gid("circuit", yaml_id),
+                    RelatedObjects=related,
+                    RelatedObjectsType="PRODUCT",
+                    RelatingGroup=product,
+                )
+            elif assigns is not None:
+                raise ValueError(f"{yaml_id} Assigns is empty")
+            self.products[yaml_id] = product
 
     def _note_type(self, element, type_class, product):
         predefined = element.get("PredefinedType")
