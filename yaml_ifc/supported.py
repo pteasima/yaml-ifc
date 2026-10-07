@@ -283,6 +283,8 @@ FURNISHING_SIZE = ("Width", "Depth", "Height")
 
 # Extrusion used when a wall has a thickness but no height. Not written back.
 DEFAULT_WALL_HEIGHT = 3.0
+# Disk radius for a routed cable. Not a measured diameter, and not written back.
+DEFAULT_CABLE_RADIUS = 0.005
 # Void depth used when the host has no thickness and the opening has no depth.
 DEFAULT_OPENING_DEPTH = 0.2
 
@@ -291,8 +293,12 @@ PSET_NAME = "yaml-ifc"
 # Distinct from PSET_NAME, which is converter bookkeeping and is not YAML.
 CUSTOM_PSET = "Pset_YamlIfc"
 LIGHT_FIXTURE_PSET = "Pset_LightFixtureTypeCommon"
+# IFC4 ADD2 TC1 property set for IfcCableSegment / CABLESEGMENT.
+# NumberOfCores is IfcInteger here. IFC4.3 later changed it to IfcCountMeasure.
+CABLE_SEGMENT_PSET = "Pset_CableSegmentTypeCableSegment"
 POWER_MEASURE = "IfcPowerMeasure"
 TEMPERATURE_MEASURE = "IfcThermodynamicTemperatureMeasure"
+INTEGER_MEASURE = "IfcInteger"
 # Applied wherever these property names are written, including authored sets.
 MEASURED_PROPERTIES = {
     "TotalWattage": POWER_MEASURE,

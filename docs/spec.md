@@ -358,6 +358,14 @@ Standard IFC has single colour temperatures and no range. `IfcLightSourceGoniome
 
 `connections` is already the wall-joint list, so a cable is not a connection. Each cable is an `IfcCableSegment` with `From` and `To`, the ids of the elements it joins. Both are required. An endpoint has to be a distribution element already in the file: a light, a switch, a sensor, an outlet, an actuator, a board, an appliance, a sanitary terminal, or another cable. A wall or a chair is not.
 
+`Route` is optional. It is the path of that one segment, a polyline of `[x, y, z]` points in metres. X and Y are the storey plan, the same coordinates as `Origin`. Z is height above the storey, the same coordinate as `Elevation`. The file has one length unit, so `2.5` is 2.5 m and a millimetre is `0.001`. At least two points. A segment of zero length is rejected. The first point is the `From` end and the last point is the `To` end.
+
+The path stays one `IfcCableSegment`. `IfcCableFitting` is a junction between two segments, and a bend is not a junction, so the bend is a vertex of the polyline rather than a fitting. The curve is the segment axis: an `IfcShapeRepresentation` with `RepresentationIdentifier` `Axis`, `RepresentationType` `Curve3D`, and one `IfcPolyline`, on a model subcontext (`Axis` / `GRAPH_VIEW`). The body is an `IfcSweptDiskSolid` along that same curve, `RepresentationIdentifier` `Body`, `RepresentationType` `AdvancedSweptSolid`. `IfcSweptDiskSolidPolygonal` would fillet those bends, and it is not in IFC4. The disk radius is 5 mm. That radius is a nominal solid so the cable has a body. It is not a measured diameter, and it is not written back. A cable with no `Route` has no axis and no body.
+
+The polyline is stored in the cable's local placement. `Origin`, `Elevation`, and `RefDirection` still place the cable. Import transforms the curve back into storey coordinates, so a cable whose origin is not `[0, 0]` keeps the same `Route` points. The inlet port is the `SINK` at the start of the curve and the outlet port is the `SOURCE` at the end, which matches the flow direction IFC gives a segment axis. The ports themselves stay unplaced.
+
+`NumberOfCores` is optional, a positive integer. It is `Pset_CableSegmentTypeCableSegment.NumberOfCores`, an `IfcInteger`, on the occurrence. That is the IFC4 ADD2 TC1 type of the property. IFC4.3 later changed the same name to `IfcCountMeasure`; this file stays on IFC4, so the value stays an integer. In IFC4 the related sets do not carry a core count: `Pset_CableSegmentTypeBusBarSegment` has none, and `Pset_CableSegmentTypeConductorSegment` gained `NumberOfCores` only in IFC4.3. The value does not go in `Pset_YamlIfc`. Putting `NumberOfCores` on that set inside `PropertySets` as well as the field is rejected. Import lifts the property back into the field and does not also leave it in `PropertySets`. Other properties in the set are kept.
+
 Ports are not written in the YAML. For each cable the converter nests four `IfcDistributionPort` entities with `IfcRelNests` and joins them with `IfcRelConnectsPorts`:
 
 | Port | `FlowDirection` | Nested in |
@@ -406,13 +414,21 @@ A circuit is an `IfcDistributionCircuit`. Required: `id`. Present when known: `N
   ObjectType: LightingCable
   From: DB-main
   To: LIGHT-down
+  Route:
+    - [0.16, 0.15, 2]
+    - [0.16, -0.04, 2]
+    - [0.16, -0.04, 2.5]
+    - [1.26, -0.04, 2.5]
+    - [1.26, 1.66, 2.5]
+    - [1.26, 1.66, 2.4]
+  NumberOfCores: 3
 - id: CIR-lights
   Name: Lights
   PredefinedType: LIGHTING
   Assigns: [DB-main, LIGHT-down, CBL-light]
 ```
 
-`samples/electrical.yaml` is one board, a downlight, a toggle switch, a push button, an mmWave presence sensor, a door contact, a socket, a blind actuator, and the cables and circuits that join them. The sizes are nominal, not a survey.
+`samples/electrical.yaml` is one board, a downlight, a toggle switch, a push button, an mmWave presence sensor, a door contact, a socket, a blind actuator, a nominal room of four walls, and the cables and circuits that join the devices. Each cable has a route in the wall at 2.5 m, including a drop from that height to a switch and from the ceiling to the downlight, and a core count. The sizes are nominal, not a survey.
 
 These names are the ones the example uses. They are not a closed list. Each one is a family, with no width, depth, or height written into it.
 
@@ -501,6 +517,8 @@ Each property is an `IfcPropertySingleValue`: the key is `Name`, the YAML value 
 | `actuators[]` | `IfcActuator` |
 | `distributionBoards[]` | `IfcElectricDistributionBoard` |
 | `cables[]` | `IfcCableSegment`. `From` and `To` are element ids |
+| `Route` | Axis `Curve3D` `IfcPolyline`, body `IfcSweptDiskSolid` on that curve |
+| `NumberOfCores` | `Pset_CableSegmentTypeCableSegment.NumberOfCores`, `IfcInteger` |
 | `circuits[]` | `IfcDistributionCircuit` |
 | `Assigns` | `IfcRelAssignsToGroup.RelatedObjects` |
 | `Wattage` | `Pset_LightFixtureTypeCommon.TotalWattage`, watts |
@@ -533,7 +551,7 @@ Each property is an `IfcPropertySingleValue`: the key is `Name`, the YAML value 
 
 `samples/furnishings.yaml` is the furnishing lists applied to one open kitchen, dining, and living room. The sizes are nominal module dimensions, not a survey of that room.
 
-`samples/electrical.yaml` is one distribution board and the devices, cables, and circuits outside it. The sizes are nominal, not a survey, and the file is not a real house.
+`samples/electrical.yaml` is one distribution board, a nominal four-wall room, and the devices, routed cables, and circuits outside the board. The sizes are nominal, not a survey, and the file is not a real house. `python tools/render_electrical.py samples/electrical.yaml -o samples/electrical.png` draws a top view and an isometric of that file.
 
 ## Converter
 
@@ -554,6 +572,8 @@ Each property is an `IfcPropertySingleValue`: the key is `Name`, the YAML value 
 - An imported `IfcWallStandardCase` is stored as a wall and written back as `IfcWall`. `PredefinedType` is kept.
 - A light's `Wattage` is `Pset_LightFixtureTypeCommon.TotalWattage` (`IfcPowerMeasure`, watts). `CctMin` and `CctMax` are `Pset_YamlIfc` properties (`IfcThermodynamicTemperatureMeasure`, kelvin). Import lifts those properties back into the fields and does not also leave them in `PropertySets`. The `WATT` and `KELVIN` units are emitted only when a measure of that kind is written.
 - Each cable becomes an `IfcCableSegment` plus four nested `IfcDistributionPort` entities and two `IfcRelConnectsPorts`. The ports are not YAML. Their `SystemType` follows the circuit that assigns the cable, or `ELECTRICAL`. The segment's own ports are named `{id}:sink` and `{id}:source`, and import restores `From` and `To` from those. A port nested in a supported element is not reported as a skipped product.
+- A cable `Route` is one axis polyline and one `IfcSweptDiskSolid` of radius 5 mm along that same curve. The radius is not written back. Import restores `Route` from the axis, in storey metres, and falls back to the swept-disk directrix when the file has a body and no axis. No `IfcCableFitting` is written. The 3D axis subcontext is created only when a route is written.
+- `NumberOfCores` is `Pset_CableSegmentTypeCableSegment.NumberOfCores` (`IfcInteger`). Import lifts it back into the field.
 - Each circuit is an `IfcDistributionCircuit`. `Assigns` is one `IfcRelAssignsToGroup`. Members this subset does not store are dropped on import.
 - YAML lengths are metres. An IFC file in millimetres is converted on the way in.
 
@@ -587,7 +607,7 @@ An IFC file also contains entities this subset does not store (slabs, roofs, sta
 24. **Push buttons.** `PUSHBUTTON` is not an `IfcSwitchingDeviceTypeEnum` value. The example uses `MOMENTARYSWITCH` / `PushButton`. A latching push button could instead be `TOGGLESWITCH` plus `Pset_SwitchingDeviceTypeToggleSwitch.ToggleSwitchType` `PUSHBUTTON`. Confirm which one the wall buttons in the house are.
 25. **mmWave.** `MovementSensingType` has no mmWave value. The family name `MmWavePresence` is the record. A controlled token in `Pset_YamlIfc` would say it again. Confirm the family name is enough.
 26. **Blind actuator.** `IfcActuator` / `ELECTRICACTUATOR`, with `SUNBLINDACTUATOR` and `MOTORDRIVE` available as standard properties. `IfcElectricMotor` was the other candidate and was not used. Confirm the actuator is the product to count, not the motor inside it.
-27. **Ports are derived.** The YAML names `From` and `To`. Four ports and two `IfcRelConnectsPorts` are rebuilt, and `SystemType` follows the circuit. A cable route, a conduit, and a number of cores are not stored. Confirm a logical segment is enough until a route is measured.
+27. **Conduit is not stored.** A measured route is one `IfcCableSegment` polyline, and `NumberOfCores` is the IFC4 integer on `Pset_CableSegmentTypeCableSegment`. A carrier or a conduit is still deferred. The swept-disk radius is a nominal 5 mm, not a measured diameter. Confirm that radius can stay nominal until `OverallDiameter` is authored.
 28. **Panel interiors.** The board is one element. Breakers, RCDs, and busbars are deferred. A circuit names the board, the devices, and the cables, and does not name a breaker.
 29. **Devices are not hosted in a wall.** A switch has a box in the room, the same way a cabinet does. There is no opening voided for the back box. Confirm that stays until a wall host is needed.
 30. **Circuit membership** is an `Assigns` list. A board may sit on several circuits. Load, phase, and protective device are not on the circuit.

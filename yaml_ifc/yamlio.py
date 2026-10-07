@@ -5,6 +5,7 @@ from pathlib import Path
 import yaml
 
 FLOW_KEYS = {"Start", "End", "Origin", "RefDirection"}
+POLYLINE_KEYS = {"Footprint", "Profile", "Route"}
 
 
 class _Flow(list):
@@ -47,9 +48,7 @@ def _flow_points(value):
         for key, item in value.items():
             if key in FLOW_KEYS and isinstance(item, list):
                 out[key] = _Flow(num(v) if isinstance(v, (int, float)) else v for v in item)
-            elif key == "Footprint" and isinstance(item, list):
-                out[key] = [_Flow(num(v) for v in point) for point in item]
-            elif key == "Profile" and isinstance(item, list):
+            elif key in POLYLINE_KEYS and isinstance(item, list):
                 out[key] = [_Flow(num(v) for v in point) for point in item]
             elif key in ("Aggregates", "Assigns") and isinstance(item, list):
                 out[key] = _Flow(item)

@@ -11,7 +11,9 @@ import ifcopenshell.validate
 from yaml_ifc.ids import connection_yaml_id, global_id
 from yaml_ifc.joints import install_priority_fix
 from yaml_ifc.supported import (
+    CABLE_SEGMENT_PSET,
     CUSTOM_PSET,
+    DEFAULT_CABLE_RADIUS,
     DEFAULT_OPENING_DEPTH,
     DEFAULT_WALL_HEIGHT,
     DERIVED_MATERIAL_NAME,
@@ -21,6 +23,7 @@ from yaml_ifc.supported import (
     FURNITURE_TYPE_CLASS,
     HEADER_FILE_NAME,
     HEADER_TIMESTAMP,
+    INTEGER_MEASURE,
     LIGHT_FIXTURE_PSET,
     MEASURED_PROPERTIES,
     ORIGINATING_SYSTEM,
@@ -187,6 +190,8 @@ class Builder:
         if measure:
             if isinstance(value, bool) or not isinstance(value, (int, float)):
                 raise ValueError(f"{measure} needs a number")
+            if measure == INTEGER_MEASURE:
+                return self.file.create_entity(measure, int(value))
             return self.file.create_entity(measure, float(value))
         if isinstance(value, bool):
             wrapped = self.file.create_entity("IfcBoolean", bool(value))
@@ -826,8 +831,17 @@ class Builder:
             if float(value) <= 0:
                 raise ValueError(f"{yaml_id} {key} must be positive")
             sizes.append(value)
+        route_local = None
+        if ifc_class == "IfcCableSegment":
+            route_local = self._route_local(element, (ox, oy, z), (ux, uy))
+        elif element.get("Route") is not None:
+            raise ValueError(f"{yaml_id} Route belongs on a cable")
         shape = None
-        if all(size is not None for size in sizes):
+        if route_local is not None:
+            if all(size is not None for size in sizes):
+                raise ValueError(f"{yaml_id} Route and a box are both set")
+            shape = self._cable_shape(route_local)
+        elif all(size is not None for size in sizes):
             shape = self._shape(
                 [("Body", "SweptSolid", self.body, self._box(sizes[0], sizes[1], sizes[2]))]
             )
@@ -871,7 +885,15 @@ class Builder:
         if ifc_class != "IfcLightFixture":
             if any(element.get(key) is not None for key in ("Wattage", "CctMin", "CctMax")):
                 raise ValueError(f"{element['id']} Wattage and CCT belong on a light fixture")
-            return [(name, props) for name, props in groups]
+        else:
+            self._light_measures(element, groups)
+        if ifc_class == "IfcCableSegment":
+            self._core_count(element, groups)
+        elif element.get("NumberOfCores") is not None:
+            raise ValueError(f"{element['id']} NumberOfCores belongs on a cable")
+        return [(name, props) for name, props in groups]
+
+    def _light_measures(self, element, groups):
         extras = []
         if element.get("Wattage") is not None:
             wattage = _number(element["Wattage"], f"{element['id']} Wattage")
@@ -895,18 +917,107 @@ class Builder:
         if bounds:
             extras.append((CUSTOM_PSET, bounds))
         for name, props in extras:
-            for group in groups:
-                if group[0] != name:
-                    continue
-                existing = {prop[0] for prop in group[1]}
-                for prop in props:
-                    if prop[0] in existing:
-                        raise ValueError(f"{element['id']} {name}.{prop[0]} is set twice")
-                    group[1].append(prop)
-                break
-            else:
-                groups.append([name, list(props)])
-        return [(name, props) for name, props in groups]
+            self._merge_group(element, groups, name, props)
+
+    def _core_count(self, element, groups):
+        if element.get("NumberOfCores") is None:
+            return
+        number = _number(element["NumberOfCores"], f"{element['id']} NumberOfCores")
+        if isinstance(number, float) and not float(number).is_integer():
+            raise ValueError(f"{element['id']} NumberOfCores must be an integer")
+        count = int(number)
+        if count < 1:
+            raise ValueError(f"{element['id']} NumberOfCores must be positive")
+        self._merge_group(
+            element,
+            groups,
+            CABLE_SEGMENT_PSET,
+            [("NumberOfCores", INTEGER_MEASURE, count)],
+        )
+
+    def _merge_group(self, element, groups, name, props):
+        for group in groups:
+            if group[0] != name:
+                continue
+            existing = {prop[0] for prop in group[1]}
+            for prop in props:
+                if prop[0] in existing:
+                    raise ValueError(f"{element['id']} {name}.{prop[0]} is set twice")
+                group[1].append(prop)
+            return
+        groups.append([name, list(props)])
+
+    def _model_axis_context(self):
+        """3D axis context for a cable route. Created only when a route is written.
+
+        Wall axes stay on the plan context. Adding this subcontext to every
+        file would change the ground-floor bytes.
+        """
+        context = getattr(self, "model_axis", None)
+        if context is not None:
+            return context
+        context = self.file.create_entity(
+            "IfcGeometricRepresentationSubContext",
+            ContextIdentifier="Axis",
+            ContextType="Model",
+            ParentContext=self.context,
+            TargetView="GRAPH_VIEW",
+        )
+        self.model_axis = context
+        return context
+
+    def _route_local(self, element, origin, ref):
+        """Storey-frame Route, in the cable's local placement.
+
+        The YAML point is metres: x, y as Origin, z as Elevation. The curve
+        is written From toward To, which is the inlet end toward the outlet.
+        """
+        route = element.get("Route")
+        if route is None:
+            return None
+        yaml_id = element["id"]
+        if not isinstance(route, list) or len(route) < 2:
+            raise ValueError(f"{yaml_id} Route needs at least two points")
+        ox, oy, oz = origin
+        ux, uy = ref
+        span = math.hypot(ux, uy)
+        ux, uy = ux / span, uy / span
+        local = []
+        for index, point in enumerate(route):
+            where = f"{yaml_id} Route point {index}"
+            if not isinstance(point, (list, tuple)) or len(point) != 3:
+                raise ValueError(f"{where} must be [x, y, z]")
+            x = float(_number(point[0], where))
+            y = float(_number(point[1], where))
+            z = float(_number(point[2], where))
+            dx, dy = x - ox, y - oy
+            local.append((dx * ux + dy * uy, -dx * uy + dy * ux, z - oz))
+            if len(local) >= 2 and math.dist(local[-2], local[-1]) <= TOL:
+                raise ValueError(f"{yaml_id} Route has a zero-length segment")
+        return local
+
+    def _cable_shape(self, local):
+        """One segment: Axis Curve3D polyline, Body swept disk along that curve.
+
+        IfcCableFitting joins two segments at a junction. A bend is a vertex
+        of this polyline, not a fitting. IfcSweptDiskSolidPolygonal (a filleted
+        polyline sweep) is not in IFC4.
+        """
+        polyline = self.file.create_entity(
+            "IfcPolyline",
+            Points=[self._point(*point) for point in local],
+        )
+        disk = self.file.create_entity(
+            "IfcSweptDiskSolid",
+            Directrix=polyline,
+            Radius=DEFAULT_CABLE_RADIUS,
+        )
+        return self._shape(
+            [
+                ("Axis", "Curve3D", self._model_axis_context(), polyline),
+                ("Body", "AdvancedSweptSolid", self.body, disk),
+            ]
+        )
 
     def _cable_system(self, cable_id):
         found = []

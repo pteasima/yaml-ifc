@@ -8,7 +8,9 @@ import pytest
 from test_roundtrip import same
 from yaml_ifc.from_ifc import read_ifc
 from yaml_ifc.supported import (
+    CABLE_SEGMENT_PSET,
     CUSTOM_PSET,
+    DEFAULT_CABLE_RADIUS,
     ELECTRICAL,
     LIGHT_FIXTURE_PSET,
     PREDEFINED_TYPES,
@@ -172,6 +174,43 @@ def test_electrical_sample_round_trip(tmp_path):
     )
     assert down.RelatedPort == light_ports[0]
 
+    assert model.by_type("IfcCableFitting") == []
+    cores = {
+        "CBL-light": 3,
+        "CBL-switch": 3,
+        "CBL-button": 3,
+        "CBL-outlet": 3,
+        "CBL-presence": 2,
+        "CBL-door": 2,
+        "CBL-blind": 4,
+    }
+    for cable in model.by_type("IfcCableSegment"):
+        reps = {rep.RepresentationIdentifier: rep for rep in cable.Representation.Representations}
+        axis = reps["Axis"]
+        body = reps["Body"]
+        assert axis.RepresentationType == "Curve3D"
+        assert axis.ContextOfItems.ContextType == "Model"
+        polyline = axis.Items[0]
+        assert polyline.is_a("IfcPolyline")
+        assert len(polyline.Points) >= 2
+        assert all(len(point.Coordinates) == 3 for point in polyline.Points)
+        assert body.RepresentationType == "AdvancedSweptSolid"
+        disk = body.Items[0]
+        assert disk.is_a("IfcSweptDiskSolid")
+        assert disk.Directrix == polyline
+        assert disk.Radius == DEFAULT_CABLE_RADIUS
+        counted = _pset(cable, CABLE_SEGMENT_PSET)["NumberOfCores"]
+        assert counted.is_a("IfcInteger")
+        assert counted.wrappedValue == cores[cable.Name]
+    light_route = next(cable for cable in original["cables"] if cable["id"] == "CBL-light")["Route"]
+    drop_from, drop_to = light_route[-2], light_route[-1]
+    assert drop_from[0] == drop_to[0] and drop_from[1] == drop_to[1]
+    assert drop_from[2] > drop_to[2]
+    switch_route = next(cable for cable in original["cables"] if cable["id"] == "CBL-switch")["Route"]
+    switch_from, switch_to = switch_route[-3], switch_route[-2]
+    assert switch_from[0] == switch_to[0] and switch_from[1] == switch_to[1]
+    assert switch_from[2] > switch_to[2]
+
     lighting = next(element for element in model.by_type("IfcCableSegmentType") if element.Name == "LightingCable")
     assert len(lighting.Types[0].RelatedObjects) == 3
 
@@ -301,6 +340,112 @@ def test_cct_range_reversed_is_rejected(tmp_path):
     doc = _shell()
     doc["lightFixtures"] = [{"id": "L", "PredefinedType": "POINTSOURCE", "CctMin": 6500, "CctMax": 2700}]
     with pytest.raises(ValueError, match="CctMin"):
+        write_ifc(doc, tmp_path / "bad.ifc")
+
+
+def test_routed_cable_keeps_storey_coordinates(tmp_path):
+    doc = _shell()
+    doc["storey"]["Elevation"] = 1.5
+    doc["spaces"] = [{"id": "ROOM", "PredefinedType": "INTERNAL"}]
+    doc["distributionBoards"] = [
+        {
+            "id": "DB",
+            "PredefinedType": "DISTRIBUTIONBOARD",
+            "ObjectType": "MainBoard",
+            "ContainedInStructure": "ROOM",
+            "Origin": [1, 2],
+            "Elevation": 0.4,
+            "RefDirection": [0, 1],
+        }
+    ]
+    doc["lightFixtures"] = [
+        {"id": "LIGHT", "PredefinedType": "POINTSOURCE", "ObjectType": "Downlight", "Origin": [3, 4]}
+    ]
+    route = [[1, 2, 0.4], [1, 2, 2.5], [3.25, 4.5, 2.5]]
+    doc["cables"] = [
+        {
+            "id": "CBL",
+            "PredefinedType": "CABLESEGMENT",
+            "ObjectType": "LightingCable",
+            "ContainedInStructure": "ROOM",
+            "Origin": [1, 2],
+            "Elevation": 0.4,
+            "RefDirection": [0, 2],
+            "From": "DB",
+            "To": "LIGHT",
+            "Route": route,
+            "NumberOfCores": 3,
+            "PropertySets": [{"Name": CABLE_SEGMENT_PSET, "Properties": {"Standard": "CYKY"}}],
+        },
+        {"id": "CBL-bare", "From": "DB", "To": "LIGHT"},
+    ]
+    model = _round_trip(doc, tmp_path)
+    cable = next(element for element in model.by_type("IfcCableSegment") if element.Name == "CBL")
+    props = _pset(cable, CABLE_SEGMENT_PSET)
+    assert set(props) == {"NumberOfCores", "Standard"}
+    assert props["NumberOfCores"].is_a("IfcInteger")
+    bare = next(element for element in model.by_type("IfcCableSegment") if element.Name == "CBL-bare")
+    assert bare.Representation is None
+    assert _pset(bare, CABLE_SEGMENT_PSET) is None
+
+
+def test_short_route_is_rejected(tmp_path):
+    doc = _shell()
+    doc["distributionBoards"] = [{"id": "DB", "PredefinedType": "DISTRIBUTIONBOARD"}]
+    doc["lightFixtures"] = [{"id": "L", "PredefinedType": "POINTSOURCE"}]
+    doc["cables"] = [{"id": "CBL", "From": "DB", "To": "L", "Route": [[0, 0, 0]]}]
+    with pytest.raises(ValueError, match="at least two"):
+        write_ifc(doc, tmp_path / "bad.ifc")
+
+
+def test_flat_route_point_is_rejected(tmp_path):
+    doc = _shell()
+    doc["distributionBoards"] = [{"id": "DB", "PredefinedType": "DISTRIBUTIONBOARD"}]
+    doc["lightFixtures"] = [{"id": "L", "PredefinedType": "POINTSOURCE"}]
+    doc["cables"] = [{"id": "CBL", "From": "DB", "To": "L", "Route": [[0, 0], [1, 0]]}]
+    with pytest.raises(ValueError, match="x, y, z"):
+        write_ifc(doc, tmp_path / "bad.ifc")
+
+
+def test_zero_length_route_segment_is_rejected(tmp_path):
+    doc = _shell()
+    doc["distributionBoards"] = [{"id": "DB", "PredefinedType": "DISTRIBUTIONBOARD"}]
+    doc["lightFixtures"] = [{"id": "L", "PredefinedType": "POINTSOURCE"}]
+    doc["cables"] = [{"id": "CBL", "From": "DB", "To": "L", "Route": [[0, 0, 1], [0, 0, 1], [1, 0, 1]]}]
+    with pytest.raises(ValueError, match="zero-length"):
+        write_ifc(doc, tmp_path / "bad.ifc")
+
+
+def test_route_on_a_light_is_rejected(tmp_path):
+    doc = _shell()
+    doc["lightFixtures"] = [{"id": "L", "PredefinedType": "POINTSOURCE", "Route": [[0, 0, 0], [1, 0, 0]]}]
+    with pytest.raises(ValueError, match="cable"):
+        write_ifc(doc, tmp_path / "bad.ifc")
+
+
+def test_fractional_core_count_is_rejected(tmp_path):
+    doc = _shell()
+    doc["distributionBoards"] = [{"id": "DB", "PredefinedType": "DISTRIBUTIONBOARD"}]
+    doc["lightFixtures"] = [{"id": "L", "PredefinedType": "POINTSOURCE"}]
+    doc["cables"] = [{"id": "CBL", "From": "DB", "To": "L", "NumberOfCores": 2.5}]
+    with pytest.raises(ValueError, match="integer"):
+        write_ifc(doc, tmp_path / "bad.ifc")
+
+
+def test_duplicate_core_count_is_rejected(tmp_path):
+    doc = _shell()
+    doc["distributionBoards"] = [{"id": "DB", "PredefinedType": "DISTRIBUTIONBOARD"}]
+    doc["lightFixtures"] = [{"id": "L", "PredefinedType": "POINTSOURCE"}]
+    doc["cables"] = [
+        {
+            "id": "CBL",
+            "From": "DB",
+            "To": "L",
+            "NumberOfCores": 3,
+            "PropertySets": [{"Name": CABLE_SEGMENT_PSET, "Properties": {"NumberOfCores": 3}}],
+        }
+    ]
+    with pytest.raises(ValueError, match="NumberOfCores"):
         write_ifc(doc, tmp_path / "bad.ifc")
 
 

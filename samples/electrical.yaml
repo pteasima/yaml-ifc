@@ -1,6 +1,8 @@
 # Nominal electrical example: one board and the devices on it.
 # Sizes are round module dimensions, not a survey. Not a real house.
 # See docs/spec.md. The panel is a whole element; its breakers are not modeled.
+# Cable routes are metres in the storey frame (x, y as Origin, z as Elevation).
+# 0.001 is one millimetre. Horizontal runs sit in the wall, 2.5 m up.
 schema: IFC4 ADD2 TC1
 units:
   LengthUnit: METRE
@@ -22,7 +24,33 @@ spaces:
   - id: SPACE-room
     Name: Room
     PredefinedType: INTERNAL
-walls: []
+# A nominal room so the cables have a wall to run in. Axes are centrelines.
+# Inner faces are x=0, y=0, x=2.7, y=2.5. Thickness 0.2 m, head 2.6 m.
+walls:
+  - id: W-west
+    Axis:
+      Start: [-0.1, -0.1]
+      End: [-0.1, 2.6]
+    Thickness: 0.2
+    Height: 2.6
+  - id: W-south
+    Axis:
+      Start: [-0.1, -0.1]
+      End: [2.8, -0.1]
+    Thickness: 0.2
+    Height: 2.6
+  - id: W-east
+    Axis:
+      Start: [2.8, -0.1]
+      End: [2.8, 2.6]
+    Thickness: 0.2
+    Height: 2.6
+  - id: W-north
+    Axis:
+      Start: [-0.1, 2.6]
+      End: [2.8, 2.6]
+    Thickness: 0.2
+    Height: 2.6
 openings: []
 doors: []
 windows: []
@@ -127,42 +155,103 @@ distributionBoards:
     Width: 0.36
     Depth: 0.1
     Height: 0.6
+# Each route leaves the top of the board, runs in the wall at 2.5 m, and drops
+# to the device. The light's last segment is the drop from the ceiling.
 cables:
   - id: CBL-light
     PredefinedType: CABLESEGMENT
     ObjectType: LightingCable
     From: DB-main
     To: LIGHT-down
+    Route:
+      - [0.16, 0.15, 2]
+      - [0.16, -0.04, 2]
+      - [0.16, -0.04, 2.5]
+      - [1.26, -0.04, 2.5]
+      - [1.26, 1.66, 2.5]
+      - [1.26, 1.66, 2.4]
+    NumberOfCores: 3
   - id: CBL-switch
     PredefinedType: CABLESEGMENT
     ObjectType: LightingCable
     From: DB-main
     To: SW-entry
+    Route:
+      - [0.2, 0.15, 2]
+      - [-0.04, 0.15, 2]
+      - [-0.04, 0.15, 2.5]
+      - [-0.04, 1.205, 2.5]
+      - [-0.04, 1.205, 1.14]
+      - [0.14, 1.205, 1.14]
+    NumberOfCores: 3
   - id: CBL-button
     PredefinedType: CABLESEGMENT
     ObjectType: LightingCable
     From: DB-main
     To: SW-bed
+    Route:
+      - [0.24, 0.15, 2]
+      - [0.24, -0.08, 2]
+      - [0.24, -0.08, 2.5]
+      - [2.44, -0.08, 2.5]
+      - [2.44, -0.08, 0.84]
+      - [2.44, 0.105, 0.84]
+    NumberOfCores: 3
   - id: CBL-outlet
     PredefinedType: CABLESEGMENT
     ObjectType: PowerCable
     From: DB-main
     To: OUT-room
+    Route:
+      - [0.28, 0.15, 2]
+      - [0.28, -0.12, 2]
+      - [0.28, -0.12, 2.5]
+      - [2.76, -0.12, 2.5]
+      - [2.76, 1.005, 2.5]
+      - [2.76, 1.005, 0.34]
+      - [2.54, 1.005, 0.34]
+    NumberOfCores: 3
   - id: CBL-presence
     PredefinedType: CABLESEGMENT
     ObjectType: SignalCable
     From: DB-main
     To: SEN-presence
+    Route:
+      - [0.32, 0.15, 2]
+      - [-0.07, 0.15, 2]
+      - [-0.07, 0.15, 2.5]
+      - [-0.07, 2.56, 2.5]
+      - [1.63, 2.56, 2.5]
+      - [1.63, 2.23, 2.5]
+      - [1.63, 2.23, 2.51]
+    NumberOfCores: 2
   - id: CBL-door
     PredefinedType: CABLESEGMENT
     ObjectType: SignalCable
     From: DB-main
     To: SEN-door
+    Route:
+      - [0.36, 0.15, 2]
+      - [-0.1, 0.15, 2]
+      - [-0.1, 0.15, 2.5]
+      - [-0.1, 2.205, 2.5]
+      - [-0.1, 2.205, 1.01]
+      - [0.07, 2.205, 1.01]
+    NumberOfCores: 2
   - id: CBL-blind
     PredefinedType: CABLESEGMENT
     ObjectType: PowerCable
     From: DB-main
     To: ACT-blind
+    Route:
+      - [0.4, 0.15, 2]
+      - [-0.13, 0.15, 2]
+      - [-0.13, 0.15, 2.5]
+      - [-0.13, 2.6, 2.5]
+      - [1, 2.6, 2.5]
+      - [1, 2.6, 2.23]
+      - [1, 2.33, 2.23]
+    NumberOfCores: 4
 circuits:
   - id: CIR-lights
     Name: Lights

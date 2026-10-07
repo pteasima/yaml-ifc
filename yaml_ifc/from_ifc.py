@@ -15,6 +15,7 @@ import numpy as np
 
 from yaml_ifc.ids import connection_yaml_id, is_derived
 from yaml_ifc.supported import (
+    CABLE_SEGMENT_PSET,
     CUSTOM_PSET,
     DERIVED_PORT,
     ELECTRICAL,
@@ -616,6 +617,8 @@ class Reader:
             entity["ContainedInStructure"] = self.by_product.get(container) or self._id_for(container)
         if element.is_a("IfcLightFixture"):
             _lift_light(entity)
+        if element.is_a("IfcCableSegment"):
+            _lift_cores(entity)
         return _ordered_furnishing(entity)
 
     def _filler(self, element, fill_of):
@@ -705,6 +708,9 @@ class Reader:
                 cable_rows = list(zip(elements, rows))
         for element, entity in cable_rows:
             self._attach_cable_ends(element, entity)
+            route = self._cable_route(element)
+            if route:
+                entity["Route"] = route
             ordered = _ordered_furnishing(entity)
             entity.clear()
             entity.update(ordered)
@@ -820,6 +826,35 @@ class Reader:
         elif len(sources) == 1:
             entity["To"] = sources[0]
 
+    def _cable_route(self, element):
+        """Axis polyline in storey coordinates. The swept-disk directrix is the fallback.
+
+        The disk radius is a nominal solid and is not a YAML value.
+        """
+        curves = []
+        for item in _items(element, "Axis"):
+            points = _curve_points(item)
+            if len(points) >= 2 and all(len(point) >= 3 for point in points):
+                curves = points
+                break
+        if not curves:
+            for item in _items(element, "Body"):
+                for node in _body_tree(item):
+                    directrix = getattr(node, "Directrix", None)
+                    points = _curve_points(directrix)
+                    if len(points) >= 2 and all(len(point) >= 3 for point in points):
+                        curves = points
+                        break
+                if curves:
+                    break
+        if not curves:
+            return None
+        route = []
+        for point in curves:
+            storey = self._to_storey(element.ObjectPlacement, point)
+            route.append([self._metres(storey[0]), self._metres(storey[1]), self._metres(storey[2])])
+        return route
+
     def _circuit(self, circuit):
         book = _pset_map(circuit)
         entity = self._common(circuit, book)
@@ -896,6 +931,21 @@ def _unique(points):
 
 def _close(a, b):
     return abs(a[0] - b[0]) < 1e-6 and abs(a[1] - b[1]) < 1e-6
+
+
+def _lift_cores(entity):
+    """NumberOfCores is a YAML field, not a PropertySets echo."""
+    kept = []
+    for pset in entity.get("PropertySets") or []:
+        props = dict(pset.get("Properties") or {})
+        if pset.get("Name") == CABLE_SEGMENT_PSET and "NumberOfCores" in props:
+            entity["NumberOfCores"] = props.pop("NumberOfCores")
+        if props:
+            kept.append({"Name": pset.get("Name"), "Properties": props})
+    if kept:
+        entity["PropertySets"] = kept
+    else:
+        entity.pop("PropertySets", None)
 
 
 def _lift_light(entity):
@@ -993,6 +1043,8 @@ def _ordered_furnishing(entity):
             "Height",
             "From",
             "To",
+            "Route",
+            "NumberOfCores",
             "Wattage",
             "CctMin",
             "CctMax",
