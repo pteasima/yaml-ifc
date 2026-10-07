@@ -14,7 +14,7 @@ Install converter dependencies with `pip install -r requirements.txt`. The test 
 
 CI runs that suite on pull requests and on pushes to `main`, on Python 3.12, with a read-only token (`permissions: contents: read`). The workflow pins one Python and the versions in `requirements.txt` because that byte comparison fails when the writer or IfcOpenShell changes, even if the YAML is the same.
 
-The plan renderer is a separate check. It needs `libcairo2`, and Cairo is a system library the converter tests do not use. Render locally with `pip install -r tools/requirements.txt` and `python tools/render_plan.py samples/ground-floor.yaml --out-dir dist`. On a pull request, `.github/workflows/plan-preview.yml` renders the samples, pushes the PNGs to the `previews` branch, and keeps one comment. `raw.githubusercontent.com` does not serve a private repository, so the comment uses the blob URL with `?raw=true`. That job's token is recorded under Repo settings.
+The plan renderer is a separate check. It needs `libcairo2`, and Cairo is a system library the converter tests do not use. Render locally with `pip install -r tools/requirements.txt` and `python tools/render_plan.py samples/ground-floor.yaml --out-dir dist`. On a pull request, `.github/workflows/plan-preview.yml` renders the samples, pushes the PNGs to the `previews` branch, and keeps one comment with the raw image URLs. That job's token is recorded under Repo settings.
 
 ## Editing files
 
@@ -28,5 +28,4 @@ The YAML writer drops comments. Hand-written comments are for people reading the
 
 ## Repo settings
 
-- **Main ruleset:** not applied, because GitHub Free does not support rulesets or branch protection on private repos.
 - **Plan preview token:** `contents: write` and `pull-requests: write` on `.github/workflows/plan-preview.yml`, because that workflow pushes rendered plans to the `previews` branch and updates the pull request comment. The test workflow uses `contents: read`.

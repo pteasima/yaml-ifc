@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 # Push rendered plan images to the previews branch and keep one PR comment.
-# Private-repo members see the image via the blob ?raw=true URL (cookies).
-# raw.githubusercontent.com does not serve private files.
 set -euo pipefail
 
 : "${GH_TOKEN:?}"
@@ -74,7 +72,7 @@ fi
   if ((push_ok)); then
     for png in "${pngs[@]}"; do
       name="$(basename "$png")"
-      url="https://github.com/${REPO}/blob/${PREVIEW_BRANCH}/${DEST}/${name}?raw=true"
+      url="https://raw.githubusercontent.com/${REPO}/${PREVIEW_BRANCH}/${DEST}/${name}"
       echo "![${name}](${url})"
       echo
     done
