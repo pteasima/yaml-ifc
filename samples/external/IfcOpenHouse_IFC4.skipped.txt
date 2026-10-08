@@ -2,5 +2,4 @@ IfcFooting 1
 IfcMember 20
 IfcPlate 5
 IfcRoof 1
-IfcSlab 2
 IfcStairFlight 1

@@ -8,12 +8,14 @@ import ifcopenshell.api.geometry
 import ifcopenshell.util.element
 import ifcopenshell.validate
 
+from yaml_ifc import tiling
 from yaml_ifc.ids import connection_yaml_id, global_id
 from yaml_ifc.joints import install_priority_fix
 from yaml_ifc.supported import (
     CABLE_SEGMENT_PSET,
     CUSTOM_PSET,
     DEFAULT_CABLE_RADIUS,
+    DEFAULT_GRATE_THICKNESS,
     DEFAULT_OPENING_DEPTH,
     DEFAULT_WALL_HEIGHT,
     DERIVED_MATERIAL_NAME,
@@ -409,14 +411,23 @@ class Builder:
             for element in self.doc.get(key) or []:
                 contained.append(self._filler(element, kind))
         self.contained_by_space = {}
+
+        def _hold(element, product):
+            container = element.get("ContainedInStructure")
+            if container:
+                if container not in self.space_ids:
+                    raise ValueError(f"{element['id']} is contained in unknown space {container}")
+                self.contained_by_space.setdefault(container, []).append(product)
+            else:
+                contained.append(product)
+
+        for slab in self.doc.get("slabs") or []:
+            _hold(slab, self._slab(slab))
         for key, ifc_class, type_class in (*FURNISHINGS, *ELECTRICAL):
             for element in self.doc.get(key) or []:
-                product = self._furnishing(element, ifc_class, type_class)
-                container = element.get("ContainedInStructure")
-                if container:
-                    self.contained_by_space.setdefault(container, []).append(product)
-                else:
-                    contained.append(product)
+                _hold(element, self._furnishing(element, ifc_class, type_class))
+        for terminal in self.doc.get("wasteTerminals") or []:
+            _hold(terminal, self._furnishing(terminal, "IfcWasteTerminal", "IfcWasteTerminalType"))
         self.contained = contained
 
     def _wall_frame(self, wall):
@@ -820,6 +831,10 @@ class Builder:
         container = element.get("ContainedInStructure")
         if container is not None and container not in self.space_ids:
             raise ValueError(f"{yaml_id} is contained in unknown space {container}")
+        if ifc_class == "IfcWasteTerminal" and element.get("Plane") is not None:
+            if elevation is not None:
+                raise ValueError(f"{yaml_id} Elevation is taken from its Plane")
+            z = tiling.plane_elevation(self._plane(element), ox, oy)
         parent = self.placements[container] if container else self.storey_placement
         placement = self._local((ox, oy, z), (ux, uy, 0.0), parent)
         sizes = []
@@ -837,10 +852,16 @@ class Builder:
         elif element.get("Route") is not None:
             raise ValueError(f"{yaml_id} Route belongs on a cable")
         shape = None
+        if element.get("TileLayout") and any(size is not None for size in sizes):
+            raise ValueError(f"{yaml_id} TileLayout replaces the box")
         if route_local is not None:
             if all(size is not None for size in sizes):
                 raise ValueError(f"{yaml_id} Route and a box are both set")
             shape = self._cable_shape(route_local)
+        elif element.get("TileLayout"):
+            shape = self._tile_shape(element)
+        elif ifc_class == "IfcWasteTerminal" and element.get("Plane") is not None:
+            shape = self._grate_shape(element, sizes)
         elif all(size is not None for size in sizes):
             shape = self._shape(
                 [("Body", "SweptSolid", self.body, self._box(sizes[0], sizes[1], sizes[2]))]
@@ -867,9 +888,270 @@ class Builder:
         for key, size in zip(FURNISHING_SIZE, sizes):
             if size is not None:
                 book[key] = size
+        self._note_plane(element, book)
+        self._note_tiles(element, book)
         self._pset(product, book, yaml_id)
         self._user_psets(product, element, self._property_groups(element, ifc_class))
         self._note_type(element, type_class, product)
+        self.products[yaml_id] = product
+        self.placements[yaml_id] = placement
+        return product
+
+    def _element(self, yaml_id):
+        for key in ("slabs", "coverings", "wasteTerminals", "walls"):
+            for element in self.doc.get(key) or []:
+                if element.get("id") == yaml_id:
+                    return element
+        raise ValueError(f"unknown element {yaml_id}")
+
+    def _plane(self, element):
+        """The finished-surface plane, inlined or referenced by id."""
+        plane = element.get("Plane")
+        if isinstance(plane, str):
+            owner = self._element(plane)
+            plane = owner.get("Plane")
+            if isinstance(plane, str) or not isinstance(plane, dict):
+                raise ValueError(f"{element['id']} Plane {element.get('Plane')} is not a plane")
+        if not isinstance(plane, dict):
+            raise ValueError(f"{element['id']} needs a Plane")
+        origin = plane.get("Origin")
+        gradient = plane.get("Gradient")
+        if (
+            not isinstance(origin, (list, tuple))
+            or len(origin) != 2
+            or not isinstance(gradient, (list, tuple))
+            or len(gradient) != 2
+            or plane.get("Elevation") is None
+        ):
+            raise ValueError(f"{element['id']} Plane needs Origin, Elevation, and Gradient")
+        return {
+            "Origin": [float(origin[0]), float(origin[1])],
+            "Elevation": float(plane["Elevation"]),
+            "Gradient": [float(gradient[0]), float(gradient[1])],
+        }
+
+    def _note_plane(self, element, book):
+        plane = element.get("Plane")
+        if plane is None:
+            return
+        if isinstance(plane, str):
+            book["PlaneRef"] = plane
+            return
+        parsed = self._plane(element)
+        book["PlaneOriginX"] = plane["Origin"][0]
+        book["PlaneOriginY"] = plane["Origin"][1]
+        book["PlaneElevation"] = plane["Elevation"]
+        book["PlaneGradientX"] = plane["Gradient"][0]
+        book["PlaneGradientY"] = plane["Gradient"][1]
+        if parsed["Gradient"] != [float(plane["Gradient"][0]), float(plane["Gradient"][1])]:
+            raise ValueError(f"{element['id']} Plane gradient is not a pair of numbers")
+
+    def _note_tiles(self, element, book):
+        layout = element.get("TileLayout")
+        if layout is None:
+            return
+        if not isinstance(layout, dict):
+            raise ValueError(f"{element['id']} TileLayout must be a mapping")
+        if layout.get("Product"):
+            book["TileProduct"] = layout["Product"]
+        if layout.get("Thickness") is None:
+            raise ValueError(f"{element['id']} TileLayout needs Thickness")
+        book["TileThickness"] = layout["Thickness"]
+        tile = layout.get("Tile")
+        if not isinstance(tile, (list, tuple)) or len(tile) != 2:
+            raise ValueError(f"{element['id']} TileLayout.Tile must be [along, across]")
+        book["TileAlong"] = tile[0]
+        book["TileAcross"] = tile[1]
+        if layout.get("Joint") is not None:
+            book["TileJoint"] = layout["Joint"]
+        if layout.get("WallJoint") is not None:
+            book["TileWallJoint"] = layout["WallJoint"]
+        if layout.get("WallTile") is not None:
+            wall_tile = layout["WallTile"]
+            book["WallTileAlong"] = wall_tile[0]
+            book["WallTileAcross"] = wall_tile[1]
+        origin = layout.get("GridOrigin")
+        if not isinstance(origin, (list, tuple)) or len(origin) != 2:
+            raise ValueError(f"{element['id']} TileLayout needs GridOrigin")
+        book["GridOriginX"] = origin[0]
+        book["GridOriginY"] = origin[1]
+        if layout.get("BottomCut") is not None:
+            if layout["BottomCut"] != tiling.BOTTOM_CUT:
+                raise ValueError(
+                    f"{element['id']} BottomCut must be {tiling.BOTTOM_CUT}"
+                )
+            book["BottomCut"] = layout["BottomCut"]
+        if layout.get("BottomJoint") is not None:
+            book["BottomJoint"] = layout["BottomJoint"]
+        if layout.get("Courses") is not None:
+            courses = layout["Courses"]
+            if isinstance(courses, bool) or not isinstance(courses, int) or courses < 1:
+                raise ValueError(f"{element['id']} Courses must be a positive integer")
+            book["TileCourses"] = courses
+        if layout.get("JointInset") is not None:
+            book["JointInset"] = layout["JointInset"]
+        if layout.get("Footprint"):
+            book["FootprintText"] = tiling.encode_points(layout["Footprint"])
+        if layout.get("Cutouts"):
+            book["CutoutsText"] = tiling.encode_cutouts(layout["Cutouts"])
+        axis = layout.get("Axis")
+        if axis:
+            book["AxisStartX"] = axis["Start"][0]
+            book["AxisStartY"] = axis["Start"][1]
+            book["AxisEndX"] = axis["End"][0]
+            book["AxisEndY"] = axis["End"][1]
+        inside = layout.get("Inside")
+        if inside:
+            book["InsideX"] = inside[0]
+            book["InsideY"] = inside[1]
+        if layout.get("Openings"):
+            book["OpeningsText"] = tiling.encode_openings(layout["Openings"])
+
+    def _brep(self, vertices, faces):
+        points = [self._point(*vertex) for vertex in vertices]
+        ifc_faces = []
+        for face in faces:
+            loop = self.file.create_entity("IfcPolyLoop", Polygon=[points[index] for index in face])
+            bound = self.file.create_entity("IfcFaceOuterBound", Bound=loop, Orientation=True)
+            ifc_faces.append(self.file.create_entity("IfcFace", Bounds=[bound]))
+        shell = self.file.create_entity("IfcClosedShell", CfsFaces=ifc_faces)
+        return self.file.create_entity("IfcFacetedBrep", Outer=shell)
+
+    def _brep_shape(self, meshes):
+        items = [self._brep(vertices, faces) for vertices, faces in meshes if faces]
+        representation = self.file.create_entity(
+            "IfcShapeRepresentation",
+            ContextOfItems=self.body,
+            RepresentationIdentifier="Body",
+            RepresentationType="Brep",
+            Items=items,
+        )
+        return self.file.create_entity("IfcProductDefinitionShape", Representations=[representation])
+
+    def _floor_meshes(self, element, layout):
+        plane = self._plane(element)
+        floor_tile = layout["Tile"]
+        wall_tile = layout.get("WallTile") or floor_tile
+        if layout.get("WallJoint") is None:
+            raise ValueError(f"{element['id']} floor TileLayout needs WallJoint")
+        result = tiling.floor_layout(
+            plane,
+            floor_tile,
+            wall_tile,
+            layout["WallJoint"],
+            layout["GridOrigin"],
+            layout["Footprint"],
+            layout.get("Cutouts") or (),
+            layout.get("JointInset") or 0.0,
+        )
+        gradient = plane["Gradient"]
+        thickness = layout["Thickness"]
+
+        def z_at(x, y):
+            return tiling.plane_elevation(plane, x, y)
+
+        meshes = []
+        for ring in (*result["tiles"], *result["grout"]):
+            meshes.append(tiling.sloped_shell(ring, z_at, thickness, gradient))
+        return meshes
+
+    def _wall_meshes(self, element, layout):
+        plane = self._plane(element)
+        if layout.get("Joint") is None or layout.get("Courses") is None:
+            raise ValueError(f"{element['id']} wall TileLayout needs Joint and Courses")
+        if layout.get("BottomCut") != tiling.BOTTOM_CUT:
+            raise ValueError(f"{element['id']} BottomCut must be {tiling.BOTTOM_CUT}")
+        if layout.get("BottomJoint") is None or layout.get("Inside") is None:
+            raise ValueError(f"{element['id']} wall TileLayout needs BottomJoint and Inside")
+        owner = element
+        if isinstance(element.get("Plane"), str):
+            owner = self._element(element["Plane"])
+        footprint = layout.get("Footprint") or owner.get("Footprint")
+        result = tiling.wall_layout(
+            plane,
+            layout["Tile"],
+            layout["Joint"],
+            layout["Courses"],
+            layout["BottomJoint"],
+            layout["GridOrigin"],
+            layout["Axis"],
+            layout["Inside"],
+            layout.get("Openings") or (),
+            footprint=footprint,
+        )
+        thickness = layout["Thickness"]
+        meshes = []
+        for piece in (*result["tiles"], *result["grout"]):
+            meshes.append(tiling.wall_shell(piece["polygon"], result["frame"], thickness))
+        return meshes
+
+    def _tile_shape(self, element):
+        layout = element["TileLayout"]
+        if layout.get("Footprint"):
+            meshes = self._floor_meshes(element, layout)
+        elif layout.get("Axis"):
+            meshes = self._wall_meshes(element, layout)
+        else:
+            raise ValueError(f"{element['id']} TileLayout needs a Footprint or an Axis")
+        if not meshes:
+            raise ValueError(f"{element['id']} produced no tiles")
+        return self._brep_shape(meshes)
+
+    def _grate_shape(self, element, sizes):
+        if sizes[0] is None or sizes[1] is None:
+            raise ValueError(f"{element['id']} needs Width and Depth")
+        plane = self._plane(element)
+        origin = element.get("Origin") or [0, 0]
+        ox, oy = float(origin[0]), float(origin[1])
+        corner = tiling.plane_elevation(plane, ox, oy)
+        thickness = sizes[2] if sizes[2] is not None else DEFAULT_GRATE_THICKNESS
+        ring = [(0.0, 0.0), (float(sizes[0]), 0.0), (float(sizes[0]), float(sizes[1])), (0.0, float(sizes[1]))]
+
+        def z_at(x, y):
+            return tiling.plane_elevation(plane, ox + x, oy + y) - corner
+
+        return self._brep_shape([tiling.sloped_shell(ring, z_at, thickness, plane["Gradient"])])
+
+    def _slab(self, slab):
+        yaml_id = slab["id"]
+        if yaml_id in self.products:
+            raise ValueError(f"duplicate id {yaml_id}")
+        _check_predefined(slab, "IfcSlab")
+        container = slab.get("ContainedInStructure")
+        if container is not None and container not in self.space_ids:
+            raise ValueError(f"{yaml_id} is contained in unknown space {container}")
+        parent = self.placements[container] if container else self.storey_placement
+        placement = self._local((0.0, 0.0, 0.0), (1.0, 0.0, 0.0), parent)
+        shape = None
+        if slab.get("Thickness") is not None and slab.get("Footprint") and isinstance(slab.get("Plane"), dict):
+            plane = self._plane(slab)
+            ring = [(float(x), float(y)) for x, y in slab["Footprint"]]
+
+            def z_at(x, y):
+                return tiling.plane_elevation(plane, x, y)
+
+            shape = self._brep_shape(
+                [tiling.sloped_shell(ring, z_at, slab["Thickness"], plane["Gradient"])]
+            )
+        values = {
+            "GlobalId": global_id(yaml_id, slab.get("GlobalId")),
+            "Name": self._named(slab, yaml_id),
+            "ObjectPlacement": placement,
+            "Representation": shape,
+        }
+        for key in ("Description", "Tag", "ObjectType", "PredefinedType"):
+            if slab.get(key) is not None:
+                values[key] = slab[key]
+        product = self.file.create_entity("IfcSlab", **values)
+        book = {"id": yaml_id}
+        self._note_plane(slab, book)
+        if slab.get("Footprint"):
+            book["FootprintText"] = tiling.encode_points(slab["Footprint"])
+        if slab.get("Thickness") is not None:
+            book["SlabThickness"] = slab["Thickness"]
+        self._pset(product, book, yaml_id)
+        self._user_psets(product, slab)
+        self._note_type(slab, "IfcSlabType", product)
         self.products[yaml_id] = product
         self.placements[yaml_id] = placement
         return product

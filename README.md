@@ -1,12 +1,12 @@
 # yaml-ifc
 
-A YAML format, shaped like IFC, for one house's building elements. Agents edit it as text. This version is walls, openings, furnishings, and the electrical installation outside the panels. A cable can carry a route and a core count.
+A YAML format, shaped like IFC, for one house's building elements. Agents edit it as text. This version is walls, openings, furnishings, a one-plane sloped floor with tiles and a point drain, and the electrical installation outside the panels. A cable can carry a route and a core count. Floor joint widths for a sloped tile layout are `yaml_ifc.floor_joint_widths`.
 
 Process for working in this repo is in [AGENTS.md](AGENTS.md).
 
-The format is [docs/spec.md](docs/spec.md). The ground floor of RD Šíma is [samples/ground-floor.yaml](samples/ground-floor.yaml) (walls and openings only). A small furnishings example, with nominal sizes rather than a survey, is [samples/furnishings.yaml](samples/furnishings.yaml). A small electrical example, also nominal, is [samples/electrical.yaml](samples/electrical.yaml).
+The format is [docs/spec.md](docs/spec.md). The ground floor of RD Šíma is [samples/ground-floor.yaml](samples/ground-floor.yaml) (walls and openings only). A small furnishings example, with nominal sizes rather than a survey, is [samples/furnishings.yaml](samples/furnishings.yaml). A small electrical example, also nominal, is [samples/electrical.yaml](samples/electrical.yaml). A bathroom with one sloped floor, tiles, grout, and a point drain is [samples/bathroom.yaml](samples/bathroom.yaml). The clear size is room 1.20; the 2 mm wall joint is an example.
 
-Render a plan locally with `pip install -r tools/requirements.txt` (needs libcairo2) and `python tools/render_plan.py samples/ground-floor.yaml --out-dir dist`. The electrical sample, devices and cable routes in top view and isometric, is `python tools/render_electrical.py samples/electrical.yaml -o samples/electrical.png`.
+Render a plan locally with `pip install -r tools/requirements.txt` (needs libcairo2) and `python tools/render_plan.py samples/ground-floor.yaml --out-dir dist`. The electrical sample, devices and cable routes in top view and isometric, is `python tools/render_electrical.py samples/electrical.yaml -o samples/electrical.png`. The bathroom tile layout, floor plan and wall elevations, is `python tools/render_tiling.py samples/bathroom.yaml --plan samples/bathroom-plan.png --walls samples/bathroom-walls.png`.
 
 Convert with `pip install -r requirements.txt`, then `python -m yaml_ifc to-ifc samples/ground-floor.yaml -o samples/ground-floor.ifc` and `python -m yaml_ifc from-ifc samples/external/IfcOpenHouse_IFC4.ifc -o samples/external/IfcOpenHouse_IFC4.yaml`. The second command prints the entity types it skipped. Tests: `pytest`.
 

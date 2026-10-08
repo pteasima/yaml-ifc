@@ -38,6 +38,7 @@ FURNISHING_KEYS = (
     "systemFurniture",
     "furniture",
     "sanitaryTerminals",
+    "wasteTerminals",
     "electricAppliances",
     "lightFixtures",
     "switchingDevices",
@@ -355,6 +356,12 @@ def render_document(doc, filename):
     for key in FURNISHING_KEYS:
         for item in doc.get(key) or []:
             if not isinstance(item, dict):
+                continue
+            # A ceiling or a membrane is a whole-room covering. Drawing the
+            # box would hide the plan. Tile layouts have no Origin.
+            if item.get("PredefinedType") in ("CEILING", "MEMBRANE"):
+                continue
+            if item.get("TileLayout"):
                 continue
             rect = furnishing_rect(item)
             if rect is None:

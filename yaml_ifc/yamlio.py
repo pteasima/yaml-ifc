@@ -4,8 +4,20 @@ from pathlib import Path
 
 import yaml
 
-FLOW_KEYS = {"Start", "End", "Origin", "RefDirection"}
+FLOW_KEYS = {
+    "Start",
+    "End",
+    "Origin",
+    "RefDirection",
+    "Tile",
+    "WallTile",
+    "Gradient",
+    "GridOrigin",
+    "Inside",
+}
 POLYLINE_KEYS = {"Footprint", "Profile", "Route"}
+# A list of rings, each ring a list of points. Not a single polyline.
+RING_LIST_KEYS = {"Cutouts"}
 
 
 class _Flow(list):
@@ -50,6 +62,11 @@ def _flow_points(value):
                 out[key] = _Flow(num(v) if isinstance(v, (int, float)) else v for v in item)
             elif key in POLYLINE_KEYS and isinstance(item, list):
                 out[key] = [_Flow(num(v) for v in point) for point in item]
+            elif key in RING_LIST_KEYS and isinstance(item, list):
+                out[key] = [
+                    [_Flow(num(v) for v in point) for point in ring] if isinstance(ring, list) else ring
+                    for ring in item
+                ]
             elif key in ("Aggregates", "Assigns") and isinstance(item, list):
                 out[key] = _Flow(item)
             else:

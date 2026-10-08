@@ -13,6 +13,7 @@ import ifcopenshell.util.placement
 import ifcopenshell.util.unit
 import numpy as np
 
+from yaml_ifc import tiling
 from yaml_ifc.ids import connection_yaml_id, is_derived
 from yaml_ifc.supported import (
     CABLE_SEGMENT_PSET,
@@ -619,7 +620,30 @@ class Reader:
             _lift_light(entity)
         if element.is_a("IfcCableSegment"):
             _lift_cores(entity)
+        if book.get("id"):
+            _lift_plane(entity, book)
+            _lift_tiles(entity, book)
         return _ordered_furnishing(entity)
+
+    def _slab(self, element, contained_in):
+        book = _pset_map(element)
+        entity = self._common(element, book)
+        _put(entity, "ObjectType", _object_type_text(element))
+        if "PredefinedType" not in entity:
+            typed = _defining_type(element)
+            fallback = _enum(getattr(typed, "PredefinedType", None)) if typed is not None else None
+            if fallback:
+                entity["PredefinedType"] = fallback
+        if book.get("id"):
+            _lift_plane(entity, book)
+            if "FootprintText" in book:
+                entity["Footprint"] = tiling.decode_points(book["FootprintText"])
+            if "SlabThickness" in book:
+                entity["Thickness"] = book["SlabThickness"]
+        container = contained_in.get(element)
+        if container is not None and container.is_a("IfcSpace"):
+            entity["ContainedInStructure"] = self.by_product.get(container) or self._id_for(container)
+        return _ordered_slab(entity)
 
     def _filler(self, element, fill_of):
         book = _pset_map(element)
@@ -698,6 +722,7 @@ class Reader:
         for rel in model.by_type("IfcRelContainedInSpatialStructure"):
             for related in rel.RelatedElements or []:
                 contained_in[related] = rel.RelatingStructure
+        slabs = [_strip(self._slab(slab, contained_in)) for slab in model.by_type("IfcSlab")]
         furnishing_lists = {}
         cable_rows = []
         for key, ifc_class, _type_class in (*FURNISHINGS, *ELECTRICAL):
@@ -706,6 +731,10 @@ class Reader:
             furnishing_lists[key] = rows
             if ifc_class == "IfcCableSegment":
                 cable_rows = list(zip(elements, rows))
+        waste = [
+            _strip(self._furnishing(element, contained_in))
+            for element in model.by_type("IfcWasteTerminal")
+        ]
         for element, entity in cable_rows:
             self._attach_cable_ends(element, entity)
             route = self._cable_route(element)
@@ -738,7 +767,11 @@ class Reader:
             document["spaces"] = spaces
         # The original lists stay present when empty, so a walls-only file
         # comes back with openings, doors, and windows still written.
+        # Slabs and waste terminals are omitted when the file has none, the
+        # same way spaces are, so a walls-only file does not grow a key.
         document["walls"] = walls
+        if slabs:
+            document["slabs"] = slabs
         if connections:
             document["connections"] = connections
         document["openings"] = openings
@@ -747,6 +780,8 @@ class Reader:
         for key, _ifc_class, _type_class in (*FURNISHINGS, *ELECTRICAL):
             if furnishing_lists[key]:
                 document[key] = furnishing_lists[key]
+            if key == "sanitaryTerminals" and waste:
+                document["wasteTerminals"] = waste
         if circuits:
             document["circuits"] = circuits
         return document
@@ -973,6 +1008,63 @@ def _strip(entity):
     return entity
 
 
+def _lift_plane(entity, book):
+    """Restore an authored plane. A reference stays a reference."""
+    if "PlaneRef" in book:
+        entity["Plane"] = book["PlaneRef"]
+        return
+    if not any(key in book for key in ("PlaneOriginX", "PlaneOriginY", "PlaneElevation")):
+        return
+    entity["Plane"] = {
+        "Origin": [book.get("PlaneOriginX"), book.get("PlaneOriginY")],
+        "Elevation": book.get("PlaneElevation"),
+        "Gradient": [book.get("PlaneGradientX"), book.get("PlaneGradientY")],
+    }
+
+
+def _lift_tiles(entity, book):
+    """Restore a tile layout. Generated breps are not read."""
+    if "TileThickness" not in book and "TileAlong" not in book:
+        return
+    layout = {}
+    if "TileProduct" in book:
+        layout["Product"] = book["TileProduct"]
+    if "TileThickness" in book:
+        layout["Thickness"] = book["TileThickness"]
+    if "TileAlong" in book or "TileAcross" in book:
+        layout["Tile"] = [book.get("TileAlong"), book.get("TileAcross")]
+    if "TileWallJoint" in book:
+        layout["WallJoint"] = book["TileWallJoint"]
+    if "WallTileAlong" in book or "WallTileAcross" in book:
+        layout["WallTile"] = [book.get("WallTileAlong"), book.get("WallTileAcross")]
+    if "TileJoint" in book:
+        layout["Joint"] = book["TileJoint"]
+    if "GridOriginX" in book or "GridOriginY" in book:
+        layout["GridOrigin"] = [book.get("GridOriginX"), book.get("GridOriginY")]
+    if "BottomCut" in book:
+        layout["BottomCut"] = book["BottomCut"]
+    if "BottomJoint" in book:
+        layout["BottomJoint"] = book["BottomJoint"]
+    if "TileCourses" in book:
+        layout["Courses"] = book["TileCourses"]
+    if "JointInset" in book:
+        layout["JointInset"] = book["JointInset"]
+    if "FootprintText" in book:
+        layout["Footprint"] = tiling.decode_points(book["FootprintText"])
+    if "CutoutsText" in book:
+        layout["Cutouts"] = tiling.decode_cutouts(book["CutoutsText"])
+    if any(key in book for key in ("AxisStartX", "AxisStartY", "AxisEndX", "AxisEndY")):
+        layout["Axis"] = {
+            "Start": [book.get("AxisStartX"), book.get("AxisStartY")],
+            "End": [book.get("AxisEndX"), book.get("AxisEndY")],
+        }
+    if "InsideX" in book or "InsideY" in book:
+        layout["Inside"] = [book.get("InsideX"), book.get("InsideY")]
+    if "OpeningsText" in book:
+        layout["Openings"] = tiling.decode_openings(book["OpeningsText"])
+    entity["TileLayout"] = layout
+
+
 def _pick(entity, keys):
     ordered = {}
     for key in keys:
@@ -1001,6 +1093,26 @@ def _ordered_wall(entity):
             "Footprint",
             "Profile",
             "MaterialLayers",
+            "PropertySets",
+        ),
+    )
+
+
+def _ordered_slab(entity):
+    return _pick(
+        entity,
+        (
+            "id",
+            "Name",
+            "GlobalId",
+            "Description",
+            "Tag",
+            "PredefinedType",
+            "ObjectType",
+            "ContainedInStructure",
+            "Plane",
+            "Footprint",
+            "Thickness",
             "PropertySets",
         ),
     )
@@ -1041,6 +1153,8 @@ def _ordered_furnishing(entity):
             "Width",
             "Depth",
             "Height",
+            "Plane",
+            "TileLayout",
             "From",
             "To",
             "Route",
