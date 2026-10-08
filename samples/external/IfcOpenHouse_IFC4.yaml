@@ -65,6 +65,13 @@ walls:
     Layers:
     - LayerThickness: 0.36
       Material: Brick
+slabs:
+- id: South roof
+  GlobalId: 2KoBar2pfAWBou8q$ldGHy
+  PredefinedType: ROOF
+- id: North roof
+  GlobalId: 3lPsczHcDCwepFiJhZqz9q
+  PredefinedType: ROOF
 openings:
 - id: 2SFAmcP6j7ngFXHkheLGEs
   GlobalId: 2SFAmcP6j7ngFXHkheLGEs

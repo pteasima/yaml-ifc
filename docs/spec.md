@@ -1,6 +1,6 @@
 # yaml-ifc
 
-A YAML file for one house, edited as text. The names match IFC, so a later converter to a real IFC file can be mechanical. This version covers walls, the openings in them, whole furnishing elements (kitchen modules, appliances, and loose furniture), and the electrical installation outside the panels.
+A YAML file for one house, edited as text. The names match IFC, so a later converter to a real IFC file can be mechanical. This version covers walls, the openings in them, whole furnishing elements (kitchen modules, appliances, and loose furniture), a one-plane sloped floor with ceramic tiles and a point drain, and the electrical installation outside the panels.
 
 ## IFC version
 
@@ -18,9 +18,10 @@ Spatial container, the minimum IFC asks for:
 Elements and the relationships between them:
 
 - `IfcWall`
+- `IfcSlab`, one finished-floor plane, or the identity of a slab this subset does not extrude
 - `IfcOpeningElement`, joined to its wall by `IfcRelVoidsElement`
 - `IfcDoor` and `IfcWindow`, joined to an opening by `IfcRelFillsElement`
-- `IfcFurniture`, `IfcSystemFurnitureElement`, `IfcSanitaryTerminal`, `IfcElectricAppliance`, `IfcLightFixture`, `IfcCovering`
+- `IfcFurniture`, `IfcSystemFurnitureElement`, `IfcSanitaryTerminal`, `IfcWasteTerminal`, `IfcElectricAppliance`, `IfcLightFixture`, `IfcCovering`
 - `IfcSwitchingDevice`, `IfcSensor`, `IfcOutlet`, `IfcActuator`, `IfcElectricDistributionBoard`, `IfcCableSegment`
 - `IfcDistributionPort`, nested by `IfcRelNests` and joined by `IfcRelConnectsPorts`
 - `IfcDistributionCircuit`, with members assigned by `IfcRelAssignsToGroup`
@@ -30,11 +31,11 @@ Units are metres, declared once in the header.
 
 ## Deferred
 
-Not in this version, and not started: slabs, roofs, stairs, ramps, columns, beams, pipes, ducts, cable carriers, the devices inside a distribution board, openings in anything other than a wall, more than one storey, sites with a map conversion, DWG import, and viewers. A space has no body. Coverings other than a placed box (a floor build-up, a ceiling, cladding) are not modeled. Furniture parts — hinges, fronts, drawers, the L of a sectional — are not entities. `IfcFurnishingElement` itself, when it is neither `IfcFurniture` nor `IfcSystemFurnitureElement`, is not stored. A light source for rendering (`IfcLightSource` and its subtypes) is not stored: the goniometric source can hold one colour temperature, and only together with a colour, a flux, an emission source, and a distribution that this file does not have.
+Not in this version, and not started: roofs, stairs, ramps, columns, beams, pipes, ducts, cable carriers, the devices inside a distribution board, openings in anything other than a wall, more than one storey, sites with a map conversion, DWG import, and viewers. A space has no body. A slab that is not one finished-floor plane (a roof, a landing, a mapped body) is stored as identity only: class, name, predefined type, and `GlobalId`. Its solid and its aggregate are not stored. Coverings are either a placed box or a tile layout on that plane. A floor build-up with several slopes, a valley, or an envelope cut is not modeled. Furniture parts — hinges, fronts, drawers, the L of a sectional — are not entities. `IfcFurnishingElement` itself, when it is neither `IfcFurniture` nor `IfcSystemFurnitureElement`, is not stored. A light source for rendering (`IfcLightSource` and its subtypes) is not stored: the goniometric source can hold one colour temperature, and only together with a colour, a flux, an emission source, and a distribution that this file does not have.
 
 ## File shape
 
-Top-level keys, in this order: `schema`, `units`, `project`, `site`, `building`, `storey`, `spaces`, `walls`, `connections`, `openings`, `doors`, `windows`, `furniture`, `systemFurniture`, `sanitaryTerminals`, `electricAppliances`, `lightFixtures`, `coverings`, `switchingDevices`, `sensors`, `outlets`, `actuators`, `distributionBoards`, `cables`, `circuits`. `walls`, `openings`, `doors`, and `windows` are present even when empty. `connections`, `spaces`, the furnishing lists, and the electrical lists are omitted when the file has none. One entity per list item. No YAML anchors or aliases. Comments are for people; a converter ignores them.
+Top-level keys, in this order: `schema`, `units`, `project`, `site`, `building`, `storey`, `spaces`, `walls`, `slabs`, `connections`, `openings`, `doors`, `windows`, `furniture`, `systemFurniture`, `sanitaryTerminals`, `wasteTerminals`, `electricAppliances`, `lightFixtures`, `coverings`, `switchingDevices`, `sensors`, `outlets`, `actuators`, `distributionBoards`, `cables`, `circuits`. `walls`, `openings`, `doors`, and `windows` are present even when empty. `connections`, `spaces`, `slabs`, `wasteTerminals`, the furnishing lists, and the electrical lists are omitted when the file has none. One entity per list item. No YAML anchors or aliases. Comments are for people; a converter ignores them.
 
 ```yaml
 schema: IFC4 ADD2 TC1
@@ -48,7 +49,7 @@ Every entity has a stable `id`, unique in the file. `Name` is optional; the expo
 
 List order in a hand-written file is the author's. A canonical writer sorts each list by `id`, then writes keys in the order below, so a round trip comes back identical.
 
-With one storey, every `IfcWall`, `IfcDoor`, and `IfcWindow` is contained in that storey. Openings are not contained in the storey; they void a wall. A furnishing or electrical element, including a cable and a distribution board, is contained in the space named by `ContainedInStructure`, or in the storey when that field is omitted. A port is nested in its element and is not contained in the storey. A circuit is a group, not a contained element. A second storey would need the same field on walls, doors, and windows. Multi-storey files are still deferred.
+With one storey, every `IfcWall`, `IfcDoor`, and `IfcWindow` is contained in that storey. Openings are not contained in the storey; they void a wall. A furnishing, a slab, a waste terminal, or an electrical element, including a cable and a distribution board, is contained in the space named by `ContainedInStructure`, or in the storey when that field is omitted. A port is nested in its element and is not contained in the storey. A circuit is a group, not a contained element. A second storey would need the same field on walls, doors, and windows. Multi-storey files are still deferred.
 
 A value the source does not contain is left out. It is not filled with a guess. Derived values that the file does store (`SillHeight` when head and height are both known, `GlobalId`, the `Name` fallback) are listed below.
 
@@ -244,6 +245,8 @@ A written zero is kept. The omitted defaults above are not written back.
 | `IfcElectricAppliance` | `DISHWASHER`, `ELECTRICCOOKER`, `FREESTANDINGELECTRICHEATER`, `FREESTANDINGFAN`, `FREESTANDINGWATERHEATER`, `FREESTANDINGWATERCOOLER`, `FREEZER`, `FRIDGE_FREEZER`, `HANDDRYER`, `KITCHENMACHINE`, `MICROWAVE`, `PHOTOCOPIER`, `REFRIGERATOR`, `TUMBLEDRYER`, `VENDINGMACHINE`, `WASHINGMACHINE`, `USERDEFINED`, `NOTDEFINED` |
 | `IfcLightFixture` | `POINTSOURCE`, `DIRECTIONSOURCE`, `SECURITYLIGHTING`, `USERDEFINED`, `NOTDEFINED` |
 | `IfcCovering` | `CEILING`, `FLOORING`, `CLADDING`, `ROOFING`, `MOLDING`, `SKIRTINGBOARD`, `INSULATION`, `MEMBRANE`, `SLEEVING`, `WRAPPING`, `USERDEFINED`, `NOTDEFINED` |
+| `IfcSlab` | `FLOOR`, `ROOF`, `LANDING`, `BASESLAB`, `USERDEFINED`, `NOTDEFINED` |
+| `IfcWasteTerminal` | `FLOORTRAP`, `FLOORWASTE`, `GULLYSUMP`, `GULLYTRAP`, `ROOFDRAIN`, `WASTEDISPOSALUNIT`, `WASTETRAP`, `USERDEFINED`, `NOTDEFINED` |
 
 Kitchen modules are `IfcSystemFurnitureElement`. The enum has no cabinet value, so a cabinet is `USERDEFINED` and the module name is `ObjectType`. `PANEL` and `WORKSURFACE` are the two values the enum does name. A loose chair, table, shelf, or sofa is `IfcFurniture` with the matching predefined type. A product the enum does not name (`Sideboard`, `TvUnit`, a rug, an oven, a hood) is `USERDEFINED` plus `ObjectType`.
 
@@ -270,7 +273,7 @@ The box is not an IFC attribute. `OverallWidth` belongs to doors and windows, no
   Height: 0.85
 ```
 
-Occurrences that share a class, a `PredefinedType`, and an `ObjectType` share one type object (`IfcFurnitureType`, `IfcSystemFurnitureElementType`, `IfcSanitaryTerminalType`, `IfcElectricApplianceType`, `IfcLightFixtureType`, or `IfcCoveringType`), linked by `IfcRelDefinesByType`. The type's `Name` is `ObjectType` when that is set, otherwise `PredefinedType`. Its `ElementType` is `ObjectType`. Its `PredefinedType` matches the occurrence. The type is not a YAML entry. It is rebuilt from the occurrences. `IfcFurnitureType.AssemblyPlace` is required by the schema and is written `NOTDEFINED`; that filler is not a measured value and is not written back. A sanitary terminal, appliance, light, or covering with no `PredefinedType` has no type object, because those type entities require one.
+Occurrences that share a class, a `PredefinedType`, and an `ObjectType` share one type object (`IfcFurnitureType`, `IfcSystemFurnitureElementType`, `IfcSanitaryTerminalType`, `IfcWasteTerminalType`, `IfcElectricApplianceType`, `IfcLightFixtureType`, `IfcCoveringType`, or `IfcSlabType`), linked by `IfcRelDefinesByType`. The type's `Name` is `ObjectType` when that is set, otherwise `PredefinedType`. Its `ElementType` is `ObjectType`. Its `PredefinedType` matches the occurrence. The type is not a YAML entry. It is rebuilt from the occurrences. `IfcFurnitureType.AssemblyPlace` is required by the schema and is written `NOTDEFINED`; that filler is not a measured value and is not written back. A sanitary terminal, waste terminal, appliance, light, covering, or slab with no `PredefinedType` has no type object, because those type entities require one. A covering may carry a `TileLayout` instead of the box. That layout, the floor plane, and a point drain are the next section.
 
 `samples/furnishings.yaml` is one of each piece below, plus a second dining chair so the shared type is visible. The sizes are nominal module dimensions, not a measured plan. `samples/ground-floor.yaml` is not furnished.
 
@@ -301,6 +304,113 @@ These names are the ones the example uses. They are not a closed list. Each one 
 Wattage and the tunable CCT range are electrical properties of a light. They are specified in the next section. The furnishing example leaves them out.
 
 A run of cabinets is one element per module, not one element for the run. A stack of ovens is one `BuiltInOven` per oven. The island is one system-furniture element; the cooktop and the sink are separate products sitting in its volume, not voids cut out of it. The sectional's L, and every front and handle, is generated later from `ObjectType`. The box is the extent.
+
+## Sloped floor, tiles, and a point drain
+
+One room can have one finished-floor plane, ceramic tiles on that plane and on the walls, and one point drain. The floor is a single plane. There is no valley and no envelope cut. `samples/bathroom.yaml` is room 1.20 of the ground floor, in local coordinates, with the inner southwest corner at the origin. The sizes of that room are measured from the wall faces. The 2 mm wall joint in the file is an example for rectified porcelain, not a joint the drawing states.
+
+### Plane
+
+`slabs[]` is an `IfcSlab`. The slab that carries the finished floor has `PredefinedType: FLOOR` and a `Plane`:
+
+```yaml
+Plane:
+  Origin: [2.175, 1.925]
+  Elevation: 0
+  Gradient: [0.011232, 0.009941]
+```
+
+`Origin` is a plan point. `Elevation` is the finished surface there, in metres above the storey. `Gradient` is `(dz/dx, dz/dy)`, rise over plan run. The surface at `(x, y)` is
+
+```text
+z = Elevation + Gradient · ((x, y) − Origin)
+```
+
+Another element uses the same plane by setting `Plane` to that slab's `id`. The reference is one hop: it must name an element whose `Plane` is the mapping above, not another reference. A waste terminal with a `Plane` does not also carry `Elevation`. The grate sits on the plane at `Origin`.
+
+`Footprint` is the plan polygon of the slab, in storey coordinates. `Thickness`, when set, extrudes that footprint down along the plane's normal, so the top is the finished surface. Bedding and adhesive that were not measured are omitted, and then the slab has no solid. `ObjectType: Screed` is the family. Underfloor heating, when it is known only as a fact, is `Pset_YamlIfc` / `UnderfloorHeating`, a boolean. It is not a thickness.
+
+On a single plane the highest and lowest points of a polygon are at vertices. A bathroom that must not rise above the hall floor sets `Elevation` 0 at the high corner. The low corner is the drain.
+
+### Tiles
+
+A floor or wall finish with a `TileLayout` is an `IfcCovering` (`FLOORING` or `CLADDING`). The layout replaces the box: `Width`, `Depth`, and `Height` are not set on that covering. The converter builds one faceted brep per tile and per grout piece so the layout can be looked at. Import ignores those breps and restores the layout.
+
+`Product` is the trade name, for example `ABK Poetry Stone Trani Beige`. `ObjectType` stays the family (`PoetryStone`) and does not carry the size. `Thickness` is the ceramic, in metres. `Tile` is `[along, across]`: for a floor, east-west then north-south; for a wall, the module along the wall, then the height. A portrait 600×1200 wall tile is `[0.6, 1.2]`.
+
+`GridOrigin` is one module boundary in plan, shared by the floor and the walls. In each module the tile sits against the boundary closer to that origin, and the joint is the remainder. A short module at the far end is a cut tile and has no joint. The bathroom example puts the origin at the door corner, so the cuts fall at the drain.
+
+Floor:
+
+```yaml
+TileLayout:
+  Product: ABK Poetry Stone Trani Beige
+  Thickness: 0.0085
+  Tile: [0.6, 0.6]
+  WallJoint: 0.002
+  GridOrigin: [2.175, 1.925]
+  JointInset: 0.002
+  Footprint:
+    - [0, 0]
+    - [2.175, 0]
+    - [2.175, 1.925]
+    - [0, 1.925]
+  Cutouts:
+    - - [0, 0]
+      - [0.3, 0]
+      - [0.3, 0.3]
+      - [0, 0.3]
+```
+
+`WallJoint` is the wall grout the floor joints line up with. `WallTile` is optional and defaults to `Tile`; set it when the wall module differs from the floor tile. `Cutouts` are holes (the grate). `JointInset` widens each hole by that much, the silicone around the grate. The grate itself is the waste terminal, not a tile.
+
+The floor joint is not stored. It is derived. A tile of surface length `t` on a gradient `g` covers `t / sqrt(1+g²)` in plan, so a floor joint equal to the wall joint would make the floor module short of the wall module. The floor joint, measured on the slope, is
+
+```text
+floor_joint = (wall_tile + wall_joint) * sqrt(1+g²) − floor_tile
+```
+
+with `g` the component of `Gradient` in that axis. `yaml_ifc.floor_joint_widths(floor_tile, wall_tile, wall_joint, gradient)` returns both axes, the extra over `wall_joint`, and the plan pitch. The plan pitch of a wall module is `wall_tile + wall_joint`. The floor module is stretched so it projects to that same pitch, and the two grids share `GridOrigin`, so the joint lines coincide in plan.
+
+For a 600 mm tile, a 2 mm wall joint, and a 1% slope, the extra is about 0.030 mm. In the bathroom example the extras are about 0.038 mm east-west and 0.030 mm north-south (floor joints about 2.038 mm and 2.030 mm). Three joints along the room add up to about 0.11 mm. That is below what a tiler can set. The model still uses the exact wider joint, so the module boundaries coincide rather than drifting by that tenth of a millimetre.
+
+Wall:
+
+```yaml
+TileLayout:
+  Product: ABK Poetry Stone Trani Beige
+  Thickness: 0.0085
+  Tile: [0.6, 1.2]
+  Joint: 0.002
+  GridOrigin: [2.175, 1.925]
+  BottomCut: follow-slope
+  BottomJoint: 0.002
+  Courses: 2
+  Plane: SLAB-1.20
+  Axis:
+    Start: [0, 1.925]
+    End: [2.175, 1.925]
+  Inside: [1, 1]
+  Openings:
+    - AlongAxis: 1.175
+      Width: 0.9
+      SillHeight: 0
+      Height: 2.1
+```
+
+`Joint` is the wall grout, in plan. The wall is vertical, so the slope does not shorten it. `Axis` is the room face, not the wall centreline. `Inside` is a point on the room side; the tile thickness extrudes that way, off the wall face. `Openings` are holes in the tiling, in the same along-axis frame as a wall opening. A sill of 0 is a door: nothing is tiled in that stretch below the head, including below datum. A window keeps the tiles below its sill.
+
+`BottomCut` is `follow-slope`. Each bottom tile is a trapezoid. The top edge is level. The bottom edge is the floor plus `BottomJoint`, a constant vertical gap. A level bottom would open that gap by the fall across one tile (about 6.7 mm on a 600 mm tile at the east-west slope of the example). The only accepted value is `follow-slope`. Course lines are measured once, from the lowest point of the plane on the slab footprint, and every wall uses those lines, so the horizontal joint does not step at a corner. At the drain the bottom tile is a full blank. At the high corner it is shorter by the fall. `Courses` is how many rows. The head is derived (`z_min + BottomJoint + Courses × tile height + (Courses − 1) × Joint`) and is not a stored elevation. Two 1200 mm courses from a floor that has already fallen cannot also be told to stop at a level 2400 mm.
+
+A membrane is an `IfcCovering` / `MEMBRANE` with `Plane` set and no solid, when the thickness was not measured. Upstand heights and a taped door edge are `Pset_YamlIfc` properties (`UpstandMin`, `UpstandMax`, `ShowerUpstandMin`, `DoorEdge`). A suspended ceiling is `CEILING` with `Origin`, `Elevation` at the soffit, `Width`, and `Depth`. Board thickness is omitted, and then there is no solid.
+
+### Point drain
+
+`wasteTerminals[]` is an `IfcWasteTerminal`. A point drain in the floor is `PredefinedType: FLOORTRAP`, `ObjectType: PointDrain`, `Width` and `Depth` the grate, `Origin` the corner of the grate. `Name` can carry the manufacturer and article (`ACO 450420`). `Pset_ManufacturerTypeInformation` holds `Manufacturer` and `ArticleNumber` when those are known. `ArticleNumber` is a string.
+
+`Elevation` is omitted. The placement height is the plane at `Origin`, so the grate cannot sit off the floor. The top of the grate solid is that plane, not a level rectangle: one plane, no valley around the drain. The solid thickness is a nominal 8 mm when `Height` is omitted. It is not written back. The body under the slab is not modeled.
+
+`FLOORTRAP` means a trapped gully. An untrapped waste would be `FLOORWASTE`. The example uses `FLOORTRAP` because a bathroom point drain is trapped unless the product says otherwise.
 
 ## Electrical
 
@@ -496,6 +606,14 @@ Each property is an `IfcPropertySingleValue`: the key is `Name`, the YAML value 
 | YAML | IFC |
 | --- | --- |
 | `walls[]` | `IfcWall` |
+| `slabs[]` | `IfcSlab` |
+| `Plane` | Finished surface `z = Elevation + Gradient · (point − Origin)`, or an `id` of an element that carries that mapping |
+| `slabs[].Footprint`, `Thickness` | Slab solid, top on the plane, thickness along the downward normal. No `Thickness` means no solid |
+| `wasteTerminals[]` | `IfcWasteTerminal` |
+| `wasteTerminals[].Origin`, `Width`, `Depth` | Grate corner and size. Height of the placement is the plane at `Origin` |
+| `TileLayout` | Tile and grout breps on an `IfcCovering`. Import restores the layout and drops the breps |
+| `TileLayout.WallJoint` | Authored wall grout. The floor joint is `yaml_ifc.floor_joint_widths` and is not stored |
+| `TileLayout.BottomCut` | `follow-slope`: bottom tiles are trapezoids, top edge level, bottom edge the floor plus `BottomJoint` |
 | `Axis` | Axis representation, `IfcPolyline`. Placement origin at `Start`, X toward `End` |
 | `Thickness` | Body profile width, centred on the axis (local Y) |
 | `Height` | Body extrusion depth (local Z) |
@@ -553,6 +671,8 @@ Each property is an `IfcPropertySingleValue`: the key is `Name`, the YAML value 
 
 `samples/electrical.yaml` is one distribution board, a nominal four-wall room, and the devices, routed cables, and circuits outside the board. The sizes are nominal, not a survey, and the file is not a real house. `python tools/render_electrical.py samples/electrical.yaml -o samples/electrical.png` draws a top view and an isometric of that file.
 
+`samples/bathroom.yaml` is one bathroom: the clear size, door, and window of ground-floor room 1.20, a single floor plane, floor and wall tiles, a membrane, a suspended ceiling, and a point drain. The wall joint is an example, not a surveyed width. `python tools/render_tiling.py samples/bathroom.yaml --plan samples/bathroom-plan.png --walls samples/bathroom-walls.png` draws the floor layout and the wall elevations.
+
 ## Converter
 
 `yaml_ifc` writes this file to IFC4 and reads IFC4 back. A few IFC rules have no YAML field. The converter fills those in, then drops them again on the way back, so a YAML file comes back with the same data:
@@ -574,10 +694,15 @@ Each property is an `IfcPropertySingleValue`: the key is `Name`, the YAML value 
 - Each cable becomes an `IfcCableSegment` plus four nested `IfcDistributionPort` entities and two `IfcRelConnectsPorts`. The ports are not YAML. Their `SystemType` follows the circuit that assigns the cable, or `ELECTRICAL`. The segment's own ports are named `{id}:sink` and `{id}:source`, and import restores `From` and `To` from those. A port nested in a supported element is not reported as a skipped product.
 - A cable `Route` is one axis polyline and one `IfcSweptDiskSolid` of radius 5 mm along that same curve. The radius is not written back. Import restores `Route` from the axis, in storey metres, and falls back to the swept-disk directrix when the file has a body and no axis. No `IfcCableFitting` is written. The 3D axis subcontext is created only when a route is written.
 - `NumberOfCores` is `Pset_CableSegmentTypeCableSegment.NumberOfCores` (`IfcInteger`). Import lifts it back into the field.
+- An `IfcSlab` with `Plane`, `Footprint`, and `Thickness` is one faceted brep, the top on the plane. Without `Thickness` there is no solid. `Plane`, `Footprint`, and `Thickness` are restored from the `yaml-ifc` set. A slab this converter did not write (a roof with a mapped body, no bookkeeping set) keeps its `id`, `PredefinedType`, and `GlobalId` only. The mapped solid and the roof aggregate are not stored, and the slab is written back without a body.
+- A covering `TileLayout` is one faceted brep per tile and per grout piece. The parameters are restored from the `yaml-ifc` set. The breps are not read. The floor joint widths are computed by `yaml_ifc.floor_joint_widths` and are not written into the file.
+- `BottomCut` must be `follow-slope`. Course elevations are computed from the lowest point of the plane on the footprint named by the layout, or on the slab the `Plane` reference points at.
+- A waste terminal with `Plane` and no `Elevation` is placed at the plane height of `Origin`. `Height`, when omitted, extrudes a nominal 8 mm grate. That thickness is not written back. Setting both `Plane` and `Elevation` is rejected.
+- `Plane` stored as an `id` is a reference. `Plane` stored as `Origin`, `Elevation`, and `Gradient` is the plane itself. The numbers in the file are the numbers written back, including an elevation of 0.
 - Each circuit is an `IfcDistributionCircuit`. `Assigns` is one `IfcRelAssignsToGroup`. Members this subset does not store are dropped on import.
 - YAML lengths are metres. An IFC file in millimetres is converted on the way in.
 
-An IFC file also contains entities this subset does not store (slabs, roofs, stairs, and the rest). Those are counted and reported, not written into the YAML. For the entities above, every instance is kept, matched by `GlobalId`. A bare `IfcFurnishingElement` is one of the counted leftovers.
+An IFC file also contains entities this subset does not store (roofs, stairs, and the rest). Those are counted and reported, not written into the YAML. An `IfcSlab` is kept, as a plane when this converter wrote one and as identity otherwise. For the entities above, every instance is kept, matched by `GlobalId`. A bare `IfcFurnishingElement` is one of the counted leftovers.
 
 ## Open questions
 
@@ -611,3 +736,9 @@ An IFC file also contains entities this subset does not store (slabs, roofs, sta
 28. **Panel interiors.** The board is one element. Breakers, RCDs, and busbars are deferred. A circuit names the board, the devices, and the cables, and does not name a breaker.
 29. **Devices are not hosted in a wall.** A switch has a box in the room, the same way a cabinet does. There is no opening voided for the back box. Confirm that stays until a wall host is needed.
 30. **Circuit membership** is an `Assigns` list. A board may sit on several circuits. Load, phase, and protective device are not on the circuit.
+31. **One floor plane.** The bathroom falls on a single plane, high at the door corner and low at the drain. A valley or a perimeter channel would be a different floor. Confirm the one plane is what gets built.
+32. **Floor joint wider than the wall joint.** The difference is a few hundredths of a millimetre so the joints line up in plan on the slope. It is derived, not authored. Confirm the tiles are set to the wall module and the extra is left in the joint, rather than ignored.
+33. **Bottom course cut to the slope.** `follow-slope` with a constant vertical `BottomJoint`. A level bottom was the alternative and is not accepted. Confirm the cut.
+34. **Point drain as `FLOORTRAP`.** The grate size and the article number are stored. The body under the slab is not. `FLOORWASTE` would be the untrapped alternative. The 8 mm grate solid is nominal. Confirm the trap and that the body can wait.
+35. **Screed and membrane thicknesses** are omitted. The screed is the plane. The membrane is the upstand properties and the taped door edge. Underfloor heating is a boolean. Confirm none of those build-ups should be given a guessed thickness.
+36. **External slabs.** A roof slab from another author is identity only. The mapped body is dropped on the way back. Confirm that limit until a second slab shape is actually needed.

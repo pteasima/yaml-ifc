@@ -12,6 +12,7 @@ SUPPORTED = (
     ("IfcBuildingStorey", "storey", False),
     ("IfcSpace", "spaces", True),
     ("IfcWall", "walls", True),
+    ("IfcSlab", "slabs", True),
     ("IfcRelConnectsPathElements", "connections", True),
     ("IfcOpeningElement", "openings", True),
     ("IfcDoor", "doors", True),
@@ -19,6 +20,7 @@ SUPPORTED = (
     ("IfcFurniture", "furniture", True),
     ("IfcSystemFurnitureElement", "systemFurniture", True),
     ("IfcSanitaryTerminal", "sanitaryTerminals", True),
+    ("IfcWasteTerminal", "wasteTerminals", True),
     ("IfcElectricAppliance", "electricAppliances", True),
     ("IfcLightFixture", "lightFixtures", True),
     ("IfcCovering", "coverings", True),
@@ -68,6 +70,8 @@ TYPE_PREDEFINED_REQUIRED = frozenset(
         "IfcActuatorType",
         "IfcElectricDistributionBoardType",
         "IfcCableSegmentType",
+        "IfcSlabType",
+        "IfcWasteTerminalType",
     }
 )
 
@@ -153,6 +157,25 @@ PREDEFINED_TYPES = {
         "MEMBRANE",
         "SLEEVING",
         "WRAPPING",
+        "USERDEFINED",
+        "NOTDEFINED",
+    ),
+    "IfcSlab": (
+        "FLOOR",
+        "ROOF",
+        "LANDING",
+        "BASESLAB",
+        "USERDEFINED",
+        "NOTDEFINED",
+    ),
+    "IfcWasteTerminal": (
+        "FLOORTRAP",
+        "FLOORWASTE",
+        "GULLYSUMP",
+        "GULLYTRAP",
+        "ROOFDRAIN",
+        "WASTEDISPOSALUNIT",
+        "WASTETRAP",
         "USERDEFINED",
         "NOTDEFINED",
     ),
@@ -285,6 +308,8 @@ FURNISHING_SIZE = ("Width", "Depth", "Height")
 DEFAULT_WALL_HEIGHT = 3.0
 # Disk radius for a routed cable. Not a measured diameter, and not written back.
 DEFAULT_CABLE_RADIUS = 0.005
+# Thickness of a point-drain grate solid. Not a measured frame depth, and not written back.
+DEFAULT_GRATE_THICKNESS = 0.008
 # Void depth used when the host has no thickness and the opening has no depth.
 DEFAULT_OPENING_DEPTH = 0.2
 
